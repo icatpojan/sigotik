@@ -13,6 +13,7 @@ class ConfUser extends Authenticatable
     public $timestamps = false;
 
     protected $fillable = [
+        'conf_user_id',
         'username',
         'password',
         'm_upt_code',
