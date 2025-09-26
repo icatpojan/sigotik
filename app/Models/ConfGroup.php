@@ -12,6 +12,7 @@ class ConfGroup extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'conf_group_id',
         'group'
     ];
 

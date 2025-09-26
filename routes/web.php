@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\GroupController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,4 +44,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
+    // Group Management Routes
+    Route::get('/groups', [GroupController::class, 'index'])->name('groups.index');
+    Route::get('/groups/data', [GroupController::class, 'getGroups'])->name('groups.data');
+    Route::post('/groups', [GroupController::class, 'store'])->name('groups.store');
+    Route::get('/groups/{group}', [GroupController::class, 'show'])->name('groups.show');
+    Route::put('/groups/{group}', [GroupController::class, 'update'])->name('groups.update');
+    Route::delete('/groups/{group}', [GroupController::class, 'destroy'])->name('groups.destroy');
+
+    // Permission Management Routes
+    Route::get('/groups/menus/all', [GroupController::class, 'getMenus'])->name('groups.menus');
+    Route::get('/groups/{group}/permissions', [GroupController::class, 'getGroupPermissions'])->name('groups.permissions');
+    Route::post('/groups/{group}/permissions', [GroupController::class, 'updatePermissions'])->name('groups.permissions.update');
 });

@@ -12,6 +12,7 @@ class ConfRoleMenu extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'id',
         'conf_group_id',
         'stm_menu_id'
     ];
