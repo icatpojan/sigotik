@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\MenuController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,4 +58,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/groups/menus/all', [GroupController::class, 'getMenus'])->name('groups.menus');
     Route::get('/groups/{group}/permissions', [GroupController::class, 'getGroupPermissions'])->name('groups.permissions');
     Route::post('/groups/{group}/permissions', [GroupController::class, 'updatePermissions'])->name('groups.permissions.update');
+
+    // Menu Management Routes
+    Route::get('/menus', [MenuController::class, 'index'])->name('menus.index');
+    Route::get('/menus/data', [MenuController::class, 'getMenus'])->name('menus.data');
+    Route::post('/menus', [MenuController::class, 'store'])->name('menus.store');
+    Route::get('/menus/{menu}', [MenuController::class, 'show'])->name('menus.show');
+    Route::put('/menus/{menu}', [MenuController::class, 'update'])->name('menus.update');
+    Route::delete('/menus/{menu}', [MenuController::class, 'destroy'])->name('menus.destroy');
+    Route::get('/menus/parent/all', [MenuController::class, 'getParentMenus'])->name('menus.parent');
 });

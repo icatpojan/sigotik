@@ -50,7 +50,7 @@
                             <ul :class="sidebarToggle ? 'lg:hidden' : 'flex'" class="flex flex-col gap-1 mt-2 menu-dropdown pl-9 transition-all duration-300 ease-in-out">
                                 <li><a href="{{ route('users.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">User</a></li>
                                 <li><a href="{{ route('groups.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Group</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Menu</a></li>
+                                <li><a href="{{ route('menus.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Menu</a></li>
                                 <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Release</a></li>
                             </ul>
                         </div>

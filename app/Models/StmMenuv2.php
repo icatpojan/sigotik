@@ -12,6 +12,7 @@ class StmMenuv2 extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'id',
         'id_parentmenu',
         'level',
         'menu',
