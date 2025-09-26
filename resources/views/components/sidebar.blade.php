@@ -51,7 +51,7 @@
                                 <li><a href="{{ route('users.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">User</a></li>
                                 <li><a href="{{ route('groups.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Group</a></li>
                                 <li><a href="{{ route('menus.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Menu</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Release</a></li>
+                                <li><a href="{{ route('release.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Release</a></li>
                             </ul>
                         </div>
                     </li>

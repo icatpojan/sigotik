@@ -7,6 +7,7 @@ use App\Http\Controllers\GroupController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\UptController;
 use App\Http\Controllers\KapalController;
+use App\Http\Controllers\ReleaseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +24,7 @@ use App\Http\Controllers\KapalController;
 Route::get('/', function () {
     return redirect('/login');
 });
+
 
 // Authentication routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login')->middleware('guest');
@@ -85,4 +87,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/kapals/{kapal}', [KapalController::class, 'show'])->name('kapals.show');
     Route::put('/kapals/{kapal}', [KapalController::class, 'update'])->name('kapals.update');
     Route::delete('/kapals/{kapal}', [KapalController::class, 'destroy'])->name('kapals.destroy');
+
+    // Release Management Routes (Read Only)
+    Route::get('/release', [ReleaseController::class, 'index'])->name('release.index');
+    Route::get('/release/data', [ReleaseController::class, 'getBbmKapaltrans'])->name('release.data');
+    Route::get('/release/{bbmKapaltrans}', [ReleaseController::class, 'show'])->name('release.show');
 });
