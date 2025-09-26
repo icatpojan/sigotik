@@ -5,6 +5,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\UptController;
+use App\Http\Controllers\KapalController;
 
 /*
 |--------------------------------------------------------------------------
@@ -67,4 +69,20 @@ Route::middleware('auth')->group(function () {
     Route::put('/menus/{menu}', [MenuController::class, 'update'])->name('menus.update');
     Route::delete('/menus/{menu}', [MenuController::class, 'destroy'])->name('menus.destroy');
     Route::get('/menus/parent/all', [MenuController::class, 'getParentMenus'])->name('menus.parent');
+
+    // UPT Management Routes
+    Route::get('/upts', [UptController::class, 'index'])->name('upts.index');
+    Route::get('/upts/data', [UptController::class, 'getUpts'])->name('upts.data');
+    Route::post('/upts', [UptController::class, 'store'])->name('upts.store');
+    Route::get('/upts/{upt}', [UptController::class, 'show'])->name('upts.show');
+    Route::put('/upts/{upt}', [UptController::class, 'update'])->name('upts.update');
+    Route::delete('/upts/{upt}', [UptController::class, 'destroy'])->name('upts.destroy');
+
+    // Kapal Management Routes
+    Route::get('/kapals', [KapalController::class, 'index'])->name('kapals.index');
+    Route::get('/kapals/data', [KapalController::class, 'getKapals'])->name('kapals.data');
+    Route::post('/kapals', [KapalController::class, 'store'])->name('kapals.store');
+    Route::get('/kapals/{kapal}', [KapalController::class, 'show'])->name('kapals.show');
+    Route::put('/kapals/{kapal}', [KapalController::class, 'update'])->name('kapals.update');
+    Route::delete('/kapals/{kapal}', [KapalController::class, 'destroy'])->name('kapals.destroy');
 });

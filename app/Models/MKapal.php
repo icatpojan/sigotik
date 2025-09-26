@@ -12,6 +12,7 @@ class MKapal extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'm_kapal_id',
         'nama_kapal',
         'code_kapal',
         'm_upt_code',

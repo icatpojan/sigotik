@@ -12,6 +12,7 @@ class MUpt extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'm_upt_id',
         'nama',
         'code',
         'alamat1',
@@ -33,6 +34,7 @@ class MUpt extends Model
         'date_insert',
         'date_update'
     ];
+
 
     // Relasi dengan kapal
     public function kapals()

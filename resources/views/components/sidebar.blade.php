@@ -73,8 +73,8 @@
                         </a>
                         <div class="overflow-hidden transform translate transition-all duration-300 ease-in-out" :class="(selected === 'Master Data') ? 'block' :'hidden'">
                             <ul :class="sidebarToggle ? 'lg:hidden' : 'flex'" class="flex flex-col gap-1 mt-2 menu-dropdown pl-9 transition-all duration-300 ease-in-out">
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Kapal</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">UPT</a></li>
+                                <li><a href="{{ route('kapals.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Kapal</a></li>
+                                <li><a href="{{ route('upts.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">UPT</a></li>
                             </ul>
                         </div>
                     </li>
