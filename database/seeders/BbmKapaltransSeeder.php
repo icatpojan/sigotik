@@ -73,7 +73,7 @@ class BbmKapaltransSeeder extends Seeder
                 'an_nakhoda_temp' => 0,
                 'an_kkm_temp' => 0,
                 'user_input' => 'admin',
-                'tanggal_input' => now()->subDays(5),
+                
                 'user_app' => 'admin',
                 'tanggal_app' => now()->subDays(4),
                 'status_trans' => 1
@@ -136,7 +136,7 @@ class BbmKapaltransSeeder extends Seeder
                 'an_nakhoda_temp' => 0,
                 'an_kkm_temp' => 0,
                 'user_input' => 'admin',
-                'tanggal_input' => now()->subDays(3),
+                
                 'user_app' => 'admin',
                 'tanggal_app' => now()->subDays(2),
                 'status_trans' => 1
@@ -199,7 +199,7 @@ class BbmKapaltransSeeder extends Seeder
                 'an_nakhoda_temp' => 0,
                 'an_kkm_temp' => 0,
                 'user_input' => 'admin',
-                'tanggal_input' => now()->subDays(1),
+                
                 'user_app' => '',
                 'tanggal_app' => null,
                 'status_trans' => 0
@@ -262,7 +262,7 @@ class BbmKapaltransSeeder extends Seeder
                 'an_nakhoda_temp' => 0,
                 'an_kkm_temp' => 0,
                 'user_input' => 'admin',
-                'tanggal_input' => now()->subDays(7),
+                
                 'user_app' => 'admin',
                 'tanggal_app' => now()->subDays(6),
                 'status_trans' => 1
@@ -325,7 +325,7 @@ class BbmKapaltransSeeder extends Seeder
                 'an_nakhoda_temp' => 0,
                 'an_kkm_temp' => 0,
                 'user_input' => 'admin',
-                'tanggal_input' => now()->subDays(10),
+                
                 'user_app' => 'admin',
                 'tanggal_app' => now()->subDays(9),
                 'status_trans' => 2
@@ -388,7 +388,7 @@ class BbmKapaltransSeeder extends Seeder
                 'an_nakhoda_temp' => 0,
                 'an_kkm_temp' => 0,
                 'user_input' => 'admin',
-                'tanggal_input' => now()->subDays(2),
+                
                 'user_app' => 'admin',
                 'tanggal_app' => now()->subDays(1),
                 'status_trans' => 1
@@ -451,7 +451,7 @@ class BbmKapaltransSeeder extends Seeder
                 'an_nakhoda_temp' => 0,
                 'an_kkm_temp' => 0,
                 'user_input' => 'admin',
-                'tanggal_input' => now()->subDays(4),
+                
                 'user_app' => '',
                 'tanggal_app' => null,
                 'status_trans' => 0
@@ -514,7 +514,7 @@ class BbmKapaltransSeeder extends Seeder
                 'an_nakhoda_temp' => 0,
                 'an_kkm_temp' => 0,
                 'user_input' => 'admin',
-                'tanggal_input' => now()->subDays(6),
+                
                 'user_app' => 'admin',
                 'tanggal_app' => now()->subDays(5),
                 'status_trans' => 1

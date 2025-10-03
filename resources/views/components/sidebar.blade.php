@@ -94,15 +94,16 @@
                         </a>
                         <div class="overflow-hidden transform translate transition-all duration-300 ease-in-out" :class="(selected === 'Monitoring BBM') ? 'block' :'hidden'">
                             <ul :class="sidebarToggle ? 'lg:hidden' : 'flex'" class="flex flex-col gap-1 mt-2 menu-dropdown pl-9 transition-all duration-300 ease-in-out">
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Sebelum Pengisian</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Sebelum Pelayaran</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Sesudah Pelayaran</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Penggunaan BBM</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Pemeriksaan Sarana Pengisian</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Penerimaan BBM</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Akhir Bulan</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Penitipan BBM</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Pengembalian BBM</a></li>
+                                <li><a href="{{ route('bbm.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Data BBM</a></li>
+                                <li><a href="{{ route('ba-sebelum-pengisian.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Sebelum Pengisian</a></li>
+                                <li><a href="{{ route('ba-sebelum-pelayaran.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Sebelum Pelayaran</a></li>
+                                <li><a href="{{ route('ba-sesudah-pelayaran.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Sesudah Pelayaran</a></li>
+                                <li><a href="{{ route('ba-pemeriksaan-sarana-pengisian.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Pemeriksaan Sarana Pengisian</a></li>
+                                <li><a href="{{ route('ba-penggunaan-bbm.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Penggunaan BBM</a></li>
+                                <li><a href="{{ route('ba-akhir-bulan.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Akhir Bulan</a></li>
+                                <li><a href="{{ route('ba-penerimaan-bbm.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Penerimaan BBM</a></li>
+                                <li><a href="{{ route('ba-penitipan-bbm.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Penitipan BBM</a></li>
+                                <li><a href="{{ route('ba-pengembalian-bbm.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Pengembalian BBM</a></li>
                             </ul>
                         </div>
                     </li>
@@ -247,7 +248,7 @@
 
                     <!-- Portal Berita -->
                     <li>
-                        <a href="#" class="menu-item group menu-item-inactive">
+                        <a href="{{ route('portnews.index') }}" class="menu-item group menu-item-inactive">
                             <svg class="menu-item-icon-inactive" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />

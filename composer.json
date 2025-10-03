@@ -15,6 +15,7 @@
         "laravel/framework": "^7.29",
         "laravel/tinker": "^2.5",
         "laravel/ui": "^2.0",
+        "tecnickcom/tcpdf": "^6.10",
         "yajra/laravel-datatables-oracle": "^9.21"
     },
     "require-dev": {

@@ -6,12 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class BbmKapaltrans extends Model
 {
-
     protected $table = 'bbm_kapaltrans';
     protected $primaryKey = 'trans_id';
-    public $timestamps = false;
+    public $timestamps = true;
 
     protected $fillable = [
+        'trans_id',
         'kapal_code',
         'nomor_surat',
         'tanggal_surat',
@@ -32,10 +32,19 @@ class BbmKapaltrans extends Model
         'gambar_segel',
         'status_flowmeter',
         'gambar_flowmeter',
+        'penyedia',
+        'kesimpulan',
+        'jabatan_staf_pangkalan', // Tambahkan field yang hilang
+        'nama_staf_pangkalan', // Tambahkan field yang hilang
+        'nip_staf', // Tambahkan field yang hilang
+        'an_staf', // Tambahkan field yang hilang
+        'peruntukan', // Field untuk peruntukan BBM
+        'link_modul_ba', // Field untuk link BA
         'nama_nahkoda',
         'nip_nahkoda',
         'jabatan_nahkoda',
         'pangkat_nahkoda',
+        'file_upload',
         'golongan_nahkoda',
         'nama_kkm',
         'nip_kkm',
@@ -50,7 +59,6 @@ class BbmKapaltrans extends Model
         'an_nakhoda',
         'an_kkm',
         'kapal_code_temp',
-        'pangkat_nahkoda',
         'nama_nahkoda_temp',
         'nip_nahkoda_temp',
         'jabatan_nahkoda_temp',
@@ -72,7 +80,9 @@ class BbmKapaltrans extends Model
         'tanggal_input',
         'user_app',
         'tanggal_app',
-        'status_trans'
+        'status_trans',
+        'penyedia', // Field untuk penyedia BBM
+        'no_so' // Field untuk nomor Sales Order
     ];
 
     protected $dates = [
@@ -83,9 +93,115 @@ class BbmKapaltrans extends Model
         'tanggal_app'
     ];
 
+    protected $casts = [
+        'volume_sisa' => 'decimal:2',
+        'volume_sebelum' => 'decimal:2',
+        'volume_pengisian' => 'decimal:2',
+        'volume_pemakaian' => 'decimal:2',
+        'status_ba' => 'integer',
+        'status_segel' => 'integer',
+        'status_flowmeter' => 'integer',
+        'an_nakhoda' => 'integer',
+        'an_kkm' => 'integer',
+        'an_nakhoda_temp' => 'integer',
+        'an_kkm_temp' => 'integer',
+        'status_trans' => 'integer'
+    ];
+
     // Relasi dengan kapal
     public function kapal()
     {
         return $this->belongsTo(MKapal::class, 'kapal_code', 'code_kapal');
+    }
+
+    // Relasi dengan user yang input
+    public function userInput()
+    {
+        return $this->belongsTo(ConfUser::class, 'user_input', 'conf_user_id');
+    }
+
+    // Relasi dengan user yang approve
+    public function userApp()
+    {
+        return $this->belongsTo(ConfUser::class, 'user_app', 'conf_user_id');
+    }
+
+    // Relasi dengan detail transportasi (untuk BA Penerimaan BBM)
+    public function transdetails()
+    {
+        return $this->hasMany(BbmTransdetail::class, 'nomor_surat', 'nomor_surat');
+    }
+
+    // Scope untuk filter berdasarkan status BA
+    public function scopeByStatusBa($query, $status)
+    {
+        return $query->where('status_ba', $status);
+    }
+
+    // Scope untuk filter berdasarkan status transaksi
+    public function scopeByStatusTrans($query, $status)
+    {
+        return $query->where('status_trans', $status);
+    }
+
+    // Scope untuk filter berdasarkan kapal
+    public function scopeByKapal($query, $kapalCode)
+    {
+        return $query->where('kapal_code', $kapalCode);
+    }
+
+    // Scope untuk filter berdasarkan tanggal
+    public function scopeByDateRange($query, $startDate, $endDate)
+    {
+        return $query->whereBetween('tanggal_surat', [$startDate, $endDate]);
+    }
+
+    // Method untuk mendapatkan status BA dalam teks
+    public function getStatusBaTextAttribute()
+    {
+        $statusMap = [
+            0 => 'BA Default',
+            1 => 'BA Akhir Bulan',
+            2 => 'BA Sebelum Pengisian',
+            3 => 'BA Penggunaan BBM',
+            4 => 'BA Pemeriksaan Sarana Pengisian',
+            5 => 'BA Penerimaan Hibah BBM',
+            6 => 'BA Sebelum Pelayaran',
+            7 => 'BA Sesudah Pelayaran',
+            8 => 'BA Pengembalian BBM',
+            9 => 'BA Penerimaan Pengembalian BBM',
+            10 => 'BA Penerimaan Pinjaman BBM',
+            11 => 'BA Pengembalian Pinjaman BBM',
+            12 => 'BA Pemberi Hibah BBM Kapal Pengawas',
+            13 => 'BA Penerima Hibah BBM Kapal Pengawas',
+            14 => 'BA Penerima Hibah BBM Instansi Lain',
+            15 => 'BA Akhir Bulan'
+        ];
+
+        return $statusMap[$this->status_ba] ?? 'Unknown';
+    }
+
+    // Method untuk mendapatkan status transaksi dalam teks
+    public function getStatusTransTextAttribute()
+    {
+        $statusMap = [
+            0 => 'Input',
+            1 => 'Approval',
+            2 => 'Batal'
+        ];
+
+        return $statusMap[$this->status_trans] ?? 'Unknown';
+    }
+
+    // Method untuk mendapatkan zona waktu dalam teks
+    public function getZonaWaktuTextAttribute()
+    {
+        $zonaMap = [
+            'WIB' => 'Waktu Indonesia Barat',
+            'WITA' => 'Waktu Indonesia Tengah',
+            'WIT' => 'Waktu Indonesia Timur'
+        ];
+
+        return $zonaMap[$this->zona_waktu_surat] ?? $this->zona_waktu_surat;
     }
 }

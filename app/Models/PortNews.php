@@ -12,6 +12,7 @@ class PortNews extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'id',
         'img',
         'news_title',
         'news',
@@ -29,5 +30,21 @@ class PortNews extends Model
     public function category()
     {
         return $this->belongsTo(Category::class, 'kategori_id', 'id');
+    }
+
+    // Cast kategori_id ke string untuk kompatibilitas dengan enum
+    protected $casts = [
+        'kategori_id' => 'string',
+        'post' => 'string',
+        'date_create' => 'datetime',
+    ];
+
+    // Accessor untuk mengkonversi blob ke string
+    public function getNewsAttribute($value)
+    {
+        if (is_resource($value)) {
+            return stream_get_contents($value);
+        }
+        return $value;
     }
 }

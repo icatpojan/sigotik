@@ -1,0 +1,69 @@
+<?php
+/**
+* Web Service Controller.
+* @version 1.0 07/05/2015 12:29:36
+* @author Wiliam Decosta
+*/
+class Ws extends CI_Controller {
+
+	function index() {
+		$this->load->view('ws_info');
+	}
+
+	
+
+	function json($class_name, $func_name) {
+
+		try {
+			check_login();
+
+			$class_location = explode(".",$class_name);
+			if(count($class_location) > 1) {
+			    $this->load->library($class_location[0]."/".$class_location[1]);
+			    $class_name = $class_location[1];
+			}else {
+			    $this->load->library($class_name);
+			}
+
+			$result = $this->$class_name->$func_name();
+			
+			$result['current'] = (int)$result['current'];
+			$result['rowCount'] = (int)$result['rowCount'];
+			$result['total'] = (int)$result['total'];
+
+		}catch(Exception $e) {
+			$result = array('rows' => array(), 'success' => false, 'current' => 1, 'rowCount' => 1, 'total' => 0, 'message' => $e->getMessage());
+		}
+
+		header('Content-Type: application/json');
+		echo json_encode($result);
+        //session_write_close();
+	}
+
+
+	function json_jqgrid($class_name, $func_name) {
+
+		try {
+			check_login();
+
+			$class_location = explode(".",$class_name);
+			if(count($class_location) > 1) {
+			    $this->load->library($class_location[0]."/".$class_location[1]);
+			    $class_name = $class_location[1];
+			}else {
+			    $this->load->library($class_name);
+			}
+
+			$result = $this->$class_name->$func_name();
+
+			
+			$result['message'] = $result['message'];
+			$result['success'] = $result['success'];
+		}catch(Exception $e) {
+			$result = array('message' => $e->getMessage(), 'success' => false);
+		}
+
+		header('Content-Type: application/json');
+		echo json_encode($result);
+	}
+}

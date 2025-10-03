@@ -66,5 +66,8 @@
 
     <!-- Modal Section -->
     @yield('modals')
+
+    <!-- Scripts Section -->
+    @yield('scripts')
 </body>
 </html>
