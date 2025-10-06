@@ -20,6 +20,11 @@ use App\Http\Controllers\BaPenerimaanBbmController;
 use App\Http\Controllers\BaPenitipanBbmController;
 use App\Http\Controllers\BaPengembalianBbmController;
 
+use App\Http\Controllers\BaPeminjamanBbmController;
+use App\Http\Controllers\BaPenerimaanPinjamanBbmController;
+use App\Http\Controllers\BaPengembalianPinjamanBbmController;
+use App\Http\Controllers\BaPenerimaanPengembalianPinjamanBbmController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -239,4 +244,56 @@ Route::middleware('auth')->group(function () {
     Route::post('/ba-pengembalian-bbm/{id}/upload', [BaPengembalianBbmController::class, 'uploadDocument'])->name('ba-pengembalian-bbm.upload');
     Route::get('/ba-pengembalian-bbm/{id}/view-document', [BaPengembalianBbmController::class, 'viewDocument'])->name('ba-pengembalian-bbm.view-document');
     Route::delete('/ba-pengembalian-bbm/{id}/delete-document', [BaPengembalianBbmController::class, 'deleteDocument'])->name('ba-pengembalian-bbm.delete-document');
+
+    Route::get('/ba-peminjaman-bbm', [BaPeminjamanBbmController::class, 'index'])->name('ba-peminjaman-bbm.index');
+    Route::get('/ba-peminjaman-bbm/data', [BaPeminjamanBbmController::class, 'getData'])->name('ba-peminjaman-bbm.data');
+    Route::get('/ba-peminjaman-bbm/kapal-data', [BaPeminjamanBbmController::class, 'getKapalData'])->name('ba-peminjaman-bbm.kapal-data');
+    Route::get('/ba-peminjaman-bbm/ba-data', [BaPeminjamanBbmController::class, 'getBaData'])->name('ba-peminjaman-bbm.ba-data');
+    Route::post('/ba-peminjaman-bbm', [BaPeminjamanBbmController::class, 'store'])->name('ba-peminjaman-bbm.store');
+    Route::get('/ba-peminjaman-bbm/{baPeminjamanBbm}', [BaPeminjamanBbmController::class, 'show'])->name('ba-peminjaman-bbm.show');
+    Route::put('/ba-peminjaman-bbm/{baPeminjamanBbm}', [BaPeminjamanBbmController::class, 'update'])->name('ba-peminjaman-bbm.update');
+    Route::delete('/ba-peminjaman-bbm/{baPeminjamanBbm}', [BaPeminjamanBbmController::class, 'destroy'])->name('ba-peminjaman-bbm.destroy');
+    Route::get('/ba-peminjaman-bbm/{baPeminjamanBbm}/pdf', [BaPeminjamanBbmController::class, 'generatePdf'])->name('ba-peminjaman-bbm.pdf');
+    Route::post('/ba-peminjaman-bbm/{baPeminjamanBbm}/upload', [BaPeminjamanBbmController::class, 'uploadDocument'])->name('ba-peminjaman-bbm.upload');
+    Route::get('/ba-peminjaman-bbm/{baPeminjamanBbm}/view-document', [BaPeminjamanBbmController::class, 'viewDocument'])->name('ba-peminjaman-bbm.view-document');
+    Route::delete('/ba-peminjaman-bbm/{baPeminjamanBbm}/delete-document', [BaPeminjamanBbmController::class, 'deleteDocument'])->name('ba-peminjaman-bbm.delete-document');
+
+    Route::get('/ba-penerimaan-pinjaman-bbm', [BaPenerimaanPinjamanBbmController::class, 'index'])->name('ba-penerimaan-pinjaman-bbm.index');
+    Route::get('/ba-penerimaan-pinjaman-bbm/data', [BaPenerimaanPinjamanBbmController::class, 'getData'])->name('ba-penerimaan-pinjaman-bbm.data');
+    Route::get('/ba-penerimaan-pinjaman-bbm/kapal-data', [BaPenerimaanPinjamanBbmController::class, 'getKapalData'])->name('ba-penerimaan-pinjaman-bbm.kapal-data');
+    Route::get('/ba-penerimaan-pinjaman-bbm/ba-data', [BaPenerimaanPinjamanBbmController::class, 'getBaData'])->name('ba-penerimaan-pinjaman-bbm.ba-data');
+    Route::post('/ba-penerimaan-pinjaman-bbm', [BaPenerimaanPinjamanBbmController::class, 'store'])->name('ba-penerimaan-pinjaman-bbm.store');
+    Route::get('/ba-penerimaan-pinjaman-bbm/{baPenerimaanPinjamanBbm}', [BaPenerimaanPinjamanBbmController::class, 'show'])->name('ba-penerimaan-pinjaman-bbm.show');
+    Route::put('/ba-penerimaan-pinjaman-bbm/{baPenerimaanPinjamanBbm}', [BaPenerimaanPinjamanBbmController::class, 'update'])->name('ba-penerimaan-pinjaman-bbm.update');
+    Route::delete('/ba-penerimaan-pinjaman-bbm/{baPenerimaanPinjamanBbm}', [BaPenerimaanPinjamanBbmController::class, 'destroy'])->name('ba-penerimaan-pinjaman-bbm.destroy');
+    Route::get('/ba-penerimaan-pinjaman-bbm/{baPenerimaanPinjamanBbm}/pdf', [BaPenerimaanPinjamanBbmController::class, 'generatePdf'])->name('ba-penerimaan-pinjaman-bbm.pdf');
+    Route::post('/ba-penerimaan-pinjaman-bbm/{baPenerimaanPinjamanBbm}/upload', [BaPenerimaanPinjamanBbmController::class, 'uploadDocument'])->name('ba-penerimaan-pinjaman-bbm.upload');
+    Route::get('/ba-penerimaan-pinjaman-bbm/{baPenerimaanPinjamanBbm}/view-document', [BaPenerimaanPinjamanBbmController::class, 'viewDocument'])->name('ba-penerimaan-pinjaman-bbm.view-document');
+    Route::delete('/ba-penerimaan-pinjaman-bbm/{baPenerimaanPinjamanBbm}/delete-document', [BaPenerimaanPinjamanBbmController::class, 'deleteDocument'])->name('ba-penerimaan-pinjaman-bbm.delete-document');
+
+    Route::get('/ba-pengembalian-pinjaman-bbm', [BaPengembalianPinjamanBbmController::class, 'index'])->name('ba-pengembalian-pinjaman-bbm.index');
+    Route::get('/ba-pengembalian-pinjaman-bbm/data', [BaPengembalianPinjamanBbmController::class, 'getData'])->name('ba-pengembalian-pinjaman-bbm.data');
+    Route::get('/ba-pengembalian-pinjaman-bbm/kapal-data', [BaPengembalianPinjamanBbmController::class, 'getKapalData'])->name('ba-pengembalian-pinjaman-bbm.kapal-data');
+    Route::get('/ba-pengembalian-pinjaman-bbm/ba-data', [BaPengembalianPinjamanBbmController::class, 'getBaData'])->name('ba-pengembalian-pinjaman-bbm.ba-data');
+    Route::post('/ba-pengembalian-pinjaman-bbm', [BaPengembalianPinjamanBbmController::class, 'store'])->name('ba-pengembalian-pinjaman-bbm.store');
+    Route::get('/ba-pengembalian-pinjaman-bbm/{baPengembalianPinjamanBbm}', [BaPengembalianPinjamanBbmController::class, 'show'])->name('ba-pengembalian-pinjaman-bbm.show');
+    Route::put('/ba-pengembalian-pinjaman-bbm/{baPengembalianPinjamanBbm}', [BaPengembalianPinjamanBbmController::class, 'update'])->name('ba-pengembalian-pinjaman-bbm.update');
+    Route::delete('/ba-pengembalian-pinjaman-bbm/{baPengembalianPinjamanBbm}', [BaPengembalianPinjamanBbmController::class, 'destroy'])->name('ba-pengembalian-pinjaman-bbm.destroy');
+    Route::get('/ba-pengembalian-pinjaman-bbm/{baPengembalianPinjamanBbm}/pdf', [BaPengembalianPinjamanBbmController::class, 'generatePdf'])->name('ba-pengembalian-pinjaman-bbm.pdf');
+    Route::post('/ba-pengembalian-pinjaman-bbm/{baPengembalianPinjamanBbm}/upload', [BaPengembalianPinjamanBbmController::class, 'uploadDocument'])->name('ba-pengembalian-pinjaman-bbm.upload');
+    Route::get('/ba-pengembalian-pinjaman-bbm/{baPengembalianPinjamanBbm}/view-document', [BaPengembalianPinjamanBbmController::class, 'viewDocument'])->name('ba-pengembalian-pinjaman-bbm.view-document');
+    Route::delete('/ba-pengembalian-pinjaman-bbm/{baPengembalianPinjamanBbm}/delete-document', [BaPengembalianPinjamanBbmController::class, 'deleteDocument'])->name('ba-pengembalian-pinjaman-bbm.delete-document');
+
+    Route::get('/ba-penerimaan-pengembalian-pinjaman-bbm', [BaPenerimaanPengembalianPinjamanBbmController::class, 'index'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.index');
+    Route::get('/ba-penerimaan-pengembalian-pinjaman-bbm/data', [BaPenerimaanPengembalianPinjamanBbmController::class, 'getData'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.data');
+    Route::get('/ba-penerimaan-pengembalian-pinjaman-bbm/kapal-data', [BaPenerimaanPengembalianPinjamanBbmController::class, 'getKapalData'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.kapal-data');
+    Route::get('/ba-penerimaan-pengembalian-pinjaman-bbm/ba-data', [BaPenerimaanPengembalianPinjamanBbmController::class, 'getBaData'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.ba-data');
+    Route::post('/ba-penerimaan-pengembalian-pinjaman-bbm', [BaPenerimaanPengembalianPinjamanBbmController::class, 'store'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.store');
+    Route::get('/ba-penerimaan-pengembalian-pinjaman-bbm/{baPenerimaanPengembalianPinjamanBbm}', [BaPenerimaanPengembalianPinjamanBbmController::class, 'show'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.show');
+    Route::put('/ba-penerimaan-pengembalian-pinjaman-bbm/{baPenerimaanPengembalianPinjamanBbm}', [BaPenerimaanPengembalianPinjamanBbmController::class, 'update'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.update');
+    Route::delete('/ba-penerimaan-pengembalian-pinjaman-bbm/{baPenerimaanPengembalianPinjamanBbm}', [BaPenerimaanPengembalianPinjamanBbmController::class, 'destroy'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.destroy');
+    Route::get('/ba-penerimaan-pengembalian-pinjaman-bbm/{baPenerimaanPengembalianPinjamanBbm}/pdf', [BaPenerimaanPengembalianPinjamanBbmController::class, 'generatePdf'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.pdf');
+    Route::post('/ba-penerimaan-pengembalian-pinjaman-bbm/{baPenerimaanPengembalianPinjamanBbm}/upload', [BaPenerimaanPengembalianPinjamanBbmController::class, 'uploadDocument'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.upload');
+    Route::get('/ba-penerimaan-pengembalian-pinjaman-bbm/{baPenerimaanPengembalianPinjamanBbm}/view-document', [BaPenerimaanPengembalianPinjamanBbmController::class, 'viewDocument'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.view-document');
+    Route::delete('/ba-penerimaan-pengembalian-pinjaman-bbm/{baPenerimaanPengembalianPinjamanBbm}/delete-document', [BaPenerimaanPengembalianPinjamanBbmController::class, 'deleteDocument'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.delete-document');
 });

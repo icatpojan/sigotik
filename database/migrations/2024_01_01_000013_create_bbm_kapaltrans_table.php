@@ -67,6 +67,7 @@ class CreateBbmKapaltransTable extends Migration
 
             // Informasi KKM (Utama)
             $table->string('nama_kkm', 30)->default(''); // DIKURANGI DARI 50
+            $table->string('nama_staf_pagkalan', 30)->default(''); // DIKURANGI DARI 50
             $table->string('nip_kkm', 20)->default(''); // DIKURANGI DARI 25
             $table->string('jabatan_kkm', 30)->nullable(); // DIKURANGI DARI 50
             $table->string('pangkat_kkm', 30)->nullable(); // DIKURANGI DARI 50

@@ -89,8 +89,8 @@
                     <tr>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Nomor Surat & Tanggal</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Kapal & Lokasi</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Penyedia & SO</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Total Volume</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Penitip BBM</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Volume Penitipan</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Status</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Aksi</th>
                     </tr>
@@ -379,8 +379,7 @@
                 clearKapalData();
                 setDefaultDates();
 
-                // Reset transportasi ke default (1 item)
-                resetTransportList();
+                // BA Penitipan BBM tidak memerlukan reset transportasi
 
                 // Reset checkboxes dan hidden input terkait
                 $('#an_staf, #an_nakhoda, #an_kkm').prop('checked', false).trigger('change');
@@ -394,28 +393,7 @@
             }
         }
 
-        function resetTransportList() {
-            console.log('resetTransportList called');
-            try {
-                // Clear semua transportasi kecuali yang pertama
-                $('.transport-item:not(:first)').remove();
-
-                // Reset transportasi pertama (jika ada)
-                if ($('.transport-item:first').length > 0) {
-                    $('.transport-item:first input[name="transportasi[]"]').val('');
-                    $('.transport-item:first input[name="no_do[]"]').val('');
-                    $('.transport-item:first input[name="volume_isi[]"]').val('');
-                    $('.transport-item:first input[name="keterangan[]"]').val('');
-                }
-
-                // Update numbering dan hide remove button
-                updateTransportNumbering();
-                calculateTotalVolume();
-                console.log('resetTransportList completed successfully');
-            } catch (error) {
-                console.error('Error in resetTransportList:', error);
-            }
-        }
+        // BA Penitipan BBM tidak memerlukan fungsi resetTransportList
 
         function resetUploadForm() {
             $('#uploadForm')[0].reset();
@@ -572,7 +550,7 @@
                         $('#link_ba').val(data.link_ba);
                         $('#volume_sebelum').val(data.volume_sisa);
                         $('#keterangan_jenis_bbm').val(data.keterangan_jenis_bbm);
-                        calculateVolumeUsage(); // Hitung ulang setelah memuat data BA
+                        // BA Penitipan BBM tidak memerlukan perhitungan volume transportasi
                     } else {
                         // Jika tidak ada data BA sebelumnya, biarkan kosong atau atur ke default
                         $('#link_ba').val('');
@@ -603,10 +581,15 @@
                 $('#nip_nahkoda').val('');
                 $('#nama_kkm').val('');
                 $('#nip_kkm').val('');
-                // Clear field baru untuk BA Penitipan BBM
-                $('#penyedia').val('');
-                $('#no_so').val('');
-                // Field volume_sebelum dan tanggal_sebelum sudah tidak ada di BA Penitipan BBM
+                // Clear field untuk BA Penitipan BBM
+                $('#penyedia_penitip').val('');
+                $('#nama_penitip').val('');
+                $('#jabatan_penitip').val('');
+                $('#alamat_penitip').val('');
+                $('#volume_sebelum').val('');
+                $('#penggunaan').val('');
+                $('#keterangan_jenis_bbm').val('');
+                $('#peruntukan').val('');
                 console.log('clearKapalData completed successfully');
             } catch (error) {
                 console.error('Error in clearKapalData:', error);
@@ -614,90 +597,11 @@
         }
 
         // Function untuk menghitung total volume dari semua transportasi
-        function calculateTotalVolume() {
-            console.log('calculateTotalVolume called');
-            try {
-                let total = 0;
-                $('input[name="volume_isi[]"]').each(function() {
-                    const volume = parseFloat($(this).val()) || 0;
-                    total += volume;
-                });
-                if ($('#totalVolume').length > 0) {
-                    $('#totalVolume').text(total.toLocaleString('id-ID', {
-                        minimumFractionDigits: 2
-                    }) + ' Liter');
-                }
-                console.log('calculateTotalVolume completed successfully, total:', total);
-            } catch (error) {
-                console.error('Error in calculateTotalVolume:', error);
-            }
-        }
+        // BA Penitipan BBM tidak memerlukan perhitungan total volume transportasi
 
-        // Function untuk menambah transportasi baru
-        function addTransportItem() {
-            const transportCount = $('.transport-item').length + 1;
-            const newItem = `
-                <div class="transport-item border border-orange-200 dark:border-orange-700 rounded-lg p-4 bg-white dark:bg-gray-800">
-                    <div class="flex items-center justify-between mb-3">
-                        <h5 class="text-sm font-medium text-orange-800 dark:text-orange-200">Transportasi #${transportCount}</h5>
-                        <button type="button" class="removeTransportBtn text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                Transportasi <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" name="transportasi[]" required placeholder="Contoh: Truk Tangki ABC-123" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white transition-colors">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                Nomor DO <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" name="no_do[]" required placeholder="DO/001/2024" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white transition-colors">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                Volume (Liter) <span class="text-red-500">*</span>
-                            </label>
-                            <input type="number" name="volume_isi[]" step="0.01" min="0" required placeholder="0" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white transition-colors">
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Keterangan</label>
-                        <input type="text" name="keterangan[]" placeholder="Keterangan tambahan (opsional)" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white transition-colors">
-                    </div>
-                </div>
-            `;
-            $('#transportList').append(newItem);
+        // BA Penitipan BBM tidak memerlukan fungsi transportasi
 
-            // Update numbering dan show/hide remove buttons
-            updateTransportNumbering();
-        }
-
-        // Function untuk update numbering transportasi
-        function updateTransportNumbering() {
-            console.log('updateTransportNumbering called');
-            try {
-                $('.transport-item').each(function(index) {
-                    $(this).find('h5').text(`Transportasi #${index + 1}`);
-
-                    // Show remove button jika ada lebih dari 1 transportasi
-                    const removeBtn = $(this).find('.removeTransportBtn');
-                    if ($('.transport-item').length > 1) {
-                        removeBtn.show();
-                    } else {
-                        removeBtn.hide();
-                    }
-                });
-                console.log('updateTransportNumbering completed successfully');
-            } catch (error) {
-                console.error('Error in updateTransportNumbering:', error);
-            }
-        }
+        // BA Penitipan BBM tidak memerlukan fungsi transportasi
 
         // --- Render Functions ---
 
@@ -746,14 +650,14 @@
                     </td>
                     <td class="px-6 py-4 border border-gray-300 dark:border-gray-600">
                         <div class="text-sm text-gray-900 dark:text-white">
-                            <div class="font-medium">Penyedia : ${ba.penyedia || '-'}</div>
-                            <div class="text-gray-500 dark:text-gray-400">SO : ${ba.no_so || '-'}</div>
+                            <div class="font-medium">Penyedia : ${ba.penyedia_penitip || '-'}</div>
+                            <div class="text-gray-500 dark:text-gray-400">Penitip : ${ba.nama_penitip || '-'}</div>
                         </div>
                     </td>
                     <td class="px-6 py-4 border border-gray-300 dark:border-gray-600">
                         <div class="text-sm text-gray-900 dark:text-white">
-                            <div class="font-medium">${formatNumber(ba.volume_pengisian || 0)} Liter</div>
-                            <div class="text-gray-500 dark:text-gray-400">Total Volume</div>
+                            <div class="font-medium">${formatNumber(ba.penggunaan || 0)} Liter</div>
+                            <div class="text-gray-500 dark:text-gray-400">Volume Penitipan</div>
                         </div>
                     </td>
                     <td class="px-6 py-4 border border-gray-300 dark:border-gray-600">
@@ -898,20 +802,28 @@
                <h6 class="text-lg font-semibold text-orange-900 dark:text-orange-100 mb-4">Volume BBM</h6>
                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                    <div class="flex justify-between">
-                       <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Volume Sebelum:</span>
+                       <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Volume Tangki Pengukuran:</span>
                        <span class="text-sm font-semibold text-gray-900 dark:text-white">${formatNumber(data.volume_sebelum)} Liter</span>
                    </div>
                    <div class="flex justify-between">
-                       <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Volume Pengisian:</span>
-                       <span class="text-sm font-semibold text-gray-900 dark:text-white">${formatNumber(data.volume_pengisian)} Liter</span>
+                       <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Jumlah Penitipan BBM:</span>
+                       <span class="text-sm font-bold text-blue-600 dark:text-blue-400">${formatNumber(data.penggunaan)} Liter</span>
                    </div>
                    <div class="flex justify-between">
-                       <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Volume Pemakaian:</span>
-                       <span class="text-sm font-semibold text-gray-900 dark:text-white">${formatNumber(data.volume_pemakaian)} Liter</span>
+                       <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Penyedia Penitip:</span>
+                       <span class="text-sm font-semibold text-gray-900 dark:text-white">${data.penyedia_penitip || '-'}</span>
                    </div>
                    <div class="flex justify-between">
-                       <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Volume Penitipan Bbm:</span>
-                       <span class="text-sm font-bold text-blue-600 dark:text-blue-400">${formatNumber(data.volume_sisa)} Liter</span>
+                       <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Nama Penitip:</span>
+                       <span class="text-sm font-semibold text-gray-900 dark:text-white">${data.nama_penitip || '-'}</span>
+                   </div>
+                   <div class="flex justify-between">
+                       <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Jenis BBM:</span>
+                       <span class="text-sm font-semibold text-gray-900 dark:text-white">${data.keterangan_jenis_bbm || '-'}</span>
+                   </div>
+                   <div class="flex justify-between">
+                       <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Peruntukan:</span>
+                       <span class="text-sm font-semibold text-gray-900 dark:text-white">${data.peruntukan || '-'}</span>
                    </div>
                </div>
            </div>
@@ -941,11 +853,17 @@
             $('#jam_surat').val(formatTimeForInput(data.jam_surat) || '');
             $('#zona_waktu_surat').val(data.zona_waktu_surat || '');
 
-            // Field baru untuk BA Penitipan BBM
-            $('#penyedia').val(data.penyedia || '');
-            $('#no_so').val(data.no_so || '');
+            // Field untuk BA Penitipan BBM
+            $('#penyedia_penitip').val(data.penyedia_penitip || '');
+            $('#nama_penitip').val(data.nama_penitip || '');
+            $('#jabatan_penitip').val(data.jabatan_penitip || '');
+            $('#alamat_penitip').val(data.alamat_penitip || '');
+            $('#volume_sebelum').val(data.volume_sebelum || '');
+            $('#penggunaan').val(data.penggunaan || '');
 
             $('#keterangan_jenis_bbm').val(data.keterangan_jenis_bbm || '');
+            $('#peruntukan').val(data.peruntukan || '');
+            console.log('Peruntukan value:', data.peruntukan);
             $('#jabatan_staf_pangkalan').val(data.jabatan_staf_pangkalan || '');
             $('#nama_staf_pangkalan').val(data.nama_staf_pangkalan || '');
             $('#nip_staf').val(data.nip_staf || '');
@@ -964,51 +882,14 @@
             $('#an_nakhoda').prop('checked', data.an_nakhoda == 1).trigger('change');
             $('#an_kkm').prop('checked', data.an_kkm == 1).trigger('change');
 
-            // Fill transportasi data
-            console.log('fillEditForm - data.transdetails:', data.transdetails);
-            fillTransportData(data.transdetails || []);
+            // BA Penitipan BBM tidak memerlukan data transportasi
 
             // Clear validation errors
             $('.is-invalid').removeClass('is-invalid');
             $('.invalid-feedback').remove();
         }
 
-        function fillTransportData(transdetails) {
-            console.log('fillTransportData called with:', transdetails);
-
-            // Clear existing transport items
-            $('.transport-item').remove();
-
-            if (transdetails.length === 0) {
-                // Jika tidak ada data, buat 1 item kosong
-                addTransportItem();
-                return;
-            }
-
-            // Add transport items berdasarkan data
-            transdetails.forEach((detail, index) => {
-                if (index === 0) {
-                    // Buat transport item pertama
-                    addTransportItem();
-                    const firstItem = $('.transport-item').first();
-                    firstItem.find('input[name="transportasi[]"]').val(detail.transportasi || '');
-                    firstItem.find('input[name="no_do[]"]').val(detail.no_do || '');
-                    firstItem.find('input[name="volume_isi[]"]').val(detail.volume_isi || '');
-                    firstItem.find('input[name="keterangan[]"]').val(detail.keterangan || '');
-                } else {
-                    // Tambah transport item baru
-                    addTransportItem();
-                    const lastItem = $('.transport-item').last();
-                    lastItem.find('input[name="transportasi[]"]').val(detail.transportasi || '');
-                    lastItem.find('input[name="no_do[]"]').val(detail.no_do || '');
-                    lastItem.find('input[name="volume_isi[]"]').val(detail.volume_isi || '');
-                    lastItem.find('input[name="keterangan[]"]').val(detail.keterangan || '');
-                }
-            });
-
-            updateTransportNumbering();
-            calculateTotalVolume();
-        }
+        // BA Penitipan BBM tidak memerlukan fungsi fillTransportData
 
         // --- Core Event Handlers ---
 
@@ -1048,14 +929,12 @@
                 }
             });
 
-            // Volume calculation handlers - sesuai project_ci
-            // Field yang mempengaruhi perhitungan: volume_sebelum, volume_pengisian, volume_sisa
-            $('#volume_sebelum, #volume_pengisian, #volume_sisa').on('change keyup', function() {
+            // Field handlers untuk BA Penitipan BBM
+            $('#volume_sebelum, #penggunaan').on('change keyup', function() {
                 // Bersihkan input dari karakter selain angka dan titik/koma
                 let val = $(this).val().replace(/[^\d.,]/g, '');
                 // Ganti koma dengan titik untuk perhitungan
                 $(this).val(val.replace(/,/, '.'));
-                calculateVolumeUsage();
             });
 
             // Form submission
@@ -1176,19 +1055,7 @@
                 }
             });
 
-            // Transportasi event handlers
-            $('#addTransportBtn').on('click', addTransportItem);
-
-            // Dynamic event handlers untuk remove transport dan volume calculation
-            $(document).on('click', '.removeTransportBtn', function() {
-                $(this).closest('.transport-item').remove();
-                updateTransportNumbering();
-                calculateTotalVolume();
-            });
-
-            $(document).on('input', 'input[name="volume_isi[]"]', function() {
-                calculateTotalVolume();
-            });
+            // BA Penitipan BBM tidak memerlukan event handlers transportasi
         }
 
         // --- AJAX Submission Handlers ---
@@ -1656,8 +1523,8 @@
             <div class="mt-3">
                 <div class="flex items-center justify-between pb-6 border-b border-gray-200 dark:border-gray-700">
                     <div>
-                        <h3 id="modalTitle" class="text-xl font-semibold text-gray-900 dark:text-white">Form Tambah BA Akkhir Bulan</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Lengkapi data berikut untuk membuat Berita Acara Akkhir Bulan</p>
+                        <h3 id="modalTitle" class="text-xl font-semibold text-gray-900 dark:text-white">Form Tambah BA Penitipan BBM</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Lengkapi data berikut untuk membuat Berita Acara Penitipan BBM</p>
                     </div>
                     <button id="closeModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1765,84 +1632,63 @@
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
-                            Informasi Penyedia BBM
+                            Informasi Penitip BBM
                         </h4>
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <div>
-                                <label for="penyedia" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    Penyedia BBM <span class="text-red-500">*</span>
+                                <label for="penyedia_penitip" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    Penyedia Penitip BBM <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" id="penyedia" name="penyedia" required placeholder="Nama penyedia BBM" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white transition-colors">
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Nama perusahaan/penyedia BBM</p>
+                                <input type="text" id="penyedia_penitip" name="penyedia_penitip" required placeholder="Nama penyedia penitip BBM" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white transition-colors">
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Nama perusahaan/penyedia yang menitipkan BBM</p>
                             </div>
                             <div>
-                                <label for="no_so" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    Nomor Sales Order (SO) <span class="text-red-500">*</span>
+                                <label for="nama_penitip" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    Nama Penitip <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" id="no_so" name="no_so" required placeholder="SO/001/2024" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white transition-colors">
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Nomor Sales Order dari penyedia</p>
+                                <input type="text" id="nama_penitip" name="nama_penitip" required placeholder="Nama lengkap penitip" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white transition-colors">
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Nama lengkap orang yang menitipkan BBM</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+                            <div>
+                                <label for="jabatan_penitip" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    Jabatan Penitip <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="jabatan_penitip" name="jabatan_penitip" required placeholder="Jabatan penitip" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white transition-colors">
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Jabatan orang yang menitipkan BBM</p>
+                            </div>
+                            <div>
+                                <label for="alamat_penitip" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    Alamat Penitip <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="alamat_penitip" name="alamat_penitip" required placeholder="Alamat penitip" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white transition-colors">
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Alamat tempat penitip BBM</p>
                             </div>
                         </div>
                     </div>
 
                     <div class="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4">
-                        <div class="flex items-center justify-between mb-4">
-                            <h4 class="text-lg font-medium text-orange-900 dark:text-orange-100 flex items-center">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                                </svg>
-                                Detail Transportasi BBM
-                            </h4>
-                            <button type="button" id="addTransportBtn" class="inline-flex items-center px-3 py-2 text-sm font-medium text-orange-600 bg-orange-100 hover:bg-orange-200 border border-orange-300 hover:border-orange-400 dark:bg-orange-900/30 dark:text-orange-400 dark:hover:bg-orange-900/50 dark:border-orange-700 dark:hover:border-orange-600 rounded-lg transition-all duration-200">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                </svg>
-                                Tambah Transportasi
-                            </button>
-                        </div>
-
-                        <div id="transportList" class="space-y-4">
-                            <!-- Transportasi akan ditambahkan secara dinamis -->
-                            <div class="transport-item border border-orange-200 dark:border-orange-700 rounded-lg p-4 bg-white dark:bg-gray-800">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h5 class="text-sm font-medium text-orange-800 dark:text-orange-200">Transportasi #1</h5>
-                                    <button type="button" class="removeTransportBtn text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300" style="display: none;">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                            Transportasi <span class="text-red-500">*</span>
-                                        </label>
-                                        <input type="text" name="transportasi[]" required placeholder="Contoh: Truk Tangki ABC-123" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white transition-colors">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                            Nomor DO <span class="text-red-500">*</span>
-                                        </label>
-                                        <input type="text" name="no_do[]" required placeholder="DO/001/2024" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white transition-colors">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                            Volume (Liter) <span class="text-red-500">*</span>
-                                        </label>
-                                        <input type="number" name="volume_isi[]" step="0.01" min="0" required placeholder="0" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white transition-colors">
-                                    </div>
-                                </div>
-                                <div class="mt-3">
-                                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Keterangan</label>
-                                    <input type="text" name="keterangan[]" placeholder="Keterangan tambahan (opsional)" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white transition-colors">
-                                </div>
+                        <h4 class="text-lg font-medium text-orange-900 dark:text-orange-100 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                            </svg>
+                            Detail Penitipan BBM
+                        </h4>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            <div>
+                                <label for="volume_sebelum" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    Volume Tangki Pengukuran (Liter) <span class="text-red-500">*</span>
+                                </label>
+                                <input type="number" id="volume_sebelum" name="volume_sebelum" step="0.01" min="0" required placeholder="0" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white transition-colors">
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Volume tangki sebelum penitipan BBM</p>
                             </div>
-                        </div>
-
-                        <div class="mt-4 p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm font-medium text-orange-800 dark:text-orange-200">Total Volume:</span>
-                                <span id="totalVolume" class="text-lg font-bold text-orange-900 dark:text-orange-100">0 Liter</span>
+                            <div>
+                                <label for="penggunaan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    Jumlah Penitipan BBM (Liter) <span class="text-red-500">*</span>
+                                </label>
+                                <input type="number" id="penggunaan" name="penggunaan" step="0.01" min="0" required placeholder="0" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white transition-colors">
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Jumlah BBM yang dititipkan</p>
                             </div>
                         </div>
                     </div>
@@ -1976,8 +1822,8 @@
             <div class="mt-3">
                 <div class="flex items-center justify-between pb-6 border-b border-gray-200 dark:border-gray-700">
                     <div>
-                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Detail BA Akkhir Bulan</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Informasi lengkap Berita Acara Akkhir Bulan</p>
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Detail BA Penitipan BBM</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Informasi lengkap Berita Acara Penitipan BBM</p>
                     </div>
                     <button id="closeViewModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

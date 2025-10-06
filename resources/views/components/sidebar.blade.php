@@ -123,10 +123,10 @@
                         </a>
                         <div class="overflow-hidden transform translate transition-all duration-300 ease-in-out" :class="(selected === 'Monitoring PINJAMAN') ? 'block' :'hidden'">
                             <ul :class="sidebarToggle ? 'lg:hidden' : 'flex'" class="flex flex-col gap-1 mt-2 menu-dropdown pl-9 transition-all duration-300 ease-in-out">
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Peminjaman BBM</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Penerimaan Pinjaman BBM</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Pengembalian Pinjaman BBM</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Penerimaan Pengembalian BBM</a></li>
+                                <li><a href="{{ route('ba-peminjaman-bbm.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Peminjaman BBM</a></li>
+                                <li><a href="{{ route('ba-penerimaan-pinjaman-bbm.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Penerimaan Pinjaman BBM</a></li>
+                                <li><a href="{{ route('ba-pengembalian-pinjaman-bbm.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Pengembalian Pinjaman BBM</a></li>
+                                <li><a href="{{ route('ba-penerimaan-pengembalian-pinjaman-bbm.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Penerimaan Pengembalian BBM</a></li>
                             </ul>
                         </div>
                     </li>

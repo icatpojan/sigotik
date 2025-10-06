@@ -4,13 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\BbmKapaltrans;
-use App\Models\BbmTransdetail;
 use App\Models\MKapal;
 use App\Models\MUpt;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 
-class BaPenitipanBbmController extends Controller
+class BaPengembalianPinjamanBbmController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,16 +18,16 @@ class BaPenitipanBbmController extends Controller
     {
         $kapals = MKapal::all();
 
-        return view('ba-penitipan-bbm.index', compact('kapals'));
+        return view('ba-pengembalian-bbm.index', compact('kapals'));
     }
 
     /**
-     * Get BA Penitipan Bbm data via AJAX
+     * Get BA Pengembalian BBM data via AJAX
      */
     public function getData(Request $request)
     {
         $query = BbmKapaltrans::with(['kapal'])
-            ->where('status_ba', 8); // BA Penitipan BBM (sesuai project_ci)
+            ->where('status_ba', 3); // BA Pengembalian BBM
 
         // Search functionality
         if ($request->has('search') && $request->search) {
@@ -112,19 +111,73 @@ class BaPenitipanBbmController extends Controller
     }
 
     /**
-     * Get BA data for linking (BA sebelumnya) - Tidak digunakan untuk BA Penitipan BBM
+     * Get BA data for linking (BA sebelumnya)
      */
     public function getBaData(Request $request)
     {
-        // BA Penitipan BBM tidak memerlukan linking dengan BA sebelumnya
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'link_ba' => '',
-                'volume_sisa' => 0,
-                'keterangan_jenis_bbm' => 'BIO SOLAR',
-            ]
+        $validator = Validator::make($request->all(), [
+            'kapal_id' => 'required|exists:m_kapal,m_kapal_id',
+            'tanggal_surat' => 'required|date',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $kapal = MKapal::find($request->kapal_id);
+            $tanggalSurat = $request->tanggal_surat;
+
+            // Cek apakah sudah ada BA Pengembalian BBM untuk tanggal dan kapal ini
+            $existingBa = BbmKapaltrans::where('kapal_code', $kapal->code_kapal)
+                ->where('tanggal_surat', $tanggalSurat)
+                ->where('status_ba', 3)
+                ->first();
+
+            if ($existingBa) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'BA Pengembalian BBM untuk kapal dan tanggal ini sudah ada'
+                ], 400);
+            }
+
+            // Cari BA sebelumnya (status_ba = 1,2,6,7) yang belum di-link
+            $baSebelumnya = BbmKapaltrans::where('kapal_code', $kapal->code_kapal)
+                ->where('tanggal_surat', $tanggalSurat)
+                ->whereIn('status_ba', [1, 2, 6, 7])
+                ->where('link_modul_ba', '')
+                ->orderBy('jam_surat', 'desc')
+                ->first();
+
+            if ($baSebelumnya) {
+                return response()->json([
+                    'success' => true,
+                    'data' => [
+                        'link_ba' => $baSebelumnya->nomor_surat,
+                        'volume_sisa' => $baSebelumnya->volume_sisa,
+                        'keterangan_jenis_bbm' => $baSebelumnya->keterangan_jenis_bbm ?? 'BIO SOLAR',
+                    ]
+                ]);
+            } else {
+                return response()->json([
+                    'success' => true,
+                    'data' => [
+                        'link_ba' => '',
+                        'volume_sisa' => 0,
+                        'keterangan_jenis_bbm' => 'BIO SOLAR',
+                    ]
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -139,24 +192,24 @@ class BaPenitipanBbmController extends Controller
             'jam_surat' => 'required|date_format:H:i',
             'zona_waktu_surat' => 'required|in:WIB,WITA,WIT',
             'lokasi_surat' => 'required|string',
-            'penyedia_penitip' => 'required|string|max:100',
-            'nama_penitip' => 'required|string|max:50',
-            'jabatan_penitip' => 'required|string|max:50',
-            'alamat_penitip' => 'required|string|max:200',
             'volume_sebelum' => 'required|numeric|min:0',
-            'penggunaan' => 'required|numeric|min:0',
-            'jabatan_staf_pangkalan' => 'nullable|string|max:50',
-            'nama_staf_pangkalan' => 'nullable|string|max:50',
-            'nip_staf' => 'nullable|string|max:25',
-            'nama_nahkoda' => 'nullable|string|max:50',
-            'nip_nahkoda' => 'nullable|string|max:25',
-            'nama_kkm' => 'nullable|string|max:50',
-            'nip_kkm' => 'nullable|string|max:25',
+            'tanggal_sebelum' => 'required|date',
+            'volume_pengisian' => 'required|numeric|min:0',
+            'tanggal_pengisian' => 'required|date',
+            'volume_pemakaian' => 'required|numeric|min:0',
+            'keterangan_jenis_bbm' => 'required|string|max:50',
+            'peruntukan' => 'nullable|string|max:100',
+            'jabatan_staf_pangkalan' => 'nullable|string|max:30',
+            'nama_staf_pagkalan' => 'nullable|string|max:30',
+            'nip_staf' => 'nullable|string|max:20',
+            'nama_nahkoda' => 'nullable|string|max:30',
+            'nip_nahkoda' => 'nullable|string|max:20',
+            'nama_kkm' => 'nullable|string|max:30',
+            'nip_kkm' => 'nullable|string|max:20',
             'an_staf' => 'nullable|in:0,1',
             'an_nakhoda' => 'nullable|in:0,1',
             'an_kkm' => 'nullable|in:0,1',
-            'keterangan_jenis_bbm' => 'required|string|max:50',
-            'peruntukan' => 'nullable|string|max:200',
+            'link_ba' => 'nullable|string|max:50',
         ]);
 
         if ($validator->fails()) {
@@ -177,7 +230,9 @@ class BaPenitipanBbmController extends Controller
             $maxId = BbmKapaltrans::max('trans_id') ?? 0;
             $newId = $maxId + 1;
 
-            // Insert data utama ke bbm_kapaltrans
+            // Calculate volume usage
+            $volumeSisa = ($request->volume_sebelum + $request->volume_pengisian) - $request->volume_pemakaian;
+
             $ba = BbmKapaltrans::create([
                 'trans_id' => $newId,
                 'kapal_code' => $kapal->code_kapal,
@@ -186,16 +241,17 @@ class BaPenitipanBbmController extends Controller
                 'jam_surat' => $request->jam_surat,
                 'zona_waktu_surat' => $request->zona_waktu_surat,
                 'lokasi_surat' => $request->lokasi_surat,
-                'status_ba' => 8, // BA Penitipan BBM (sesuai project_ci)
-                'penyedia_penitip' => $request->penyedia_penitip,
-                'nama_penitip' => $request->nama_penitip,
-                'jabatan_penitip' => $request->jabatan_penitip,
-                'alamat_penitip' => $request->alamat_penitip,
+                'status_ba' => 3, // BA Pengembalian BBM
+                'volume_sisa' => $volumeSisa, // Volume penggunaan
                 'volume_sebelum' => $request->volume_sebelum,
-                'penggunaan' => $request->penggunaan,
-                'tanggal_sebelum' => $request->tanggal_surat,
+                'tanggal_sebelum' => $request->tanggal_sebelum,
+                'volume_pengisian' => $request->volume_pengisian,
+                'tanggal_pengisian' => $request->tanggal_pengisian,
+                'volume_pemakaian' => $request->volume_pemakaian,
+                'keterangan_jenis_bbm' => $request->keterangan_jenis_bbm,
+                'peruntukan' => $request->peruntukan,
                 'jabatan_staf_pangkalan' => $request->jabatan_staf_pangkalan,
-                'nama_staf_pangkalan' => $request->nama_staf_pangkalan,
+                'nama_staf_pagkalan' => $request->nama_staf_pagkalan,
                 'nip_staf' => $request->nip_staf,
                 'nama_nahkoda' => $request->nama_nahkoda,
                 'nip_nahkoda' => $request->nip_nahkoda,
@@ -204,22 +260,24 @@ class BaPenitipanBbmController extends Controller
                 'an_staf' => (int)($request->an_staf == '1'),
                 'an_nakhoda' => (int)($request->an_nakhoda == '1'),
                 'an_kkm' => (int)($request->an_kkm == '1'),
-                'keterangan_jenis_bbm' => $request->keterangan_jenis_bbm,
-                'peruntukan' => $request->peruntukan,
+                'link_modul_ba' => $request->link_ba,
                 'user_input' => (string)(auth()->user()->conf_user_id ?? 1),
                 'status_trans' => 0, // Input
-                'status_upload' => 0, // Belum upload
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
 
-            // BA Penitipan BBM tidak menggunakan detail transportasi
+            // Update link BA sebelumnya jika ada
+            if ($request->link_ba) {
+                BbmKapaltrans::where('nomor_surat', $request->link_ba)
+                    ->update(['link_modul_ba' => $request->nomor_surat]);
+            }
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'BA Penitipan Bbm berhasil dibuat',
+                'message' => 'BA Pengembalian BBM berhasil dibuat',
                 'data' => $ba->load('kapal')
             ]);
         } catch (\Exception $e) {
@@ -234,77 +292,44 @@ class BaPenitipanBbmController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(BbmKapaltrans $baPenggunaanBbm)
     {
-        try {
-            $baPenitipanBbm = BbmKapaltrans::where('status_ba', 8)
-                ->with(['kapal.upt', 'transdetails'])
-                ->find($id);
-
-            if (!$baPenitipanBbm) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Data tidak ditemukan'
-                ], 404);
-            }
-
-            return response()->json([
-                'success' => true,
-                'data' => $baPenitipanBbm
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+            'data' => $baPenggunaanBbm->load('kapal.upt')
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, BbmKapaltrans $baPenggunaanBbm)
     {
-        // Find the record first
-        $baPenitipanBbm = BbmKapaltrans::find($id);
-
-        if (!$baPenitipanBbm) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Data tidak ditemukan'
-            ], 404);
-        }
-        // Check if nomor_surat is being changed
-        $nomorSuratRules = 'required|string|max:50';
-        if ($request->nomor_surat !== $baPenitipanBbm->nomor_surat) {
-            $nomorSuratRules .= '|unique:bbm_kapaltrans,nomor_surat,' . $baPenitipanBbm->trans_id . ',trans_id';
-        }
-
         $validator = Validator::make($request->all(), [
             'kapal_id' => 'required|exists:m_kapal,m_kapal_id',
-            'nomor_surat' => $nomorSuratRules,
+            'nomor_surat' => 'required|string|max:50|unique:bbm_kapaltrans,nomor_surat,' . $baPenggunaanBbm->trans_id . ',trans_id',
             'tanggal_surat' => 'required|date',
             'jam_surat' => 'required|date_format:H:i',
             'zona_waktu_surat' => 'required|in:WIB,WITA,WIT',
             'lokasi_surat' => 'required|string',
-            'penyedia_penitip' => 'required|string|max:100',
-            'nama_penitip' => 'required|string|max:50',
-            'jabatan_penitip' => 'required|string|max:50',
-            'alamat_penitip' => 'required|string|max:200',
             'volume_sebelum' => 'required|numeric|min:0',
-            'penggunaan' => 'required|numeric|min:0',
-            'jabatan_staf_pangkalan' => 'nullable|string|max:50',
-            'nama_staf_pangkalan' => 'nullable|string|max:50',
-            'nip_staf' => 'nullable|string|max:25',
-            'nama_nahkoda' => 'nullable|string|max:50',
-            'nip_nahkoda' => 'nullable|string|max:25',
-            'nama_kkm' => 'nullable|string|max:50',
-            'nip_kkm' => 'nullable|string|max:25',
+            'tanggal_sebelum' => 'required|date',
+            'volume_pengisian' => 'required|numeric|min:0',
+            'tanggal_pengisian' => 'required|date',
+            'volume_pemakaian' => 'required|numeric|min:0',
+            'keterangan_jenis_bbm' => 'required|string|max:50',
+            'peruntukan' => 'nullable|string|max:100',
+            'jabatan_staf_pangkalan' => 'nullable|string|max:30',
+            'nama_staf_pagkalan' => 'nullable|string|max:30',
+            'nip_staf' => 'nullable|string|max:20',
+            'nama_nahkoda' => 'nullable|string|max:30',
+            'nip_nahkoda' => 'nullable|string|max:20',
+            'nama_kkm' => 'nullable|string|max:30',
+            'nip_kkm' => 'nullable|string|max:20',
             'an_staf' => 'nullable|in:0,1',
             'an_nakhoda' => 'nullable|in:0,1',
             'an_kkm' => 'nullable|in:0,1',
-            'keterangan_jenis_bbm' => 'required|string|max:50',
-            'peruntukan' => 'nullable|string|max:200',
+            'link_ba' => 'nullable|string|max:50',
         ]);
 
         if ($validator->fails()) {
@@ -321,23 +346,26 @@ class BaPenitipanBbmController extends Controller
             // Get kapal data
             $kapal = MKapal::find($request->kapal_id);
 
-            // Update data utama
-            $baPenitipanBbm->update([
+            // Calculate volume usage
+            $volumeSisa = ($request->volume_sebelum + $request->volume_pengisian) - $request->volume_pemakaian;
+
+            $baPenggunaanBbm->update([
                 'kapal_code' => $kapal->code_kapal,
                 'nomor_surat' => $request->nomor_surat,
                 'tanggal_surat' => $request->tanggal_surat,
                 'jam_surat' => $request->jam_surat,
                 'zona_waktu_surat' => $request->zona_waktu_surat,
                 'lokasi_surat' => $request->lokasi_surat,
-                'penyedia_penitip' => $request->penyedia_penitip,
-                'nama_penitip' => $request->nama_penitip,
-                'jabatan_penitip' => $request->jabatan_penitip,
-                'alamat_penitip' => $request->alamat_penitip,
+                'volume_sisa' => $volumeSisa,
                 'volume_sebelum' => $request->volume_sebelum,
-                'penggunaan' => $request->penggunaan,
-                'tanggal_sebelum' => $request->tanggal_surat,
+                'tanggal_sebelum' => $request->tanggal_sebelum,
+                'volume_pengisian' => $request->volume_pengisian,
+                'tanggal_pengisian' => $request->tanggal_pengisian,
+                'volume_pemakaian' => $request->volume_pemakaian,
+                'keterangan_jenis_bbm' => $request->keterangan_jenis_bbm,
+                'peruntukan' => $request->peruntukan,
                 'jabatan_staf_pangkalan' => $request->jabatan_staf_pangkalan,
-                'nama_staf_pangkalan' => $request->nama_staf_pangkalan,
+                'nama_staf_pagkalan' => $request->nama_staf_pagkalan,
                 'nip_staf' => $request->nip_staf,
                 'nama_nahkoda' => $request->nama_nahkoda,
                 'nip_nahkoda' => $request->nip_nahkoda,
@@ -346,20 +374,17 @@ class BaPenitipanBbmController extends Controller
                 'an_staf' => (int)($request->an_staf == '1'),
                 'an_nakhoda' => (int)($request->an_nakhoda == '1'),
                 'an_kkm' => (int)($request->an_kkm == '1'),
-                'keterangan_jenis_bbm' => $request->keterangan_jenis_bbm,
-                'peruntukan' => $request->peruntukan,
+                'link_modul_ba' => $request->link_ba,
                 'user_input' => (string)(auth()->user()->conf_user_id ?? 1),
                 'updated_at' => now(),
             ]);
-
-            // BA Penitipan BBM tidak menggunakan detail transportasi
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'BA Penitipan Bbm berhasil diperbarui',
-                'data' => $baPenitipanBbm->load('kapal')
+                'message' => 'BA Pengembalian BBM berhasil diperbarui',
+                'data' => $baPenggunaanBbm->load('kapal')
             ]);
         } catch (\Exception $e) {
             DB::rollback();
@@ -373,143 +398,45 @@ class BaPenitipanBbmController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(BbmKapaltrans $baPenggunaanBbm)
     {
         try {
-            // Find the record first
-            $baPenitipanBbm = BbmKapaltrans::where('status_ba', 8)->find($id);
-
-            if (!$baPenitipanBbm) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Data tidak ditemukan'
-                ], 404);
-            }
-
-            DB::beginTransaction();
-
-            // Delete data utama (BA Penitipan BBM tidak menggunakan detail transportasi)
-            $baPenitipanBbm->delete();
-
-            DB::commit();
+            $baPenggunaanBbm->delete();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Data berhasil dihapus'
+                'message' => 'BA Pengembalian BBM berhasil dihapus'
             ]);
         } catch (\Exception $e) {
-            DB::rollback();
             return response()->json([
                 'success' => false,
-                'message' => 'Data gagal dihapus: ' . $e->getMessage()
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
         }
     }
 
     /**
-     * Format tanggal Indonesia sesuai project_ci
-     */
-    private function indo_date($tgl)
-    {
-        $tgl_s = date('j', strtotime($tgl));
-        $bln_s = $this->get_bulan(date('n', strtotime($tgl)));
-        $thn_s = date('Y', strtotime($tgl));
-        return $tgl_s . ' ' . $bln_s . ' ' . $thn_s;
-    }
-
-    /**
-     * Get nama bulan Indonesia
-     */
-    private function get_bulan($bln)
-    {
-        switch ($bln) {
-            case '1':
-                $nama_bln = 'Januari';
-                break;
-            case '2':
-                $nama_bln = 'Februari';
-                break;
-            case '3':
-                $nama_bln = 'Maret';
-                break;
-            case '4':
-                $nama_bln = 'April';
-                break;
-            case '5':
-                $nama_bln = 'Mei';
-                break;
-            case '6':
-                $nama_bln = 'Juni';
-                break;
-            case '7':
-                $nama_bln = 'Juli';
-                break;
-            case '8':
-                $nama_bln = 'Agustus';
-                break;
-            case '9':
-                $nama_bln = 'September';
-                break;
-            case '10':
-                $nama_bln = 'Oktober';
-                break;
-            case '11':
-                $nama_bln = 'November';
-                break;
-            case '12':
-                $nama_bln = 'Desember';
-                break;
-        }
-        return $nama_bln;
-    }
-
-    /**
      * Generate PDF for the specified resource.
-     * Template telah disesuaikan 100% dengan template CodeIgniter di prooject_ci/application/models/dokumen/Dokumen_cetak.php
-     * Function: cetak_ba_pemenerimaan_bbm() - Semua elemen template sudah 100% sama persis termasuk:
-     * - Header dengan logo KKP dan informasi UPT
-     * - Judul "BERITA ACARA PENERIMAAN BBM"
-     * - Format tanggal Indonesia (indo_date) dan jam dengan titik
-     * - Pernyataan penitipan BBM dari penyedia
-     * - Font size dinamis berdasarkan jumlah detail (11px untuk 8-10 items, 12px untuk lainnya)
-     * - Tabel detail transportasi dengan kolom (No, Transportasi, Nomor SO, Nomor DO, Volume, Keterangan)
-     * - Row jumlah total volume
-     * - Footer dengan 3 tanda tangan (KKM, Penyedia, Nakhoda) dan Staf UPT sebagai saksi
-     * - Format filename "BA_Penitipan_BBM_"
-     * - Semua styling, spacing, dan layout sudah sama persis dengan project_ci
      */
-    public function generatePdf($id)
+    public function generatePdf(BbmKapaltrans $baPenggunaanBbm)
     {
         try {
-            // Find the record first
-            $baPenitipanBbm = BbmKapaltrans::find($id);
-
-            if (!$baPenitipanBbm) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Data tidak ditemukan'
-                ], 404);
-            }
-
             // Load relationship data
-            $baPenitipanBbm->load(['kapal.upt']);
+            $baPenggunaanBbm->load(['kapal.upt']);
 
             // Get data
-            $data = $baPenitipanBbm;
+            $data = $baPenggunaanBbm;
             $kapal = $data->kapal;
             $upt = $kapal ? $kapal->upt : null;
 
-            // Format date sesuai project_ci (menggunakan indo_date format)
-            $tanggalFormatted = $this->indo_date($data->tanggal_surat);
+            // Format date
+            $tanggalFormatted = \Carbon\Carbon::parse($data->tanggal_surat)->locale('id')->isoFormat('dddd, D MMMM YYYY');
             $jamFormatted = str_replace(':', '.', $data->jam_surat);
 
             // Handle "An." prefix
             $anStaf = ($data->an_staf == 1 || $data->an_staf === true) ? 'An. ' : '';
             $anNakhoda = ($data->an_nakhoda == 1 || $data->an_nakhoda === true) ? 'An. ' : '';
             $anKkm = ($data->an_kkm == 1 || $data->an_kkm === true) ? 'An. ' : '';
-
-            // Font size untuk BA Penitipan BBM (sesuai CodeIgniter: 11px)
-            $fontSize = '11px';
 
             // Create TCPDF instance
             $pdf = new \TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
@@ -553,12 +480,12 @@ class BaPenitipanBbmController extends Controller
             $style2 = array('width' => 0.6, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));
             $pdf->Line(10, 60, 200, 60, $style2);
 
-            // Content sesuai template CodeIgniter
+            // Content
             $html .= '<br><br>
-                <table cellpadding="0" cellspacing="0" width="100%" style="font-family: Arial, Helvetica, sans-serif;font-size:11px" border="0">
+                <table cellpadding="0" cellspacing="0" width="100%" style="font-family: Arial, Helvetica, sans-serif;font-size:12px" border="0">
                     <tr>
                         <td width="100%" align="center">
-                            <font size="12"><b><u>BERITA ACARA PENITIPAN BBM</b></u></font>
+                            <font size="12"><b><u>BERITA ACARA PENGGUNAAN BBM</b></u></font>
                         </td>
                     </tr>
                     <tr>
@@ -587,6 +514,9 @@ class BaPenitipanBbmController extends Controller
                         <td width="auto" align="justify">' . $data->nama_kkm . ' / KKM Kapal Pengawas ' . ($kapal ? $kapal->nama_kapal : '') . '</td>
                     </tr>
                     <tr>
+                        <td></td>
+                    </tr>
+                    <tr>
                         <td width="20%" align="justify">Alamat</td>
                         <td width="2%" align="center">:</td>
                         <td width="auto" align="justify">' . ($upt ? $upt->alamat1 : '') . '</td>
@@ -595,99 +525,89 @@ class BaPenitipanBbmController extends Controller
                         <td></td>
                     </tr>
                     <tr>
-                        <td width="100%" align="justify">Selanjutnya disebut sebagai Pihak I selaku Penitip BBM, dan </td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td width="20%" align="justify">Nama/Jabatan</td>
-                        <td width="2%" align="center">:</td>
-                        <td width="3%" align="center">1.</td>
-                        <td width="auto" align="justify">' . $data->nama_penitip . ' / ' . $data->jabatan_penitip . ' ' . $data->penyedia_penitip . '</td>
-                    </tr>
-                    <tr>
-                        <td width="20%" align="justify">Alamat</td>
-                        <td width="2%" align="center">:</td>
-                        <td width="auto" align="justify">' . $data->alamat_penitip . '</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td width="100%" align="justify">Selanjutnya disebut sebagai Pihak II selaku Penitip BBM, dan </td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td width="100%" align="justify">Menyatakan bahwa : </td>
-                    </tr>
-                    <tr>
-                        <td width="2%" align="justify"></td>
-                        <td width="4%" align="center">1.</td>
-                        <td width="auto" align="justify">Pihak I melakukan penitipan BBM sejumlah <b>' . number_format($data->penggunaan) . '</b> Liter dalam kondisi baik kepada Pihak II.</td>
-                    </tr>
-                    <tr>
-                        <td width="2%" align="justify"></td>
-                        <td width="4%" align="center">2.</td>
-                        <td width="auto" align="justify">Pihak II bersedia menerima penitipan BBM tersebut dalam rangka pengamanan BBM saat ' . ($kapal ? $kapal->nama_kapal : '') . ' melakukan perbaikan.</td>
-                    </tr>
-                    <tr>
-                        <td width="2%" align="justify"></td>
-                        <td width="4%" align="center">3.</td>
-                        <td width="auto" align="justify">Pada saat kegiatan perbaikan selesai, Pihak II bersedia mengembalikan BBM yang dititipkan kepada Pihak I dalam keadaan utuh sebagaimana semula.</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td width="100%" align="justify">Demikian Berita Acara Penitipan BBM ini dibuat dengan sebenar-benarnya untuk dapat dipergunakan sebagaimana mestinya.</td>
+                        <td width="100%" align="justify">Menyatakan bahwa telah menggunakan BBM ' . $data->keterangan_jenis_bbm . ' dengan rincian sebagai berikut :
+                        </td>
                     </tr>
                 </table>';
 
-            // BA Penitipan BBM tidak menggunakan tabel detail, langsung ke footer
+            // Format dates
+            $tanggalSebelumFormatted = \Carbon\Carbon::parse($data->tanggal_sebelum)->locale('id')->isoFormat('D MMMM YYYY');
+            $tanggalPengisianFormatted = $data->tanggal_pengisian && $data->tanggal_pengisian != '1970-01-01' && $data->tanggal_pengisian != '0000-00-00'
+                ? \Carbon\Carbon::parse($data->tanggal_pengisian)->locale('id')->isoFormat('D MMMM YYYY')
+                : '';
+            $tanggalSaatIniFormatted = \Carbon\Carbon::parse($data->tanggal_surat)->locale('id')->isoFormat('D MMMM YYYY');
 
-            // Footer signatures sesuai template project_ci (BA Penitipan BBM)
+            // Volume table with detailed breakdown
             $html .= '<br><br>
+                <table cellpadding="0" cellspacing="0" width="100%" style="font-family: Arial, Helvetica, sans-serif;font-size:12px" border="1">
+                    <tr>
+                        <td width="69%" align="justify">&nbsp; Volume tangki pengukuran sebelumnya, tanggal ' . $tanggalSebelumFormatted . '</td>
+                        <td width="3%" align="center">=</td>
+                        <td width="17%" align="right">' . number_format($data->volume_sebelum) . '&nbsp;&nbsp;&nbsp;</td>
+                        <td width="auto" align="justify">&nbsp;Liter</td>
+                    </tr>
+                    <tr>
+                        <td width="69%" align="justify">&nbsp; Pengisian' . ($tanggalPengisianFormatted ? ', tanggal ' . $tanggalPengisianFormatted : '') . '</td>
+                        <td width="3%" align="center">=</td>
+                        <td width="17%" align="right">' . number_format($data->volume_pengisian) . '&nbsp;&nbsp;&nbsp;</td>
+                        <td width="auto" align="justify">&nbsp;Liter</td>
+                    </tr>
+                    <tr>
+                        <td width="69%" align="justify">&nbsp; Volume tangki pengukuran saat ini, tanggal ' . $tanggalSaatIniFormatted . '</td>
+                        <td width="3%" align="center">=</td>
+                        <td width="17%" align="right">' . number_format($data->volume_sisa) . '&nbsp;&nbsp;&nbsp;</td>
+                        <td width="auto" align="justify">&nbsp;Liter</td>
+                    </tr>
+                    <tr>
+                        <td width="69%" align="justify">&nbsp; Jumlah Penggunaan</td>
+                        <td width="3%" align="center">=</td>
+                        <td width="17%" align="right">' . number_format($data->volume_pemakaian) . '&nbsp;&nbsp;&nbsp;</td>
+                        <td width="auto" align="justify">&nbsp;Liter</td>
+                    </tr>
+                </table>';
+
+            // Closing statement
+            $html .= '<br><br>
+                <table cellpadding="0" cellspacing="0" width="100%" style="font-family: Arial, Helvetica, sans-serif;font-size:12px" border="0">
+                    <tr>
+                        <td width="100%" align="justify">Demikian Berita Acara Pengembalian BBM ini dibuat dengan sebenar – benarnya untuk dapat dipergunakan sebagaimana mestinya.
+                        </td>
+                    </tr>
+                </table>';
+
+            // Footer signatures
+            $html .= '<br><br><br>
                 <table cellpadding="0" cellspacing="0" width="100%" style="font-family: Arial, Helvetica, sans-serif; font-size:10px" border="0">
                     <tr>
                         <td width="40%" align="center">
-                            <b>Pihak I (Pertama)</b><br>
                             <b>' . $anNakhoda . ' Nakhoda KP. ' . ($kapal ? $kapal->nama_kapal : '') . '</b><br><br><br><br><br>
                             <b><u>' . $data->nama_nahkoda . '</u></b><br>
                             <b>NIP. ' . $data->nip_nahkoda . '</b>
                         </td>
                         <td width="20%" align="center"></td>
                         <td width="40%" align="center">
-                            <b>Pihak II (Kedua)</b><br>
-                            <b>' . $data->penyedia_penitip . '</b><br><br><br><br><br>
-                            <b><u>' . $data->nama_penitip . '</u></b><br>
-                            <b>' . $data->jabatan_penitip . '</b>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td width="40%" align="center">
-                            <b><br><br><br>' . $anKkm . ' KKM KP. ' . ($kapal ? $kapal->nama_kapal : '') . '</b><br><br><br><br><br>
+                            <b>' . $anKkm . ' KKM KP. ' . ($kapal ? $kapal->nama_kapal : '') . '</b><br><br><br><br><br>
                             <b><u>' . $data->nama_kkm . '</u></b><br>
                             <b>NIP. ' . $data->nip_kkm . '</b>
                         </td>
-                        <td width="20%" align="center">
-                            <b>Menyaksikan:</b>
-                        </td>
+                    </tr>
+                    <tr>
+                        <td width="30%" align="center"></td>
                         <td width="40%" align="center">
-                            <b><br><br><br>' . $anStaf . ' ' . $data->jabatan_staf_pangkalan . '</b><br><br><br><br><br>
-                            <b><u>' . $data->nama_staf_pangkalan . '</u></b><br>
+                            <b><br><br>Menyaksikan:</b><br>
+                            <b>' . $anStaf . ' ' . $data->jabatan_staf_pangkalan . '</b><br><br><br><br><br>
+                            <b><u>' . $data->nama_staf_pagkalan . '</u></b><br>
                             <b>NIP. ' . $data->nip_staf . '</b>
                         </td>
+                        <td width="30%" align="center"></td>
                     </tr>
                 </table>';
 
             // Write HTML to PDF
             $pdf->writeHTML($html, true, false, true, false, '');
 
-            // Generate filename (sesuai template project_ci)
-            $filename = 'BA_Penitipan_BBM_' . str_replace('/', '_', $data->nomor_surat) . '_' . date('Y-m-d_H-i-s');
+            // Generate filename
+            $filename = 'BA_Penggunaan_BBM_' . str_replace('/', '_', $data->nomor_surat) . '_' . date('Y-m-d_H-i-s');
 
             // Output PDF
             $path = public_path('ba_pdf/' . $filename . '.pdf');
@@ -717,7 +637,7 @@ class BaPenitipanBbmController extends Controller
         ]);
 
         try {
-            $ba = BbmKapaltrans::where('status_ba', 8)->findOrFail($id);
+            $ba = BbmKapaltrans::where('status_ba', 3)->findOrFail($id);
 
             if ($request->hasFile('document')) {
                 $file = $request->file('document');
@@ -757,7 +677,7 @@ class BaPenitipanBbmController extends Controller
     public function viewDocument($id)
     {
         try {
-            $ba = BbmKapaltrans::where('status_ba', 8)->findOrFail($id);
+            $ba = BbmKapaltrans::where('status_ba', 3)->findOrFail($id);
 
             if (!$ba->file_upload) {
                 return response()->json([
@@ -796,7 +716,7 @@ class BaPenitipanBbmController extends Controller
     public function deleteDocument($id)
     {
         try {
-            $ba = BbmKapaltrans::where('status_ba', 8)->findOrFail($id);
+            $ba = BbmKapaltrans::where('status_ba', 3)->findOrFail($id);
 
             if ($ba->file_upload) {
                 $filePath = public_path('uploads/ba-documents/' . $ba->file_upload);

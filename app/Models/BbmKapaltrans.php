@@ -40,12 +40,21 @@ class BbmKapaltrans extends Model
         'an_staf', // Tambahkan field yang hilang
         'peruntukan', // Field untuk peruntukan BBM
         'link_modul_ba', // Field untuk link BA
+        'penyedia_penitip', // Field untuk penyedia penitip
+        'nama_penitip', // Field untuk nama penitip
+        'jabatan_penitip', // Field untuk jabatan penitip
+        'alamat_penitip', // Field untuk alamat penitip
+        'alamat_penyedia_penitip', // Field untuk alamat penyedia penitip
+        'penggunaan', // Field untuk jumlah penitipan BBM
+        'volume_sebelum', // Field untuk volume tangki pengukuran
+        'volume_pemakaian', // Field untuk volume tangki saat ini
         'nama_nahkoda',
         'nip_nahkoda',
         'jabatan_nahkoda',
         'pangkat_nahkoda',
         'file_upload',
         'golongan_nahkoda',
+        'nama_staf_pagkalan',
         'nama_kkm',
         'nip_kkm',
         'jabatan_kkm',
@@ -76,13 +85,31 @@ class BbmKapaltrans extends Model
         'golongan_an_temp',
         'an_nakhoda_temp',
         'an_kkm_temp',
+        'sebab_temp', // Field untuk alasan peminjaman BBM
+        'nomer_persetujuan', // Field untuk nomor persetujuan
+        'tgl_persetujuan', // Field untuk tanggal persetujuan
+        'm_persetujuan_id', // Field untuk ID jenis persetujuan
+        'status_temp', // Field untuk status sementara
+        'link_modul_temp', // Field untuk link modul temp
         'user_input',
         'tanggal_input',
         'user_app',
         'tanggal_app',
         'status_trans',
         'penyedia', // Field untuk penyedia BBM
-        'no_so' // Field untuk nomor Sales Order
+        'no_so', // Field untuk nomor Sales Order
+        'penyedia_penitip', // Field untuk penyedia penitip
+        'nama_penitip', // Field untuk nama penitip
+        'jabatan_penitip', // Field untuk jabatan penitip
+        'alamat_penitip', // Field untuk alamat penitip
+        'penggunaan', // Field untuk jumlah penitipan BBM
+        'volume_sebelum', // Field untuk volume tangki pengukuran
+        'tanggal_sebelum', // Field untuk tanggal sebelum
+        'an_staf', // Field untuk checkbox An. staf
+        'an_nakhoda', // Field untuk checkbox An. nakhoda
+        'an_kkm', // Field untuk checkbox An. kkm
+        'status_upload', // Field untuk status upload dokumen
+        'file_upload' // Field untuk file upload dokumen
     ];
 
     protected $dates = [
@@ -105,7 +132,10 @@ class BbmKapaltrans extends Model
         'an_kkm' => 'integer',
         'an_nakhoda_temp' => 'integer',
         'an_kkm_temp' => 'integer',
-        'status_trans' => 'integer'
+        'status_trans' => 'integer',
+        'an_staf' => 'integer',
+        'penggunaan' => 'decimal:2',
+        'status_upload' => 'integer'
     ];
 
     // Relasi dengan kapal
@@ -165,13 +195,13 @@ class BbmKapaltrans extends Model
             2 => 'BA Sebelum Pengisian',
             3 => 'BA Penggunaan BBM',
             4 => 'BA Pemeriksaan Sarana Pengisian',
-            5 => 'BA Penerimaan Hibah BBM',
+            5 => 'BA Penerimaan BBM',
             6 => 'BA Sebelum Pelayaran',
             7 => 'BA Sesudah Pelayaran',
-            8 => 'BA Pengembalian BBM',
-            9 => 'BA Penerimaan Pengembalian BBM',
-            10 => 'BA Penerimaan Pinjaman BBM',
-            11 => 'BA Pengembalian Pinjaman BBM',
+            8 => 'BA Penitipan BBM',
+            9 => 'BA Pengembalian BBM',
+            10 => 'BA Peminjaman BBM',
+            11 => 'BA Penerimaan Pinjaman BBM',
             12 => 'BA Pemberi Hibah BBM Kapal Pengawas',
             13 => 'BA Penerima Hibah BBM Kapal Pengawas',
             14 => 'BA Penerima Hibah BBM Instansi Lain',

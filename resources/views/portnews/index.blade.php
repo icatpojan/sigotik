@@ -458,12 +458,11 @@
                     $('#post').val(item.post);
 
                     $('#imagePreview').addClass('hidden');
-                    if (item.img) {
-                        $('#currentImage').attr('src', `/${item.img}`);
-                        $('#currentImageContainer').removeClass('hidden');
-                    } else {
-                        $('#currentImageContainer').addClass('hidden');
-                    }
+                    // Selalu tampilkan container gambar saat edit, gunakan fallback jika tidak ada gambar
+                    const imageUrl = item.img ? `/${item.img}` : '/images/logo-kkp.png';
+                    console.log('Setting current image URL:', imageUrl);
+                    $('#currentImage').attr('src', imageUrl);
+                    $('#currentImageContainer').removeClass('hidden');
 
                     $('#portNewsModal').removeClass('hidden').addClass('flex items-center justify-center');
                 }
@@ -636,7 +635,7 @@
                     <!-- Current Image Preview (for edit) -->
                     <div id="currentImageContainer" class="hidden">
                         <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Gambar Saat Ini</label>
-                        <img id="currentImage" src="" alt="Current Image" class="w-32 h-32 object-cover rounded-lg">
+                        <img id="currentImage" src="" alt="Current Image" class="w-32 h-32 object-cover rounded-lg" onerror="this.src='/images/logo-kkp.png'">
                     </div>
 
                     <!-- New Image Preview -->
