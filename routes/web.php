@@ -19,11 +19,19 @@ use App\Http\Controllers\BaAkhirBulanController;
 use App\Http\Controllers\BaPenerimaanBbmController;
 use App\Http\Controllers\BaPenitipanBbmController;
 use App\Http\Controllers\BaPengembalianBbmController;
+use App\Http\Controllers\AnggaranController;
 
 use App\Http\Controllers\BaPeminjamanBbmController;
 use App\Http\Controllers\BaPenerimaanPinjamanBbmController;
 use App\Http\Controllers\BaPengembalianPinjamanBbmController;
 use App\Http\Controllers\BaPenerimaanPengembalianPinjamanBbmController;
+use App\Http\Controllers\BaPemberiHibahBbmKapalPengawasController;
+use App\Http\Controllers\BaPenerimaHibahBbmKapalPengawasController;
+use App\Http\Controllers\BaPemberiHibahBbmDenganInstansiLainController;
+use App\Http\Controllers\BaPenerimaHibahBbmDenganInstansiLainController;
+use App\Http\Controllers\BaPenerimaanHibahBbmController;
+use App\Http\Controllers\BbmReportController;
+use App\Http\Controllers\LaporanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,9 +57,10 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Protected routes
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/stats', [App\Http\Controllers\DashboardController::class, 'getStats'])->name('dashboard.stats');
+    Route::get('/dashboard/chart', [App\Http\Controllers\DashboardController::class, 'getChartData'])->name('dashboard.chart');
+    Route::get('/dashboard/table', [App\Http\Controllers\DashboardController::class, 'getTableData'])->name('dashboard.table');
 
     Route::get('/home', function () {
         return redirect('/dashboard');
@@ -108,6 +117,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/release', [ReleaseController::class, 'index'])->name('release.index');
     Route::get('/release/data', [ReleaseController::class, 'getBbmKapaltrans'])->name('release.data');
     Route::get('/release/{bbmKapaltrans}', [ReleaseController::class, 'show'])->name('release.show');
+    Route::post('/release/release', [ReleaseController::class, 'release'])->name('release.release');
 
     // Port News Management Routes
     Route::get('/portnews', [PortNewsController::class, 'index'])->name('portnews.index');
@@ -289,11 +299,293 @@ Route::middleware('auth')->group(function () {
     Route::get('/ba-penerimaan-pengembalian-pinjaman-bbm/kapal-data', [BaPenerimaanPengembalianPinjamanBbmController::class, 'getKapalData'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.kapal-data');
     Route::get('/ba-penerimaan-pengembalian-pinjaman-bbm/ba-data', [BaPenerimaanPengembalianPinjamanBbmController::class, 'getBaData'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.ba-data');
     Route::post('/ba-penerimaan-pengembalian-pinjaman-bbm', [BaPenerimaanPengembalianPinjamanBbmController::class, 'store'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.store');
-    Route::get('/ba-penerimaan-pengembalian-pinjaman-bbm/{baPenerimaanPengembalianPinjamanBbm}', [BaPenerimaanPengembalianPinjamanBbmController::class, 'show'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.show');
-    Route::put('/ba-penerimaan-pengembalian-pinjaman-bbm/{baPenerimaanPengembalianPinjamanBbm}', [BaPenerimaanPengembalianPinjamanBbmController::class, 'update'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.update');
-    Route::delete('/ba-penerimaan-pengembalian-pinjaman-bbm/{baPenerimaanPengembalianPinjamanBbm}', [BaPenerimaanPengembalianPinjamanBbmController::class, 'destroy'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.destroy');
-    Route::get('/ba-penerimaan-pengembalian-pinjaman-bbm/{baPenerimaanPengembalianPinjamanBbm}/pdf', [BaPenerimaanPengembalianPinjamanBbmController::class, 'generatePdf'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.pdf');
-    Route::post('/ba-penerimaan-pengembalian-pinjaman-bbm/{baPenerimaanPengembalianPinjamanBbm}/upload', [BaPenerimaanPengembalianPinjamanBbmController::class, 'uploadDocument'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.upload');
-    Route::get('/ba-penerimaan-pengembalian-pinjaman-bbm/{baPenerimaanPengembalianPinjamanBbm}/view-document', [BaPenerimaanPengembalianPinjamanBbmController::class, 'viewDocument'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.view-document');
-    Route::delete('/ba-penerimaan-pengembalian-pinjaman-bbm/{baPenerimaanPengembalianPinjamanBbm}/delete-document', [BaPenerimaanPengembalianPinjamanBbmController::class, 'deleteDocument'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.delete-document');
+    Route::get('/ba-penerimaan-pengembalian-pinjaman-bbm/{baPenerimaanPengembalian}', [BaPenerimaanPengembalianPinjamanBbmController::class, 'show'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.show');
+    Route::put('/ba-penerimaan-pengembalian-pinjaman-bbm/{baPenerimaanPengembalian}', [BaPenerimaanPengembalianPinjamanBbmController::class, 'update'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.update');
+    Route::delete('/ba-penerimaan-pengembalian-pinjaman-bbm/{baPenerimaanPengembalian}', [BaPenerimaanPengembalianPinjamanBbmController::class, 'destroy'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.destroy');
+    Route::get('/ba-penerimaan-pengembalian-pinjaman-bbm/{baPenerimaanPengembalian}/pdf', [BaPenerimaanPengembalianPinjamanBbmController::class, 'generatePdf'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.pdf');
+    Route::post('/ba-penerimaan-pengembalian-pinjaman-bbm/{baPenerimaanPengembalian}/upload', [BaPenerimaanPengembalianPinjamanBbmController::class, 'uploadDocument'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.upload');
+    Route::get('/ba-penerimaan-pengembalian-pinjaman-bbm/{baPenerimaanPengembalian}/view-document', [BaPenerimaanPengembalianPinjamanBbmController::class, 'viewDocument'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.view-document');
+    Route::delete('/ba-penerimaan-pengembalian-pinjaman-bbm/{baPenerimaanPengembalian}/delete-document', [BaPenerimaanPengembalianPinjamanBbmController::class, 'deleteDocument'])->name('ba-penerimaan-pengembalian-pinjaman-bbm.delete-document');
+
+    // BA Pemberi Hibah BBM Kapal Pengawas Routes
+    Route::get('/ba-pemberi-hibah-bbm-kapal-pengawas', [BaPemberiHibahBbmKapalPengawasController::class, 'index'])->name('ba-pemberi-hibah-bbm-kapal-pengawas.index');
+    Route::get('/ba-pemberi-hibah-bbm-kapal-pengawas/data', [BaPemberiHibahBbmKapalPengawasController::class, 'getData'])->name('ba-pemberi-hibah-bbm-kapal-pengawas.data');
+    Route::get('/ba-pemberi-hibah-bbm-kapal-pengawas/kapal-data', [BaPemberiHibahBbmKapalPengawasController::class, 'getKapalData'])->name('ba-pemberi-hibah-bbm-kapal-pengawas.kapal-data');
+    Route::get('/ba-pemberi-hibah-bbm-kapal-pengawas/kapal-penerima-data', [BaPemberiHibahBbmKapalPengawasController::class, 'getKapalPenerimaData'])->name('ba-pemberi-hibah-bbm-kapal-pengawas.kapal-penerima-data');
+    Route::get('/ba-pemberi-hibah-bbm-kapal-pengawas/persetujuan-data', [BaPemberiHibahBbmKapalPengawasController::class, 'getPersetujuanData'])->name('ba-pemberi-hibah-bbm-kapal-pengawas.persetujuan-data');
+    Route::post('/ba-pemberi-hibah-bbm-kapal-pengawas', [BaPemberiHibahBbmKapalPengawasController::class, 'store'])->name('ba-pemberi-hibah-bbm-kapal-pengawas.store');
+    Route::get('/ba-pemberi-hibah-bbm-kapal-pengawas/{baPemberiHibah}', [BaPemberiHibahBbmKapalPengawasController::class, 'show'])->name('ba-pemberi-hibah-bbm-kapal-pengawas.show');
+    Route::put('/ba-pemberi-hibah-bbm-kapal-pengawas/{baPemberiHibah}', [BaPemberiHibahBbmKapalPengawasController::class, 'update'])->name('ba-pemberi-hibah-bbm-kapal-pengawas.update');
+    Route::delete('/ba-pemberi-hibah-bbm-kapal-pengawas/{baPemberiHibah}', [BaPemberiHibahBbmKapalPengawasController::class, 'destroy'])->name('ba-pemberi-hibah-bbm-kapal-pengawas.destroy');
+    Route::get('/ba-pemberi-hibah-bbm-kapal-pengawas/{baPemberiHibah}/pdf', [BaPemberiHibahBbmKapalPengawasController::class, 'generatePdf'])->name('ba-pemberi-hibah-bbm-kapal-pengawas.pdf');
+    Route::post('/ba-pemberi-hibah-bbm-kapal-pengawas/{baPemberiHibah}/upload', [BaPemberiHibahBbmKapalPengawasController::class, 'uploadDocument'])->name('ba-pemberi-hibah-bbm-kapal-pengawas.upload');
+    Route::get('/ba-pemberi-hibah-bbm-kapal-pengawas/{baPemberiHibah}/view-document', [BaPemberiHibahBbmKapalPengawasController::class, 'viewDocument'])->name('ba-pemberi-hibah-bbm-kapal-pengawas.view-document');
+    Route::delete('/ba-pemberi-hibah-bbm-kapal-pengawas/{baPemberiHibah}/delete-document', [BaPemberiHibahBbmKapalPengawasController::class, 'deleteDocument'])->name('ba-pemberi-hibah-bbm-kapal-pengawas.delete-document');
+
+    // BA Penerima Hibah BBM Kapal Pengawas Routes
+    Route::get('/ba-penerima-hibah-bbm-kapal-pengawas', [BaPenerimaHibahBbmKapalPengawasController::class, 'index'])->name('ba-penerima-hibah-bbm-kapal-pengawas.index');
+    Route::get('/ba-penerima-hibah-bbm-kapal-pengawas/data', [BaPenerimaHibahBbmKapalPengawasController::class, 'getData'])->name('ba-penerima-hibah-bbm-kapal-pengawas.data');
+    Route::get('/ba-penerima-hibah-bbm-kapal-pengawas/kapal-data', [BaPenerimaHibahBbmKapalPengawasController::class, 'getKapalData'])->name('ba-penerima-hibah-bbm-kapal-pengawas.kapal-data');
+    Route::get('/ba-penerima-hibah-bbm-kapal-pengawas/kapal-pemberi-data', [BaPenerimaHibahBbmKapalPengawasController::class, 'getKapalPemberiData'])->name('ba-penerima-hibah-bbm-kapal-pengawas.kapal-pemberi-data');
+    Route::get('/ba-penerima-hibah-bbm-kapal-pengawas/persetujuan-data', [BaPenerimaHibahBbmKapalPengawasController::class, 'getPersetujuanData'])->name('ba-penerima-hibah-bbm-kapal-pengawas.persetujuan-data');
+    Route::post('/ba-penerima-hibah-bbm-kapal-pengawas', [BaPenerimaHibahBbmKapalPengawasController::class, 'store'])->name('ba-penerima-hibah-bbm-kapal-pengawas.store');
+    Route::get('/ba-penerima-hibah-bbm-kapal-pengawas/{baPenerimaHibah}', [BaPenerimaHibahBbmKapalPengawasController::class, 'show'])->name('ba-penerima-hibah-bbm-kapal-pengawas.show');
+    Route::put('/ba-penerima-hibah-bbm-kapal-pengawas/{baPenerimaHibah}', [BaPenerimaHibahBbmKapalPengawasController::class, 'update'])->name('ba-penerima-hibah-bbm-kapal-pengawas.update');
+    Route::delete('/ba-penerima-hibah-bbm-kapal-pengawas/{baPenerimaHibah}', [BaPenerimaHibahBbmKapalPengawasController::class, 'destroy'])->name('ba-penerima-hibah-bbm-kapal-pengawas.destroy');
+    Route::get('/ba-penerima-hibah-bbm-kapal-pengawas/{baPenerimaHibah}/pdf', [BaPenerimaHibahBbmKapalPengawasController::class, 'generatePdf'])->name('ba-penerima-hibah-bbm-kapal-pengawas.pdf');
+    Route::post('/ba-penerima-hibah-bbm-kapal-pengawas/{baPenerimaHibah}/upload', [BaPenerimaHibahBbmKapalPengawasController::class, 'uploadDocument'])->name('ba-penerima-hibah-bbm-kapal-pengawas.upload');
+    Route::get('/ba-penerima-hibah-bbm-kapal-pengawas/{baPenerimaHibah}/view-document', [BaPenerimaHibahBbmKapalPengawasController::class, 'viewDocument'])->name('ba-penerima-hibah-bbm-kapal-pengawas.view-document');
+    Route::delete('/ba-penerima-hibah-bbm-kapal-pengawas/{baPenerimaHibah}/delete-document', [BaPenerimaHibahBbmKapalPengawasController::class, 'deleteDocument'])->name('ba-penerima-hibah-bbm-kapal-pengawas.delete-document');
+    Route::get('/ba-penerima-hibah/pemberi-options', [BaPenerimaHibahBbmKapalPengawasController::class, 'getBaPemberiOptions'])->name('ba-penerima-hibah-bbm-kapal-pengawas.ba-pemberi-options');
+    Route::get('/ba-penerima-hibah/pemberi-data', [BaPenerimaHibahBbmKapalPengawasController::class, 'getBaPemberiData'])->name('ba-penerima-hibah-bbm-kapal-pengawas.ba-pemberi-data');
+
+    // BA Pemberi Hibah BBM Dengan Instansi Lain Routes
+    Route::get('/ba-pemberi-hibah-bbm-dengan-instansi-lain', [BaPemberiHibahBbmDenganInstansiLainController::class, 'index'])->name('ba-pemberi-hibah-bbm-dengan-instansi-lain.index');
+    Route::get('/ba-pemberi-hibah-bbm-dengan-instansi-lain/data', [BaPemberiHibahBbmDenganInstansiLainController::class, 'getData'])->name('ba-pemberi-hibah-bbm-dengan-instansi-lain.data');
+    Route::get('/ba-pemberi-hibah-bbm-dengan-instansi-lain/kapal-data', [BaPemberiHibahBbmDenganInstansiLainController::class, 'getKapalData'])->name('ba-pemberi-hibah-bbm-dengan-instansi-lain.kapal-data');
+    Route::get('/ba-pemberi-hibah-bbm-dengan-instansi-lain/persetujuan-data', [BaPemberiHibahBbmDenganInstansiLainController::class, 'getPersetujuanData'])->name('ba-pemberi-hibah-bbm-dengan-instansi-lain.persetujuan-data');
+    Route::post('/ba-pemberi-hibah-bbm-dengan-instansi-lain', [BaPemberiHibahBbmDenganInstansiLainController::class, 'store'])->name('ba-pemberi-hibah-bbm-dengan-instansi-lain.store');
+    Route::get('/ba-pemberi-hibah-bbm-dengan-instansi-lain/{baPemberiHibah}', [BaPemberiHibahBbmDenganInstansiLainController::class, 'show'])->name('ba-pemberi-hibah-bbm-dengan-instansi-lain.show');
+    Route::put('/ba-pemberi-hibah-bbm-dengan-instansi-lain/{baPemberiHibah}', [BaPemberiHibahBbmDenganInstansiLainController::class, 'update'])->name('ba-pemberi-hibah-bbm-dengan-instansi-lain.update');
+    Route::delete('/ba-pemberi-hibah-bbm-dengan-instansi-lain/{baPemberiHibah}', [BaPemberiHibahBbmDenganInstansiLainController::class, 'destroy'])->name('ba-pemberi-hibah-bbm-dengan-instansi-lain.destroy');
+    Route::get('/ba-pemberi-hibah-bbm-dengan-instansi-lain/{baPemberiHibah}/pdf', [BaPemberiHibahBbmDenganInstansiLainController::class, 'generatePdf'])->name('ba-pemberi-hibah-bbm-dengan-instansi-lain.pdf');
+    Route::post('/ba-pemberi-hibah-bbm-dengan-instansi-lain/{baPemberiHibah}/upload', [BaPemberiHibahBbmDenganInstansiLainController::class, 'uploadDocument'])->name('ba-pemberi-hibah-bbm-dengan-instansi-lain.upload');
+    Route::get('/ba-pemberi-hibah-bbm-dengan-instansi-lain/{baPemberiHibah}/view-document', [BaPemberiHibahBbmDenganInstansiLainController::class, 'viewDocument'])->name('ba-pemberi-hibah-bbm-dengan-instansi-lain.view-document');
+    Route::delete('/ba-pemberi-hibah-bbm-dengan-instansi-lain/{baPemberiHibah}/delete-document', [BaPemberiHibahBbmDenganInstansiLainController::class, 'deleteDocument'])->name('ba-pemberi-hibah-bbm-dengan-instansi-lain.delete-document');
+
+    // BA Penerima Hibah BBM Dengan Instansi Lain Routes
+    Route::get('/ba-penerima-hibah-bbm-dengan-instansi-lain', [BaPenerimaHibahBbmDenganInstansiLainController::class, 'index'])->name('ba-penerima-hibah-bbm-dengan-instansi-lain.index');
+    Route::get('/ba-penerima-hibah-bbm-dengan-instansi-lain/data', [BaPenerimaHibahBbmDenganInstansiLainController::class, 'getData'])->name('ba-penerima-hibah-bbm-dengan-instansi-lain.data');
+    Route::get('/ba-penerima-hibah-bbm-dengan-instansi-lain/kapal-data', [BaPenerimaHibahBbmDenganInstansiLainController::class, 'getKapalData'])->name('ba-penerima-hibah-bbm-dengan-instansi-lain.kapal-data');
+    Route::get('/ba-penerima-hibah-bbm-dengan-instansi-lain/persetujuan-data', [BaPenerimaHibahBbmDenganInstansiLainController::class, 'getPersetujuanData'])->name('ba-penerima-hibah-bbm-dengan-instansi-lain.persetujuan-data');
+    Route::post('/ba-penerima-hibah-bbm-dengan-instansi-lain', [BaPenerimaHibahBbmDenganInstansiLainController::class, 'store'])->name('ba-penerima-hibah-bbm-dengan-instansi-lain.store');
+    Route::get('/ba-penerima-hibah-bbm-dengan-instansi-lain/{baPenerimaHibah}', [BaPenerimaHibahBbmDenganInstansiLainController::class, 'show'])->name('ba-penerima-hibah-bbm-dengan-instansi-lain.show');
+    Route::put('/ba-penerima-hibah-bbm-dengan-instansi-lain/{baPenerimaHibah}', [BaPenerimaHibahBbmDenganInstansiLainController::class, 'update'])->name('ba-penerima-hibah-bbm-dengan-instansi-lain.update');
+    Route::delete('/ba-penerima-hibah-bbm-dengan-instansi-lain/{baPenerimaHibah}', [BaPenerimaHibahBbmDenganInstansiLainController::class, 'destroy'])->name('ba-penerima-hibah-bbm-dengan-instansi-lain.destroy');
+    Route::get('/ba-penerima-hibah-bbm-dengan-instansi-lain/{baPenerimaHibah}/pdf', [BaPenerimaHibahBbmDenganInstansiLainController::class, 'generatePdf'])->name('ba-penerima-hibah-bbm-dengan-instansi-lain.pdf');
+    Route::post('/ba-penerima-hibah-bbm-dengan-instansi-lain/{baPenerimaHibah}/upload', [BaPenerimaHibahBbmDenganInstansiLainController::class, 'uploadDocument'])->name('ba-penerima-hibah-bbm-dengan-instansi-lain.upload');
+    Route::get('/ba-penerima-hibah-bbm-dengan-instansi-lain/{baPenerimaHibah}/view-document', [BaPenerimaHibahBbmDenganInstansiLainController::class, 'viewDocument'])->name('ba-penerima-hibah-bbm-dengan-instansi-lain.view-document');
+    Route::delete('/ba-penerima-hibah-bbm-dengan-instansi-lain/{baPenerimaHibah}/delete-document', [BaPenerimaHibahBbmDenganInstansiLainController::class, 'deleteDocument'])->name('ba-penerima-hibah-bbm-dengan-instansi-lain.delete-document');
+
+    // BA Penerimaan Hibah BBM Routes
+    Route::get('/ba-penerimaan-hibah-bbm', [BaPenerimaanHibahBbmController::class, 'index'])->name('ba-penerimaan-hibah-bbm.index');
+    Route::get('/ba-penerimaan-hibah-bbm/data', [BaPenerimaanHibahBbmController::class, 'getData'])->name('ba-penerimaan-hibah-bbm.data');
+    Route::get('/ba-penerimaan-hibah-bbm/kapal-data', [BaPenerimaanHibahBbmController::class, 'getKapalData'])->name('ba-penerimaan-hibah-bbm.kapal-data');
+    Route::get('/ba-penerimaan-hibah-bbm/upt-data', [BaPenerimaanHibahBbmController::class, 'getUptData'])->name('ba-penerimaan-hibah-bbm.upt-data');
+    Route::get('/ba-penerimaan-hibah-bbm/ba-data', [BaPenerimaanHibahBbmController::class, 'getBaData'])->name('ba-penerimaan-hibah-bbm.ba-data');
+    Route::post('/ba-penerimaan-hibah-bbm', [BaPenerimaanHibahBbmController::class, 'store'])->name('ba-penerimaan-hibah-bbm.store');
+    Route::get('/ba-penerimaan-hibah-bbm/{baPenerimaanHibah}', [BaPenerimaanHibahBbmController::class, 'show'])->name('ba-penerimaan-hibah-bbm.show');
+    Route::put('/ba-penerimaan-hibah-bbm/{baPenerimaanHibah}', [BaPenerimaanHibahBbmController::class, 'update'])->name('ba-penerimaan-hibah-bbm.update');
+    Route::delete('/ba-penerimaan-hibah-bbm/{baPenerimaanHibah}', [BaPenerimaanHibahBbmController::class, 'destroy'])->name('ba-penerimaan-hibah-bbm.destroy');
+    Route::get('/ba-penerimaan-hibah-bbm/{baPenerimaanHibah}/pdf', [BaPenerimaanHibahBbmController::class, 'generatePdf'])->name('ba-penerimaan-hibah-bbm.pdf');
+    Route::post('/ba-penerimaan-hibah-bbm/{baPenerimaanHibah}/upload', [BaPenerimaanHibahBbmController::class, 'uploadDocument'])->name('ba-penerimaan-hibah-bbm.upload');
+    Route::get('/ba-penerimaan-hibah-bbm/{baPenerimaanHibah}/view-document', [BaPenerimaanHibahBbmController::class, 'viewDocument'])->name('ba-penerimaan-hibah-bbm.view-document');
+    Route::delete('/ba-penerimaan-hibah-bbm/{baPenerimaanHibah}/delete-document', [BaPenerimaanHibahBbmController::class, 'deleteDocument'])->name('ba-penerimaan-hibah-bbm.delete-document');
+
+    // BBM Reports Routes
+    Route::prefix('laporan-bbm')->name('laporan-bbm.')->group(function () {
+        // LAP Total Penerimaan & Penggunaan BBM
+        Route::get('/total-penerimaan-penggunaan', [BbmReportController::class, 'totalPenerimaanPenggunaan'])->name('total-penerimaan-penggunaan');
+        Route::get('/total-penerimaan-penggunaan/data', [BbmReportController::class, 'getTotalPenerimaanPenggunaanData'])->name('total-penerimaan-penggunaan.data');
+        Route::get('/total-penerimaan-penggunaan/export', [BbmReportController::class, 'exportTotalPenerimaanPenggunaan'])->name('total-penerimaan-penggunaan.export');
+
+        // LAP Detail Penggunaan & Penerimaan BBM
+        Route::get('/detail-penggunaan-penerimaan', [BbmReportController::class, 'detailPenggunaanPenerimaan'])->name('detail-penggunaan-penerimaan');
+        Route::get('/detail-penggunaan-penerimaan/data', [BbmReportController::class, 'getDetailPenggunaanPenerimaanData'])->name('detail-penggunaan-penerimaan.data');
+        Route::get('/detail-penggunaan-penerimaan/export', [BbmReportController::class, 'exportDetailPenggunaanPenerimaan'])->name('detail-penggunaan-penerimaan.export');
+
+        // History Penerimaan & Penggunaan BBM
+        Route::get('/history-penerimaan-penggunaan', [BbmReportController::class, 'historyPenerimaanPenggunaan'])->name('history-penerimaan-penggunaan');
+        Route::get('/history-penerimaan-penggunaan/data', [BbmReportController::class, 'getHistoryPenerimaanPenggunaanData'])->name('history-penerimaan-penggunaan.data');
+        Route::get('/history-penerimaan-penggunaan/export', [BbmReportController::class, 'exportHistoryPenerimaanPenggunaan'])->name('history-penerimaan-penggunaan.export');
+
+        // Laporan BBM Akhir Bulan
+        Route::get('/akhir-bulan', [BbmReportController::class, 'akhirBulan'])->name('akhir-bulan');
+        Route::get('/akhir-bulan/data', [BbmReportController::class, 'getAkhirBulanData'])->name('akhir-bulan.data');
+        Route::get('/akhir-bulan/export', [BbmReportController::class, 'exportAkhirBulan'])->name('akhir-bulan.export');
+
+        // Laporan Penerimaan BBM
+        Route::get('/penerimaan', [BbmReportController::class, 'penerimaan'])->name('penerimaan');
+        Route::get('/penerimaan/data', [BbmReportController::class, 'getPenerimaanData'])->name('penerimaan.data');
+        Route::get('/penerimaan/export', [BbmReportController::class, 'exportPenerimaan'])->name('penerimaan.export');
+
+        // Laporan Penitipan BBM
+        Route::get('/penitipan', [BbmReportController::class, 'penitipan'])->name('penitipan');
+        Route::get('/penitipan/data', [BbmReportController::class, 'getPenitipanData'])->name('penitipan.data');
+        Route::get('/penitipan/export', [BbmReportController::class, 'exportPenitipan'])->name('penitipan.export');
+
+        // Laporan Pengembalian BBM
+        Route::get('/pengembalian', [BbmReportController::class, 'pengembalian'])->name('pengembalian');
+        Route::get('/pengembalian/data', [BbmReportController::class, 'getPengembalianData'])->name('pengembalian.data');
+        Route::get('/pengembalian/export', [BbmReportController::class, 'exportPengembalian'])->name('pengembalian.export');
+
+        // Laporan Peminjaman
+        Route::get('/peminjaman', [BbmReportController::class, 'peminjaman'])->name('peminjaman');
+        Route::get('/peminjaman/data', [BbmReportController::class, 'getPeminjamanData'])->name('peminjaman.data');
+        Route::get('/peminjaman/export', [BbmReportController::class, 'exportPeminjaman'])->name('peminjaman.export');
+
+        // Laporan Pengembalian Pinjaman
+        Route::get('/pengembalian-pinjaman', [BbmReportController::class, 'pengembalianPinjaman'])->name('pengembalian-pinjaman');
+        Route::get('/pengembalian-pinjaman/data', [BbmReportController::class, 'getPengembalianPinjamanData'])->name('pengembalian-pinjaman.data');
+        Route::get('/pengembalian-pinjaman/export', [BbmReportController::class, 'exportPengembalianPinjaman'])->name('pengembalian-pinjaman.export');
+
+        // Laporan Pinjaman Belum dikembalikan
+        Route::get('/pinjaman-belum-dikembalikan', [BbmReportController::class, 'pinjamanBelumDikembalikan'])->name('pinjaman-belum-dikembalikan');
+        Route::get('/pinjaman-belum-dikembalikan/data', [BbmReportController::class, 'getPinjamanBelumDikembalikanData'])->name('pinjaman-belum-dikembalikan.data');
+        Route::get('/pinjaman-belum-dikembalikan/export', [BbmReportController::class, 'exportPinjamanBelumDikembalikan'])->name('pinjaman-belum-dikembalikan.export');
+
+        // Laporan Hibah Antar Kapal Pengawas
+        Route::get('/hibah-antar-kapal-pengawas', [BbmReportController::class, 'hibahAntarKapalPengawas'])->name('hibah-antar-kapal-pengawas');
+        Route::get('/hibah-antar-kapal-pengawas/data', [BbmReportController::class, 'getHibahAntarKapalPengawasData'])->name('hibah-antar-kapal-pengawas.data');
+        Route::get('/hibah-antar-kapal-pengawas/export', [BbmReportController::class, 'exportHibahAntarKapalPengawas'])->name('hibah-antar-kapal-pengawas.export');
+
+        // Laporan Pemberi Hibah BBM Instansi Lain
+        Route::get('/pemberi-hibah-instansi-lain', [BbmReportController::class, 'pemberiHibahInstansiLain'])->name('pemberi-hibah-instansi-lain');
+        Route::get('/pemberi-hibah-instansi-lain/data', [BbmReportController::class, 'getPemberiHibahInstansiLainData'])->name('pemberi-hibah-instansi-lain.data');
+        Route::get('/pemberi-hibah-instansi-lain/export', [BbmReportController::class, 'exportPemberiHibahInstansiLain'])->name('pemberi-hibah-instansi-lain.export');
+
+        // Laporan Penerima Hibah BBM Instansi Lain
+        Route::get('/penerima-hibah-instansi-lain', [BbmReportController::class, 'penerimaHibahInstansiLain'])->name('penerima-hibah-instansi-lain');
+        Route::get('/penerima-hibah-instansi-lain/data', [BbmReportController::class, 'getPenerimaHibahInstansiLainData'])->name('penerima-hibah-instansi-lain.data');
+        Route::get('/penerima-hibah-instansi-lain/export', [BbmReportController::class, 'exportPenerimaHibahInstansiLain'])->name('penerima-hibah-instansi-lain.export');
+
+        // Laporan Penerimaan Hibah BBM
+        Route::get('/penerimaan-hibah', [BbmReportController::class, 'penerimaanHibah'])->name('penerimaan-hibah');
+        Route::get('/penerimaan-hibah/data', [BbmReportController::class, 'getPenerimaanHibahData'])->name('penerimaan-hibah.data');
+        Route::get('/penerimaan-hibah/export', [BbmReportController::class, 'exportPenerimaanHibah'])->name('penerimaan-hibah.export');
+
+        // Helper routes for dropdown data
+        Route::get('/upt-options', [BbmReportController::class, 'getUptOptions'])->name('upt-options');
+        Route::get('/kapal-options', [BbmReportController::class, 'getKapalOptions'])->name('kapal-options');
+    });
+
+    // ==================== ANGGARAN ROUTES ====================
+    Route::prefix('anggaran')->name('anggaran.')->group(function () {
+        // Entri Anggaran
+        Route::get('/entri-anggaran', [AnggaranController::class, 'entriAnggaran'])->name('entri-anggaran');
+        Route::get('/entri-anggaran/data', [AnggaranController::class, 'getEntriAnggaranData'])->name('entri-anggaran.data');
+        Route::post('/entri-anggaran/create', [AnggaranController::class, 'createEntriAnggaran'])->name('entri-anggaran.create');
+        Route::get('/entri-anggaran/view/{periode}/{perubahanKe}', [AnggaranController::class, 'viewEntriAnggaran'])->name('entri-anggaran.view');
+        Route::get('/entri-anggaran/edit/{periode}/{perubahanKe}', [AnggaranController::class, 'editEntriAnggaran'])->name('entri-anggaran.edit');
+        Route::post('/entri-anggaran/update', [AnggaranController::class, 'updateEntriAnggaran'])->name('entri-anggaran.update');
+        Route::delete('/entri-anggaran/delete/{periode}/{perubahanKe}', [AnggaranController::class, 'deleteEntriAnggaran'])->name('entri-anggaran.delete');
+
+        // Perubahan Anggaran
+        Route::get('/perubahan-anggaran', [AnggaranController::class, 'perubahanAnggaran'])->name('perubahan-anggaran');
+        Route::get('/perubahan-anggaran/data', [AnggaranController::class, 'getPerubahanAnggaranData'])->name('perubahan-anggaran.data');
+        Route::get('/perubahan-anggaran/view/{periode}/{perubahanKe}', [AnggaranController::class, 'viewPerubahanAnggaran'])->name('perubahan-anggaran.view');
+        Route::get('/perubahan-anggaran/edit/{periode}/{perubahanKe}', [AnggaranController::class, 'editPerubahanAnggaran'])->name('perubahan-anggaran.edit');
+        Route::post('/perubahan-anggaran/create', [AnggaranController::class, 'createPerubahanAnggaran'])->name('perubahan-anggaran.create');
+        Route::post('/perubahan-anggaran/update', [AnggaranController::class, 'updatePerubahanAnggaran'])->name('perubahan-anggaran.update');
+        Route::delete('/perubahan-anggaran/delete/{periode}/{perubahanKe}', [AnggaranController::class, 'deletePerubahanAnggaran'])->name('perubahan-anggaran.delete');
+
+        // Approval Anggaran
+        Route::get('/approval-anggaran', [AnggaranController::class, 'approvalAnggaran'])->name('approval-anggaran');
+        Route::get('/approval-anggaran/data', [AnggaranController::class, 'getApprovalAnggaranData'])->name('approval-anggaran.data');
+        Route::get('/approval-anggaran/view/{periode}', [AnggaranController::class, 'viewApprovalAnggaran'])->name('approval-anggaran.view');
+        Route::post('/approval-anggaran/approve', [AnggaranController::class, 'approveAnggaran'])->name('approval-anggaran.approve');
+
+        // Entry Realisasi
+        Route::get('/entry-realisasi', [AnggaranController::class, 'entryRealisasi'])->name('entry-realisasi');
+        Route::get('/entry-realisasi/data', [AnggaranController::class, 'getEntryRealisasiData'])->name('entry-realisasi.data');
+        Route::get('/entry-realisasi/view/{periode}', [AnggaranController::class, 'viewEntryRealisasi'])->name('entry-realisasi.view');
+        Route::get('/entry-realisasi/edit/{periode}', [AnggaranController::class, 'editEntryRealisasi'])->name('entry-realisasi.edit');
+        Route::post('/entry-realisasi/create', [AnggaranController::class, 'createEntryRealisasi'])->name('entry-realisasi.create');
+        Route::post('/entry-realisasi/update', [AnggaranController::class, 'updateEntryRealisasi'])->name('entry-realisasi.update');
+        Route::delete('/entry-realisasi/delete/{periode}', [AnggaranController::class, 'deleteEntryRealisasi'])->name('entry-realisasi.delete');
+
+        // Approval Realisasi
+        Route::get('/approval-realisasi', [AnggaranController::class, 'approvalRealisasi'])->name('approval-realisasi');
+        Route::get('/approval-realisasi/data', [AnggaranController::class, 'getApprovalRealisasiData'])->name('approval-realisasi.data');
+        Route::get('/approval-realisasi/view/{periode}', [AnggaranController::class, 'viewApprovalRealisasi'])->name('approval-realisasi.view');
+        Route::post('/approval-realisasi/approve', [AnggaranController::class, 'approveRealisasi'])->name('approval-realisasi.approve');
+
+        // Pembatalan Realisasi
+        Route::get('/pembatalan-realisasi', [AnggaranController::class, 'pembatalanRealisasi'])->name('pembatalan-realisasi');
+        Route::get('/pembatalan-realisasi/data', [AnggaranController::class, 'getPembatalanRealisasiData'])->name('pembatalan-realisasi.data');
+        Route::get('/pembatalan-realisasi/view/{periode}', [AnggaranController::class, 'viewPembatalanRealisasi'])->name('pembatalan-realisasi.view');
+        Route::post('/pembatalan-realisasi/cancel', [AnggaranController::class, 'cancelRealisasi'])->name('pembatalan-realisasi.cancel');
+
+        // Tanggal SPPD
+        Route::get('/tanggal-sppd', [AnggaranController::class, 'tanggalSppd'])->name('tanggal-sppd');
+        Route::get('/tanggal-sppd/data', [AnggaranController::class, 'getTanggalSppdData'])->name('tanggal-sppd.data');
+        Route::post('/tanggal-sppd/create', [AnggaranController::class, 'createTanggalSppd'])->name('tanggal-sppd.create');
+        Route::get('/tanggal-sppd/edit/{periode}', [AnggaranController::class, 'editTanggalSppd'])->name('tanggal-sppd.edit');
+        Route::post('/tanggal-sppd/update', [AnggaranController::class, 'updateTanggalSppd'])->name('tanggal-sppd.update');
+        Route::delete('/tanggal-sppd/delete/{periode}', [AnggaranController::class, 'deleteTanggalSppd'])->name('tanggal-sppd.delete');
+
+        // Entry Anggaran Internal
+        Route::get('/entry-anggaran-internal', [AnggaranController::class, 'entryAnggaranInternal'])->name('entry-anggaran-internal');
+        Route::get('/entry-anggaran-internal/data', [AnggaranController::class, 'getEntryAnggaranInternalData'])->name('entry-anggaran-internal.data');
+        Route::get('/entry-anggaran-internal/view/{periode}', [AnggaranController::class, 'viewEntryAnggaranInternal'])->name('entry-anggaran-internal.view');
+        Route::get('/entry-anggaran-internal/edit/{periode}', [AnggaranController::class, 'editEntryAnggaranInternal'])->name('entry-anggaran-internal.edit');
+        Route::post('/entry-anggaran-internal/create', [AnggaranController::class, 'createEntryAnggaranInternal'])->name('entry-anggaran-internal.create');
+        Route::post('/entry-anggaran-internal/update', [AnggaranController::class, 'updateEntryAnggaranInternal'])->name('entry-anggaran-internal.update');
+        Route::delete('/entry-anggaran-internal/delete/{periode}', [AnggaranController::class, 'deleteEntryAnggaranInternal'])->name('entry-anggaran-internal.delete');
+
+        // Approval Anggaran Internal
+        Route::get('/approval-anggaran-internal', [AnggaranController::class, 'approvalAnggaranInternal'])->name('approval-anggaran-internal');
+        Route::get('/approval-anggaran-internal/data', [AnggaranController::class, 'getApprovalAnggaranInternalData'])->name('approval-anggaran-internal.data');
+        Route::get('/approval-anggaran-internal/view/{periode}', [AnggaranController::class, 'viewApprovalAnggaranInternal'])->name('approval-anggaran-internal.view');
+        Route::post('/approval-anggaran-internal/approve', [AnggaranController::class, 'approveAnggaranInternal'])->name('approval-anggaran-internal.approve');
+
+        // Pembatalan Anggaran Internal
+        Route::get('/pembatalan-anggaran-internal', [AnggaranController::class, 'pembatalanAnggaranInternal'])->name('pembatalan-anggaran-internal');
+        Route::get('/pembatalan-anggaran-internal/data', [AnggaranController::class, 'getPembatalanAnggaranInternalData'])->name('pembatalan-anggaran-internal.data');
+        Route::get('/pembatalan-anggaran-internal/view/{periode}', [AnggaranController::class, 'viewPembatalanAnggaranInternal'])->name('pembatalan-anggaran-internal.view');
+        Route::post('/pembatalan-anggaran-internal/cancel', [AnggaranController::class, 'cancelAnggaranInternal'])->name('pembatalan-anggaran-internal.cancel');
+
+        // Helper routes for anggaran
+        Route::get('/upt-options', [AnggaranController::class, 'getUptOptions'])->name('upt-options');
+        Route::get('/anggaran-data', [AnggaranController::class, 'getAnggaranData'])->name('anggaran-data');
+        Route::get('/nominal-awal', [AnggaranController::class, 'getNominalAwal'])->name('nominal-awal');
+    });
+
+    // ==================== LAPORAN ANGGARAN ROUTES ====================
+    Route::prefix('laporan-anggaran')->name('laporan-anggaran.')->group(function () {
+        // Laporan Anggaran
+        Route::get('/anggaran', [LaporanController::class, 'anggaran'])->name('anggaran');
+        Route::get('/anggaran/data', [LaporanController::class, 'getAnggaranData'])->name('anggaran.data');
+        Route::get('/anggaran/periodes', [LaporanController::class, 'getPeriodeOptions'])->name('anggaran.periodes');
+
+        // Riwayat Anggaran & Realisasi ALL
+        Route::get('/riwayat-all', [LaporanController::class, 'riwayatAll'])->name('riwayat-all');
+        Route::get('/riwayat-all/data', [LaporanController::class, 'getRiwayatAllData'])->name('riwayat-all.data');
+
+        // Laporan Realisasi per Periode
+        Route::get('/realisasi-periode', [LaporanController::class, 'realisasiPeriode'])->name('realisasi-periode');
+        Route::get('/realisasi-periode/data', [LaporanController::class, 'getRealisasiPeriodeData'])->name('realisasi-periode.data');
+        Route::get('/realisasi-periode/upts', [LaporanController::class, 'getUptOptions'])->name('realisasi-periode.upts');
+
+        // Laporan Transaksi Realisasi UPT
+        Route::get('/transaksi-realisasi-upt', [LaporanController::class, 'transaksiRealisasiUpt'])->name('transaksi-realisasi-upt');
+        Route::get('/transaksi-realisasi-upt/data', [LaporanController::class, 'getTransaksiRealisasiUptData'])->name('transaksi-realisasi-upt.data');
+        Route::get('/transaksi-realisasi-upt/upts', [LaporanController::class, 'getUptOptions'])->name('transaksi-realisasi-upt.upts');
+        Route::get('/transaksi-realisasi-upt/no-tagihan', [LaporanController::class, 'getNoTagihanOptions'])->name('transaksi-realisasi-upt.no-tagihan');
+
+        // Laporan Transaksi Perubahan Anggaran Internal UPT
+        Route::get('/perubahan-anggaran-internal', [LaporanController::class, 'perubahanAnggaranInternal'])->name('perubahan-anggaran-internal');
+        Route::get('/perubahan-anggaran-internal/data', [LaporanController::class, 'getPerubahanAnggaranInternalData'])->name('perubahan-anggaran-internal.data');
+        Route::get('/perubahan-anggaran-internal/upts', [LaporanController::class, 'getUptOptions'])->name('perubahan-anggaran-internal.upts');
+
+        // Laporan Berita Acara Pembayaran Tagihan
+        Route::get('/berita-acara-pembayaran', [LaporanController::class, 'beritaAcaraPembayaran'])->name('berita-acara-pembayaran');
+        Route::get('/berita-acara-pembayaran/data', [LaporanController::class, 'getBeritaAcaraPembayaranData'])->name('berita-acara-pembayaran.data');
+        Route::get('/berita-acara-pembayaran/upts', [LaporanController::class, 'getUptOptions'])->name('berita-acara-pembayaran.upts');
+
+        // Laporan Verifikasi Tagihan
+        Route::get('/verifikasi-tagihan', [LaporanController::class, 'verifikasiTagihan'])->name('verifikasi-tagihan');
+        Route::get('/verifikasi-tagihan/data', [LaporanController::class, 'getVerifikasiTagihanData'])->name('verifikasi-tagihan.data');
+        Route::get('/verifikasi-tagihan/upts', [LaporanController::class, 'getUptOptions'])->name('verifikasi-tagihan.upts');
+        Route::get('/verifikasi-tagihan/no-tagihan', [LaporanController::class, 'getNoTagihanOptions'])->name('verifikasi-tagihan.no-tagihan');
+
+        // Export routes
+        Route::post('/export/excel/{type}', [LaporanController::class, 'exportExcel'])->name('export.excel');
+        Route::post('/export/pdf/{type}', [LaporanController::class, 'exportPdf'])->name('export.pdf');
+    });
 });
+
+// Swagger Documentation Routes
+Route::get('/api/documentation', function () {
+    return view('swagger.index');
+})->name('swagger.docs');

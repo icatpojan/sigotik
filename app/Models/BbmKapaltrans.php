@@ -109,7 +109,10 @@ class BbmKapaltrans extends Model
         'an_nakhoda', // Field untuk checkbox An. nakhoda
         'an_kkm', // Field untuk checkbox An. kkm
         'status_upload', // Field untuk status upload dokumen
-        'file_upload' // Field untuk file upload dokumen
+        'file_upload', // Field untuk file upload dokumen
+        'instansi_temp', // Field untuk nama instansi pemberi
+        'alamat_instansi_temp', // Field untuk alamat instansi pemberi
+        'nama_penyedia' // Field untuk nama penyedia
     ];
 
     protected $dates = [
@@ -160,6 +163,12 @@ class BbmKapaltrans extends Model
     public function transdetails()
     {
         return $this->hasMany(BbmTransdetail::class, 'nomor_surat', 'nomor_surat');
+    }
+
+    // Relasi dengan persetujuan
+    public function persetujuan()
+    {
+        return $this->belongsTo(MPersetujuan::class, 'm_persetujuan_id', 'id');
     }
 
     // Scope untuk filter berdasarkan status BA

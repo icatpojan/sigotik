@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
 class ConfUser extends Authenticatable
 {
+    use HasApiTokens;
 
     protected $table = 'conf_user';
     protected $primaryKey = 'conf_user_id';

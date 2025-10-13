@@ -492,12 +492,16 @@
                     if (response.success) {
                         const data = response.data;
                         $('#link_ba').val(data.link_ba);
+                        $('#link_modul_temp').val(data.link_ba); // Set link_modul_temp dari data BA
+                        $('#kapal_code_temp').val(data.kapal_code_temp); // Set kapal_code_temp dari data BA
                         $('#volume_sebelum').val(data.volume_sisa);
                         $('#keterangan_jenis_bbm').val(data.keterangan_jenis_bbm);
                         calculateVolumeUsage(); // Hitung ulang setelah memuat data BA
                     } else {
                         // Jika tidak ada data BA sebelumnya, biarkan kosong atau atur ke default
                         $('#link_ba').val('');
+                        $('#link_modul_temp').val('');
+                        $('#kapal_code_temp').val('');
                         // JANGAN me-reset volume_sebelum jika ini mode EDIT dan kapal tidak berubah
                         if (!currentEditMode) {
                             $('#volume_sebelum').val('0');
@@ -523,6 +527,8 @@
             $('#nama_kkm').val('');
             $('#nip_kkm').val('');
             $('#link_ba').val('');
+            $('#link_modul_temp').val('');
+            $('#kapal_code_temp').val('');
             $('#volume_sebelum').val('');
             calculateVolumeUsage(); // Hitung ulang setelah clear
         }
@@ -781,6 +787,7 @@
             $('#tanggal_sebelum').val(formatDateForInput(data.tanggal_sebelum) || '');
             $('#volume_pengisian').val(data.volume_pengisian || '');
             $('#tanggal_pengisian').val(formatDateForInput(data.tanggal_pengisian) || '');
+
             $('#volume_pemakaian').val(data.volume_pemakaian || '');
             $('#volume_sisa').val(data.volume_sisa || '');
             $('#keterangan_jenis_bbm').val(data.keterangan_jenis_bbm || '');
@@ -793,10 +800,25 @@
             $('#nama_kkm').val(data.nama_kkm || '');
             $('#nip_kkm').val(data.nip_kkm || '');
 
+            // Field untuk kapal temp
+            $('#link_modul_temp').val(data.link_modul_temp || '');
+            $('#kapal_code_temp').val(data.kapal_code_temp || '');
+            $('#nama_nahkoda_temp').val(data.nama_nahkoda_temp || '');
+            $('#nip_nahkoda_temp').val(data.nip_nahkoda_temp || '');
+            $('#nama_kkm_temp').val(data.nama_kkm_temp || '');
+            $('#nip_kkm_temp').val(data.nip_kkm_temp || '');
+            $('#sebab_temp').val(data.sebab_temp || '');
+            $('#m_persetujuan_id').val(data.m_persetujuan_id || '');
+            $('#nomer_persetujuan').val(data.nomer_persetujuan || '');
+            $('#tgl_persetujuan').val(formatDateForInput(data.tgl_persetujuan) || '');
+
+
             // Set checkboxes dan pemicu perubahan untuk hidden input
             $('#an_staf').prop('checked', data.an_staf == 1).trigger('change');
             $('#an_nakhoda').prop('checked', data.an_nakhoda == 1).trigger('change');
             $('#an_kkm').prop('checked', data.an_kkm == 1).trigger('change');
+            $('#an_nakhoda_temp').prop('checked', data.an_nakhoda_temp == 1).trigger('change');
+            $('#an_kkm_temp').prop('checked', data.an_kkm_temp == 1).trigger('change');
 
             // Clear validation errors
             $('.is-invalid').removeClass('is-invalid');
@@ -855,7 +877,7 @@
             $('#baForm').on('submit', handleFormSubmit);
 
             // Checkbox handlers untuk mengisi hidden input
-            $('#an_staf, #an_nakhoda, #an_kkm').on('change', function() {
+            $('#an_staf, #an_nakhoda, #an_kkm, #an_nakhoda_temp, #an_kkm_temp').on('change', function() {
                 const hiddenInput = $(this).next('input[type="hidden"]');
                 if (hiddenInput.length) {
                     hiddenInput.val($(this).is(':checked') ? '1' : '0');
@@ -937,14 +959,14 @@
 
             $('#deleteDocumentBtn').on('click', function() {
                 if (confirm('Apakah Anda yakin ingin menghapus dokumen ini?')) {
-            $.ajax({
+                    $.ajax({
                         url: `/ba-pengembalian-pinjaman-bbm/${currentBaId}/delete-document`
                         , type: 'DELETE'
-                , data: {
+                        , data: {
                             _token: '{{ csrf_token() }}'
-                }
-                , success: function(response) {
-                    if (response.success) {
+                        }
+                        , success: function(response) {
+                            if (response.success) {
                                 showSuccess('Dokumen berhasil dihapus');
                                 $('#viewDocumentModal').addClass('hidden');
                                 loadData(); // Reload data to update table
@@ -1437,6 +1459,8 @@
                 <form id="baForm" class="mt-6 space-y-6">
                     @csrf
                     <input type="hidden" id="baId" name="ba_id">
+                    <input type="hidden" id="link_modul_temp" name="link_modul_temp">
+                    <input type="hidden" id="kapal_code_temp" name="kapal_code_temp">
                     <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
                         <h4 class="text-lg font-medium text-blue-900 dark:text-blue-100 mb-4 flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1718,6 +1742,83 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="bg-teal-50 dark:bg-teal-900/20 rounded-lg p-4">
+                        <h4 class="text-lg font-medium text-teal-900 dark:text-teal-100 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                            Informasi Kapal Temp (Pemberi Pinjaman)
+                        </h4>
+                        <div class="mb-3">
+                            <div class="flex items-center space-x-6">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="an_nakhoda_temp" name="an_nakhoda_temp" value="1" class="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded">
+                                    <input type="hidden" name="an_nakhoda_temp" value="0">
+                                    <label for="an_nakhoda_temp" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        An. Nakhoda Temp
+                                    </label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="an_kkm_temp" name="an_kkm_temp" value="1" class="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded">
+                                    <input type="hidden" name="an_kkm_temp" value="0">
+                                    <label for="an_kkm_temp" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        An. KKM Temp
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            <div>
+                                <label for="nama_nahkoda_temp" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nama Nakhoda Temp</label>
+                                <input type="text" id="nama_nahkoda_temp" name="nama_nahkoda_temp" placeholder="Nama lengkap nakhoda temp" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 dark:bg-gray-700 dark:text-white transition-colors">
+                            </div>
+                            <div>
+                                <label for="nip_nahkoda_temp" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NIP Nakhoda Temp</label>
+                                <input type="text" id="nip_nahkoda_temp" name="nip_nahkoda_temp" placeholder="Nomor Induk Pegawai" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 dark:bg-gray-700 dark:text-white transition-colors">
+                            </div>
+                            <div>
+                                <label for="nama_kkm_temp" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nama KKM Temp</label>
+                                <input type="text" id="nama_kkm_temp" name="nama_kkm_temp" placeholder="Nama lengkap KKM temp" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 dark:bg-gray-700 dark:text-white transition-colors">
+                            </div>
+                            <div>
+                                <label for="nip_kkm_temp" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NIP KKM Temp</label>
+                                <input type="text" id="nip_kkm_temp" name="nip_kkm_temp" placeholder="Nomor Induk Pegawai" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 dark:bg-gray-700 dark:text-white transition-colors">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
+                        <h4 class="text-lg font-medium text-purple-900 dark:text-purple-100 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Informasi Persetujuan
+                        </h4>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            <div>
+                                <label for="sebab_temp" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Sebab Temp</label>
+                                <input type="text" id="sebab_temp" name="sebab_temp" placeholder="Alasan peminjaman BBM" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white transition-colors">
+                            </div>
+                            <div>
+                                <label for="m_persetujuan_id" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Jenis Persetujuan</label>
+                                <select id="m_persetujuan_id" name="m_persetujuan_id" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white transition-colors">
+                                    <option value="">-- Pilih Jenis Persetujuan --</option>
+                                    @foreach($persetujuans as $persetujuan)
+                                    <option value="{{ $persetujuan->id }}">{{ $persetujuan->deskripsi_persetujuan }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label for="nomer_persetujuan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nomor Persetujuan</label>
+                                <input type="text" id="nomer_persetujuan" name="nomer_persetujuan" placeholder="Nomor persetujuan" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white transition-colors">
+                            </div>
+                            <div>
+                                <label for="tgl_persetujuan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Tanggal Persetujuan</label>
+                                <input type="date" id="tgl_persetujuan" name="tgl_persetujuan" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white transition-colors">
+                            </div>
+                        </div>
+                    </div>
                 </form>
 
                 <!-- Modal Footer -->
@@ -1769,16 +1870,16 @@
         <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
             <h3 id="uploadModalTitle" class="text-lg font-semibold text-gray-900 dark:text-white">Upload Dokumen Pendukung</h3>
             <button id="closeUploadModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
 
         <form id="uploadForm" enctype="multipart/form-data">
-                    @csrf
+            @csrf
             <div class="p-6">
-                    <div class="mb-4">
+                <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Pilih Dokumen <span class="text-red-500">*</span>
                     </label>
@@ -1788,7 +1889,7 @@
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         Format yang didukung: PDF, DOC, DOCX, JPG, JPEG, PNG (Maksimal 10MB)
                     </p>
-                        </div>
+                </div>
 
                 <div id="uploadProgress" class="hidden mb-4">
                     <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-2">
@@ -1800,16 +1901,16 @@
 
             <div class="flex justify-end space-x-3 p-6 border-t border-gray-200 dark:border-gray-700">
                 <button type="button" id="cancelUploadBtn" class="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 rounded-lg transition-colors font-medium">
-                            Batal
-                        </button>
+                    Batal
+                </button>
                 <button type="submit" id="uploadBtn" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium flex items-center">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                     </svg>
                     <span id="uploadBtnText">Upload</span>
-                        </button>
-                    </div>
-                </form>
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -1825,12 +1926,12 @@
                     </svg>
                 </button>
                 <button id="closeViewDocumentModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-                    </div>
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
 
         <div class="p-6 overflow-auto max-h-[calc(90vh-120px)]">
             <div id="documentViewer" class="w-full h-full">

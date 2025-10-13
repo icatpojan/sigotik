@@ -117,7 +117,11 @@
 @endsection
 
 @section('scripts')
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- DataTables CSS and JS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/dataTables.tailwindcss.min.css">
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.13.7/js/dataTables.tailwindcss.min.js"></script>
+<!-- Toastr -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 <script>
@@ -280,15 +284,15 @@
 
         function showLoading() {
             $('#baTableBody').html(`
-   <tr>
-       <td colspan="5" class="px-6 py-4 text-center">
-           <div class="flex items-center justify-center">
-               <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-               <span class="ml-2 text-gray-600 dark:text-gray-400">Memuat data...</span>
-           </div>
-       </td>
-   </tr>
-   `);
+        <tr>
+            <td colspan="5" class="px-6 py-4 text-center">
+                <div class="flex items-center justify-center">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <span class="ml-2 text-gray-600 dark:text-gray-400">Memuat data...</span>
+                </div>
+            </td>
+        </tr>
+        `);
         }
 
         function hideLoading() {
@@ -489,24 +493,19 @@
                     , tanggal_surat: tanggalSurat
                 }
                 , success: function(response) {
-                    if (response.success) {
-                        const data = response.data;
-                        $('#link_ba').val(data.link_ba);
-                        $('#volume_sebelum').val(data.volume_sisa);
-                        $('#keterangan_jenis_bbm').val(data.keterangan_jenis_bbm);
-                        calculateVolumeUsage(); // Hitung ulang setelah memuat data BA
+                    if (response.success && response.data.length > 0) {
+                        // Load BA Peminjaman data ke dropdown
+                        const options = response.data.map(item =>
+                            `<option value="${item.trans_id}">${item.nomor_surat} - ${item.tanggal_surat} (${item.volume_pemakaian}L)</option>`
+                        );
+                        $('#trans_id_peminjam').html('<option value="">-- Pilih BA Peminjaman --</option>' + options.join(''));
                     } else {
-                        // Jika tidak ada data BA sebelumnya, biarkan kosong atau atur ke default
-                        $('#link_ba').val('');
-                        // JANGAN me-reset volume_sebelum jika ini mode EDIT dan kapal tidak berubah
-                        if (!currentEditMode) {
-                            $('#volume_sebelum').val('0');
-                        }
-                        $('#keterangan_jenis_bbm').val('');
+                        $('#trans_id_peminjam').html('<option value="">-- Tidak ada BA Peminjaman --</option>');
                     }
                 }
                 , error: function(xhr) {
                     console.error('AJAX Error loadBaData:', xhr);
+                    $('#trans_id_peminjam').html('<option value="">-- Error loading data --</option>');
                 }
             });
         }
@@ -522,20 +521,82 @@
             $('#nip_nahkoda').val('');
             $('#nama_kkm').val('');
             $('#nip_kkm').val('');
-            $('#link_ba').val('');
+            $('#trans_id_peminjam').val('');
+            $('#link_modul_temp').val('');
             $('#volume_sebelum').val('');
+            $('#volume_pengisian').val('');
+            $('#volume_sisa').val('');
+            $('#keterangan_jenis_bbm').val('BIO SOLAR');
+            $('#sebab_temp').val('');
+            $('#kapal_code_temp').val('');
+            $('#nama_nahkoda_temp').val('');
+            $('#pangkat_nahkoda_temp').val('');
+            $('#nip_nahkoda_temp').val('');
+            $('#nama_kkm_temp').val('');
+            $('#nip_kkm_temp').val('');
+            $('#an_nakhoda_temp').prop('checked', false);
+            $('#an_kkm_temp').prop('checked', false);
             calculateVolumeUsage(); // Hitung ulang setelah clear
         }
 
         function calculateVolumeUsage() {
-            const volumeSebelum = parseFloat($('#volume_sebelum').val().replace(/,/, '.')) || 0;
-            const volumePengisian = parseFloat($('#volume_pengisian').val().replace(/,/, '.')) || 0;
-            const volumePemakaian = parseFloat($('#volume_pemakaian').val().replace(/,/, '.')) || 0;
+            const volumeSebelum = parseFloat($('#volume_sebelum').val() || 0);
+            const volumePengisian = parseFloat($('#volume_pengisian').val() || 0);
 
-            const volumeSisa = (volumeSebelum + volumePengisian) - volumePemakaian;
-            // Gunakan formatNumber untuk menampilkan hasil, tapi pastikan input diset dengan . sebagai decimal
-            // Untuk input form, lebih baik menggunakan .
+            const volumeSisa = volumeSebelum + volumePengisian;
             $('#volume_sisa').val(volumeSisa.toFixed(2));
+        }
+
+        function loadBaPeminjamanDetails(transId) {
+            if (!transId) {
+                clearBaPeminjamanData();
+                return;
+            }
+
+            $.ajax({
+                url: '{{ route("ba-penerimaan-pinjaman-bbm.ba-data") }}'
+                , type: 'GET'
+                , data: {
+                    trans_id: transId
+                }
+                , success: function(response) {
+                    if (response.success && response.data.length > 0) {
+                        const data = response.data[0];
+                        $('#link_modul_temp').val(data.nomor_surat);
+                        $('#volume_sebelum').val(data.volume_sisa);
+                        $('#keterangan_jenis_bbm').val(data.keterangan_jenis_bbm);
+                        $('#sebab_temp').val(data.sebab_temp);
+                        $('#kapal_code_temp').val(data.kapal_code_temp);
+                        $('#nama_nahkoda_temp').val(data.nama_nahkoda_temp);
+                        $('#pangkat_nahkoda_temp').val(data.pangkat_nahkoda_temp);
+                        $('#nip_nahkoda_temp').val(data.nip_nahkoda_temp);
+                        $('#nama_kkm_temp').val(data.nama_kkm_temp);
+                        $('#nip_kkm_temp').val(data.nip_kkm_temp);
+                        $('#an_nakhoda_temp').prop('checked', data.an_nakhoda_temp == 1);
+                        $('#an_kkm_temp').prop('checked', data.an_kkm_temp == 1);
+                        calculateVolumeUsage();
+                    }
+                }
+                , error: function(xhr) {
+                    console.error('Error loading BA Peminjaman details:', xhr);
+                }
+            });
+        }
+
+        function clearBaPeminjamanData() {
+            $('#link_modul_temp').val('');
+            $('#volume_sebelum').val('');
+            $('#keterangan_jenis_bbm').val('BIO SOLAR');
+            $('#sebab_temp').val('');
+            $('#kapal_code_temp').val('');
+            $('#nama_nahkoda_temp').val('');
+            $('#pangkat_nahkoda_temp').val('');
+            $('#nip_nahkoda_temp').val('');
+            $('#nama_kkm_temp').val('');
+            $('#nip_kkm_temp').val('');
+            $('#an_nakhoda_temp').prop('checked', false);
+            $('#an_kkm_temp').prop('checked', false);
+            calculateVolumeUsage();
         }
 
         // --- Render Functions ---
@@ -753,12 +814,13 @@
         }
 
         function fillEditForm(data) {
-            // Reset form untuk memastikan semua field bersih (tapi jangan reset kapal_id dulu)
+            // Reset form dan set mode edit
+
             $('#baForm')[0].reset();
-            $('#modalTitle').text('Form Tambah BA Penerimaan Pinjaman BBM');
-            $('#submitBtn').html('<i class="fas fa-save me-2"></i>Simpan BA');
-            currentBaId = null;
-            currentEditMode = false;
+            $('#modalTitle').text('Edit BA Penerimaan Pinjaman BBM');
+            $('#submitBtn').html('<i class="fas fa-save me-2"></i>Update BA');
+            currentBaId = data.trans_id;
+            currentEditMode = true;
 
             // Set kapal_id terlebih dahulu sebelum loadKapalData
             $('#kapal_id').val(data.kapal ? data.kapal.m_kapal_id : '');
@@ -792,6 +854,19 @@
             $('#nip_nahkoda').val(data.nip_nahkoda || '');
             $('#nama_kkm').val(data.nama_kkm || '');
             $('#nip_kkm').val(data.nip_kkm || '');
+            $('#trans_id_peminjam').val(data.trans_id_peminjam || '');
+            $('#link_modul_temp').val(data.link_modul_temp || '');
+
+            // Fill data kapal pemberi (BA Peminjaman)
+            $('#kapal_code_temp').val(data.kapal_code_temp || '');
+            $('#sebab_temp').val(data.sebab_temp || '');
+            $('#nama_nahkoda_temp').val(data.nama_nahkoda_temp || '');
+            $('#pangkat_nahkoda_temp').val(data.pangkat_nahkoda_temp || '');
+            $('#nip_nahkoda_temp').val(data.nip_nahkoda_temp || '');
+            $('#nama_kkm_temp').val(data.nama_kkm_temp || '');
+            $('#nip_kkm_temp').val(data.nip_kkm_temp || '');
+            $('#an_nakhoda_temp').prop('checked', data.an_nakhoda_temp == 1);
+            $('#an_kkm_temp').prop('checked', data.an_kkm_temp == 1);
 
             // Set checkboxes dan pemicu perubahan untuk hidden input
             $('#an_staf').prop('checked', data.an_staf == 1).trigger('change');
@@ -841,9 +916,19 @@
                 }
             });
 
+            // BA Peminjaman berubah, load detail data
+            $('#trans_id_peminjam').on('change', function() {
+                const transId = $(this).val();
+                if (transId) {
+                    loadBaPeminjamanDetails(transId);
+                } else {
+                    clearBaPeminjamanData();
+                }
+            });
+
             // Volume calculation handlers
             // Mengganti `on('input')` dengan `on('change keyup')` dan .replace(/,/, '.')
-            $('#volume_sebelum, #volume_pengisian, #volume_pemakaian').on('change keyup', function() {
+            $('#volume_sebelum, #volume_pengisian').on('change keyup', function() {
                 // Bersihkan input dari karakter selain angka dan titik/koma
                 let val = $(this).val().replace(/[^\d.,]/g, '');
                 // Ganti koma dengan titik untuk perhitungan
@@ -1411,9 +1496,321 @@
                 }
             });
         };
+
+        // Initialize DataTable
+        function initDataTable() {
+            // Check if DataTable is available
+            if (typeof $.fn.DataTable === 'undefined') {
+                console.error('DataTable library is not loaded');
+                return;
+            }
+
+            // Check if table exists
+            if ($('#baTable').length === 0) {
+                console.error('Table #baTable not found');
+                return;
+            }
+
+            dataTable = $('#baTable').DataTable({
+                processing: true
+                , serverSide: true
+                , ajax: {
+                    url: '{{ route("ba-penerimaan-pinjaman-bbm.data") }}'
+                    , data: function(d) {
+                        d.search = $('#search').val();
+                        d.kapal = $('#kapal').val();
+                        d.date_from = $('#date_from').val();
+                        d.date_to = $('#date_to').val();
+                    }
+                }
+                , columns: [{
+                        data: 'DT_RowIndex'
+                        , name: 'DT_RowIndex'
+                        , orderable: false
+                        , searchable: false
+                    }
+                    , {
+                        data: 'nomor_surat'
+                        , name: 'nomor_surat'
+                    }
+                    , {
+                        data: 'kapal.nama_kapal'
+                        , name: 'kapal.nama_kapal'
+                    }
+                    , {
+                        data: 'tanggal_surat'
+                        , name: 'tanggal_surat'
+                    }
+                    , {
+                        data: 'volume_pengisian'
+                        , name: 'volume_pengisian'
+                    }
+                    , {
+                        data: 'keterangan_jenis_bbm'
+                        , name: 'keterangan_jenis_bbm'
+                    }
+                    , {
+                        data: 'action'
+                        , name: 'action'
+                        , orderable: false
+                        , searchable: false
+                    }
+                ]
+                , order: [
+                    [3, 'desc']
+                ]
+                , pageLength: 10
+                , responsive: true
+                , language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
+                }
+            });
+        }
+
+        // Load BA Peminjaman data
+        function loadBaPeminjamanData(kapalId) {
+            if (!kapalId) {
+                $('#trans_id_peminjam').html('<option value="">-- Pilih BA Peminjaman --</option>');
+                return;
+            }
+
+            $.ajax({
+                url: '{{ route("ba-penerimaan-pinjaman-bbm.ba-data") }}'
+                , type: 'GET'
+                , data: {
+                    kapal_id: kapalId
+                    , tanggal_surat: $('#tanggal_surat').val()
+                }
+                , success: function(response) {
+                    if (response.success) {
+                        const options = response.data.map(item =>
+                            `<option value="${item.trans_id}">${item.nomor_surat} - ${item.tanggal_surat} (${item.volume_pemakaian}L)</option>`
+                        );
+                        $('#trans_id_peminjam').html('<option value="">-- Pilih BA Peminjaman --</option>' + options.join(''));
+                    } else {
+                        $('#trans_id_peminjam').html('<option value="">-- Tidak ada BA Peminjaman --</option>');
+                    }
+                }
+                , error: function(xhr) {
+                    console.error('Error loading BA Peminjaman data:', xhr);
+                    $('#trans_id_peminjam').html('<option value="">-- Error loading data --</option>');
+                }
+            });
+        }
+
+        // Load kapal data
+        function loadKapalData(kapalId) {
+            $.ajax({
+                url: '{{ route("ba-penerimaan-pinjaman-bbm.kapal-data") }}'
+                , type: 'GET'
+                , data: {
+                    kapal_id: kapalId
+                }
+                , success: function(response) {
+                    if (response.success) {
+                        const data = response.data;
+                        $('#code_kapal').val(data.code_kapal);
+                        $('#alamat_upt').val(data.alamat_upt);
+                        $('#zona_waktu_surat').val(data.zona_waktu_upt);
+                        $('#jabatan_staf_pangkalan').val(data.jabatan_petugas);
+                        $('#nama_staf_pagkalan').val(data.nama_petugas);
+                        $('#nip_staf').val(data.nip_petugas);
+                        $('#nama_nahkoda').val(data.nama_nakoda);
+                        $('#nip_nahkoda').val(data.nip_nakoda);
+                        $('#nama_kkm').val(data.nama_kkm);
+                        $('#nip_kkm').val(data.nip_kkm);
+                    }
+                }
+                , error: function(xhr) {
+                    console.error('Error loading kapal data:', xhr);
+                }
+            });
+        }
+
+        // Load BA Peminjaman details
+        function loadBaPeminjamanDetails(transId) {
+            if (!transId) {
+                clearBaPeminjamanData();
+                return;
+            }
+
+            $.ajax({
+                url: '{{ route("ba-penerimaan-pinjaman-bbm.ba-data") }}'
+                , type: 'GET'
+                , data: {
+                    trans_id: transId
+                }
+                , success: function(response) {
+                    if (response.success && response.data.length > 0) {
+                        const data = response.data[0];
+                        $('#link_modul_temp').val(data.nomor_surat);
+                        $('#volume_sebelum').val(data.volume_sisa);
+                        $('#keterangan_jenis_bbm').val(data.keterangan_jenis_bbm);
+                        $('#sebab_temp').val(data.sebab_temp);
+                        $('#kapal_code_temp').val(data.kapal_code_temp);
+                        $('#nama_nahkoda_temp').val(data.nama_nahkoda_temp);
+                        $('#pangkat_nahkoda_temp').val(data.pangkat_nahkoda_temp);
+                        $('#nip_nahkoda_temp').val(data.nip_nahkoda_temp);
+                        $('#nama_kkm_temp').val(data.nama_kkm_temp);
+                        $('#nip_kkm_temp').val(data.nip_kkm_temp);
+                        $('#an_nakhoda_temp').prop('checked', data.an_nakhoda_temp == 1);
+                        $('#an_kkm_temp').prop('checked', data.an_kkm_temp == 1);
+                    }
+                }
+                , error: function(xhr) {
+                    console.error('Error loading BA Peminjaman details:', xhr);
+                }
+            });
+        }
+
+        // Clear BA Peminjaman data
+        function clearBaPeminjamanData() {
+            $('#link_modul_temp').val('');
+            $('#volume_sebelum').val('');
+            $('#keterangan_jenis_bbm').val('BIO SOLAR');
+            $('#sebab_temp').val('');
+            $('#kapal_code_temp').val('');
+            $('#nama_nahkoda_temp').val('');
+            $('#pangkat_nahkoda_temp').val('');
+            $('#nip_nahkoda_temp').val('');
+            $('#nama_kkm_temp').val('');
+            $('#nip_kkm_temp').val('');
+            $('#an_nakhoda_temp').prop('checked', false);
+            $('#an_kkm_temp').prop('checked', false);
+        }
+
+        // Calculate volume sisa
+        function calculateVolumeSisa() {
+            const volumeSebelum = parseFloat($('#volume_sebelum').val()) || 0;
+            const volumePengisian = parseFloat($('#volume_pengisian').val()) || 0;
+            const volumeSisa = volumeSebelum + volumePengisian;
+            $('#volume_sisa').val(volumeSisa.toFixed(2));
+        }
+
+        // Event listeners
+        $('#kapal_id').on('change', function() {
+            const kapalId = $(this).val();
+            if (kapalId) {
+                loadKapalData(kapalId);
+                loadBaPeminjamanData(kapalId);
+            } else {
+                $('#code_kapal').val('');
+                $('#alamat_upt').val('');
+                $('#trans_id_peminjam').html('<option value="">-- Pilih BA Peminjaman --</option>');
+                clearBaPeminjamanData();
+            }
+        });
+
+        $('#trans_id_peminjam').on('change', function() {
+            const transId = $(this).val();
+            loadBaPeminjamanDetails(transId);
+        });
+
+        $('#volume_pengisian').on('input', function() {
+            calculateVolumeSisa();
+        });
+
+        // Form submission
+        $('#baForm').on('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const url = currentEditMode ?
+                `{{ url('ba-penerimaan-pinjaman-bbm') }}/${currentBaId}` :
+                '{{ route("ba-penerimaan-pinjaman-bbm.store") }}';
+            const method = currentEditMode ? 'PUT' : 'POST';
+
+            $.ajax({
+                url: url
+                , type: method
+                , data: formData
+                , processData: false
+                , contentType: false
+                , success: function(response) {
+                    if (response.success) {
+                        $('#baModal').modal('hide');
+                        dataTable.ajax.reload();
+                        Swal.fire({
+                            icon: 'success'
+                            , title: 'Berhasil!'
+                            , text: response.message
+                            , timer: 2000
+                            , showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error'
+                            , title: 'Gagal!'
+                            , text: response.message
+                        });
+                    }
+                }
+                , error: function(xhr) {
+                    let errorMessage = 'Terjadi kesalahan saat menyimpan data';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        icon: 'error'
+                        , title: 'Gagal!'
+                        , text: errorMessage
+                    });
+                }
+            });
+        });
+
+        // Create BA button
+        $('#createBaBtn').on('click', function() {
+            currentEditMode = false;
+            currentBaId = null;
+            $('#baForm')[0].reset();
+            $('#modalTitle').text('Tambah BA Penerimaan Pinjaman BBM');
+            $('#submitBtn').html('<i class="fas fa-save me-2"></i>Simpan BA');
+            $('#baModal').modal('show');
+        });
+
+        // Edit BA
+        $(document).on('click', '.edit-btn', function() {
+            const id = $(this).data('id');
+            currentEditMode = true;
+            currentBaId = id;
+
+            $.ajax({
+                url: `{{ url('ba-penerimaan-pinjaman-bbm') }}/${id}`
+                , type: 'GET'
+                , success: function(response) {
+                    if (response.success) {
+                        fillEditForm(response.data);
+                        $('#baModal').modal('show');
+                    }
+                }
+                , error: function(xhr) {
+                    Swal.fire({
+                        icon: 'error'
+                        , title: 'Gagal!'
+                        , text: 'Terjadi kesalahan saat mengambil data'
+                    });
+                }
+            });
+        });
+
+        // Initialize DataTable setelah semua setup selesai
+        // Wait for DataTable library to load
+        function tryInitDataTable() {
+            if (typeof $.fn.DataTable !== 'undefined') {
+                initDataTable();
+            } else {
+                // Wait a bit and try again
+                setTimeout(tryInitDataTable, 500);
+            }
+        }
+
+        // Start trying to initialize DataTable
+        tryInitDataTable();
     });
 
 </script>
+
 @endsection
 
 @section('modals')
@@ -1806,7 +2203,9 @@
 </div>
 
 <!-- Modal Upload Dokumen -->
-<div id="uploadModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999] hidden">
+<div id="uploadModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full hidden z-[99999]">
+    <div class="flex items-center justify-center min-h-full py-8">
+    
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4">
         <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
             <h3 id="uploadModalTitle" class="text-lg font-semibold text-gray-900 dark:text-white">Upload Dokumen Pendukung</h3>
@@ -1854,9 +2253,13 @@
         </form>
     </div>
 </div>
+</div>
 
 <!-- Modal View Dokumen -->
-<div id="viewDocumentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[99999] hidden">
+<div id="viewDocumentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full hidden z-[99999]">
+
+    <div class="flex items-center justify-center min-h-full py-8">
+   
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
         <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Dokumen Pendukung</h3>
@@ -1881,365 +2284,5 @@
         </div>
     </div>
 </div>
-
-@endsection
-
-@section('scripts')
-<script>
-    $(document).ready(function() {
-        let currentEditMode = false;
-        let currentBaId = null;
-        let dataTable;
-
-        // Initialize DataTable
-        function initDataTable() {
-            dataTable = $('#baTable').DataTable({
-                processing: true
-                , serverSide: true
-                , ajax: {
-                    url: '{{ route("ba-penerimaan-pinjaman-bbm.data") }}'
-                    , data: function(d) {
-                        d.search = $('#search').val();
-                        d.kapal = $('#kapal').val();
-                        d.date_from = $('#date_from').val();
-                        d.date_to = $('#date_to').val();
-                    }
-                }
-                , columns: [{
-                        data: 'DT_RowIndex'
-                        , name: 'DT_RowIndex'
-                        , orderable: false
-                        , searchable: false
-                    }
-                    , {
-                        data: 'nomor_surat'
-                        , name: 'nomor_surat'
-                    }
-                    , {
-                        data: 'kapal.nama_kapal'
-                        , name: 'kapal.nama_kapal'
-                    }
-                    , {
-                        data: 'tanggal_surat'
-                        , name: 'tanggal_surat'
-                    }
-                    , {
-                        data: 'volume_pengisian'
-                        , name: 'volume_pengisian'
-                    }
-                    , {
-                        data: 'keterangan_jenis_bbm'
-                        , name: 'keterangan_jenis_bbm'
-                    }
-                    , {
-                        data: 'action'
-                        , name: 'action'
-                        , orderable: false
-                        , searchable: false
-                    }
-                ]
-                , order: [
-                    [3, 'desc']
-                ]
-                , pageLength: 10
-                , responsive: true
-                , language: {
-                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json'
-                }
-            });
-        }
-
-        // Load BA Peminjaman data
-        function loadBaPeminjamanData(kapalId) {
-            if (!kapalId) {
-                $('#trans_id_peminjam').html('<option value="">-- Pilih BA Peminjaman --</option>');
-                return;
-            }
-
-            $.ajax({
-                url: '{{ route("ba-penerimaan-pinjaman-bbm.ba-data") }}'
-                , type: 'GET'
-                , data: {
-                    kapal_id: kapalId
-                    , tanggal_surat: $('#tanggal_surat').val()
-                }
-                , success: function(response) {
-                    if (response.success) {
-                        const options = response.data.map(item =>
-                            `<option value="${item.trans_id}">${item.nomor_surat} - ${item.tanggal_surat} (${item.volume_pemakaian}L)</option>`
-                        );
-                        $('#trans_id_peminjam').html('<option value="">-- Pilih BA Peminjaman --</option>' + options.join(''));
-                    } else {
-                        $('#trans_id_peminjam').html('<option value="">-- Tidak ada BA Peminjaman --</option>');
-                    }
-                }
-                , error: function(xhr) {
-                    console.error('Error loading BA Peminjaman data:', xhr);
-                    $('#trans_id_peminjam').html('<option value="">-- Error loading data --</option>');
-                }
-            });
-        }
-
-        // Load kapal data
-        function loadKapalData(kapalId) {
-            $.ajax({
-                url: '{{ route("ba-penerimaan-pinjaman-bbm.kapal-data") }}'
-                , type: 'GET'
-                , data: {
-                    kapal_id: kapalId
-                }
-                , success: function(response) {
-                    if (response.success) {
-                        const data = response.data;
-                        $('#code_kapal').val(data.code_kapal);
-                        $('#alamat_upt').val(data.alamat_upt);
-                        $('#zona_waktu_surat').val(data.zona_waktu_upt);
-                        $('#jabatan_staf_pangkalan').val(data.jabatan_petugas);
-                        $('#nama_staf_pagkalan').val(data.nama_petugas);
-                        $('#nip_staf').val(data.nip_petugas);
-                        $('#nama_nahkoda').val(data.nama_nakoda);
-                        $('#nip_nahkoda').val(data.nip_nakoda);
-                        $('#nama_kkm').val(data.nama_kkm);
-                        $('#nip_kkm').val(data.nip_kkm);
-                    }
-                }
-                , error: function(xhr) {
-                    console.error('Error loading kapal data:', xhr);
-                }
-            });
-        }
-
-        // Load BA Peminjaman details
-        function loadBaPeminjamanDetails(transId) {
-            if (!transId) {
-                clearBaPeminjamanData();
-                return;
-            }
-
-            $.ajax({
-                url: '{{ route("ba-penerimaan-pinjaman-bbm.ba-data") }}'
-                , type: 'GET'
-                , data: {
-                    trans_id: transId
-                }
-                , success: function(response) {
-                    if (response.success && response.data.length > 0) {
-                        const data = response.data[0];
-                        $('#link_modul_temp').val(data.nomor_surat);
-                        $('#volume_sebelum').val(data.volume_sisa);
-                        $('#keterangan_jenis_bbm').val(data.keterangan_jenis_bbm);
-                        $('#sebab_temp').val(data.sebab_temp);
-                        $('#kapal_code_temp').val(data.kapal_code_temp);
-                        $('#nama_nahkoda_temp').val(data.nama_nahkoda_temp);
-                        $('#pangkat_nahkoda_temp').val(data.pangkat_nahkoda_temp);
-                        $('#nip_nahkoda_temp').val(data.nip_nahkoda_temp);
-                        $('#nama_kkm_temp').val(data.nama_kkm_temp);
-                        $('#nip_kkm_temp').val(data.nip_kkm_temp);
-                        $('#an_nakhoda_temp').prop('checked', data.an_nakhoda_temp == 1);
-                        $('#an_kkm_temp').prop('checked', data.an_kkm_temp == 1);
-                    }
-                }
-                , error: function(xhr) {
-                    console.error('Error loading BA Peminjaman details:', xhr);
-                }
-            });
-        }
-
-        // Clear BA Peminjaman data
-        function clearBaPeminjamanData() {
-            $('#link_modul_temp').val('');
-            $('#volume_sebelum').val('');
-            $('#keterangan_jenis_bbm').val('BIO SOLAR');
-            $('#sebab_temp').val('');
-            $('#kapal_code_temp').val('');
-            $('#nama_nahkoda_temp').val('');
-            $('#pangkat_nahkoda_temp').val('');
-            $('#nip_nahkoda_temp').val('');
-            $('#nama_kkm_temp').val('');
-            $('#nip_kkm_temp').val('');
-            $('#an_nakhoda_temp').prop('checked', false);
-            $('#an_kkm_temp').prop('checked', false);
-        }
-
-        // Calculate volume sisa
-        function calculateVolumeSisa() {
-            const volumeSebelum = parseFloat($('#volume_sebelum').val()) || 0;
-            const volumePengisian = parseFloat($('#volume_pengisian').val()) || 0;
-            const volumeSisa = volumeSebelum + volumePengisian;
-            $('#volume_sisa').val(volumeSisa.toFixed(2));
-        }
-
-        // Event listeners
-        $('#kapal_id').on('change', function() {
-            const kapalId = $(this).val();
-            if (kapalId) {
-                loadKapalData(kapalId);
-                loadBaPeminjamanData(kapalId);
-            } else {
-                $('#code_kapal').val('');
-                $('#alamat_upt').val('');
-                $('#trans_id_peminjam').html('<option value="">-- Pilih BA Peminjaman --</option>');
-                clearBaPeminjamanData();
-            }
-        });
-
-        $('#trans_id_peminjam').on('change', function() {
-            const transId = $(this).val();
-            loadBaPeminjamanDetails(transId);
-        });
-
-        $('#volume_pengisian').on('input', function() {
-            calculateVolumeSisa();
-        });
-
-        // Form submission
-        $('#baForm').on('submit', function(e) {
-            e.preventDefault();
-
-            const formData = new FormData(this);
-            const url = currentEditMode ?
-                `{{ url('ba-penerimaan-pinjaman-bbm') }}/${currentBaId}` :
-                '{{ route("ba-penerimaan-pinjaman-bbm.store") }}';
-            const method = currentEditMode ? 'PUT' : 'POST';
-
-            $.ajax({
-                url: url
-                , type: method
-                , data: formData
-                , processData: false
-                , contentType: false
-                , success: function(response) {
-                    if (response.success) {
-                        $('#baModal').modal('hide');
-                        dataTable.ajax.reload();
-                        Swal.fire({
-                            icon: 'success'
-                            , title: 'Berhasil!'
-                            , text: response.message
-                            , timer: 2000
-                            , showConfirmButton: false
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error'
-                            , title: 'Gagal!'
-                            , text: response.message
-                        });
-                    }
-                }
-                , error: function(xhr) {
-                    let errorMessage = 'Terjadi kesalahan saat menyimpan data';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        errorMessage = xhr.responseJSON.message;
-                    }
-                    Swal.fire({
-                        icon: 'error'
-                        , title: 'Gagal!'
-                        , text: errorMessage
-                    });
-                }
-            });
-        });
-
-        // Create BA button
-        $('#createBaBtn').on('click', function() {
-            currentEditMode = false;
-            currentBaId = null;
-            $('#baForm')[0].reset();
-            $('#modalTitle').text('Tambah BA Penerimaan Pinjaman BBM');
-            $('#submitBtn').html('<i class="fas fa-save me-2"></i>Simpan BA');
-            $('#baModal').modal('show');
-        });
-
-        // Edit BA
-        $(document).on('click', '.edit-btn', function() {
-            const id = $(this).data('id');
-            currentEditMode = true;
-            currentBaId = id;
-
-            $.ajax({
-                url: `{{ url('ba-penerimaan-pinjaman-bbm') }}/${id}`
-                , type: 'GET'
-                , success: function(response) {
-                    if (response.success) {
-                        fillEditForm(response.data);
-                        $('#baModal').modal('show');
-                    }
-                }
-                , error: function(xhr) {
-                    Swal.fire({
-                        icon: 'error'
-                        , title: 'Gagal!'
-                        , text: 'Terjadi kesalahan saat mengambil data'
-                    });
-                }
-            });
-        });
-
-        // Fill edit form
-        function fillEditForm(data) {
-            $('#baForm')[0].reset();
-            $('#modalTitle').text('Edit BA Penerimaan Pinjaman BBM');
-            $('#submitBtn').html('<i class="fas fa-save me-2"></i>Update BA');
-
-            // Fill form fields
-            $('#kapal_id').val(data.kapal ? data.kapal.m_kapal_id : '');
-            $('#code_kapal').val(data.kapal_code || '');
-            $('#alamat_upt').val(data.alamat_upt || '');
-            $('#lokasi_surat').val(data.lokasi_surat || '');
-            $('#nomor_surat').val(data.nomor_surat || '');
-            $('#tanggal_surat').val(formatDateForInput(data.tanggal_surat) || '');
-            $('#jam_surat').val(formatTimeForInput(data.jam_surat) || '');
-            $('#zona_waktu_surat').val(data.zona_waktu_surat || '');
-            $('#trans_id_peminjam').val(data.trans_id_peminjam || '');
-            $('#link_modul_temp').val(data.link_modul_temp || '');
-            $('#volume_sebelum').val(data.volume_sebelum || '');
-            $('#volume_pengisian').val(data.volume_pengisian || '');
-            $('#volume_sisa').val(data.volume_sisa || '');
-            $('#keterangan_jenis_bbm').val(data.keterangan_jenis_bbm || '');
-            $('#jabatan_staf_pangkalan').val(data.jabatan_staf_pangkalan || '');
-            $('#nama_staf_pagkalan').val(data.nama_staf_pagkalan || '');
-            $('#nip_staf').val(data.nip_staf || '');
-            $('#nama_nahkoda').val(data.nama_nahkoda || '');
-            $('#nip_nahkoda').val(data.nip_nahkoda || '');
-            $('#nama_kkm').val(data.nama_kkm || '');
-            $('#nip_kkm').val(data.nip_kkm || '');
-            $('#an_staf').prop('checked', data.an_staf == 1);
-            $('#an_nakhoda').prop('checked', data.an_nakhoda == 1);
-            $('#an_kkm').prop('checked', data.an_kkm == 1);
-
-            // Fill BA Peminjaman data
-            $('#kapal_code_temp').val(data.kapal_code_temp || '');
-            $('#sebab_temp').val(data.sebab_temp || '');
-            $('#nama_nahkoda_temp').val(data.nama_nahkoda_temp || '');
-            $('#pangkat_nahkoda_temp').val(data.pangkat_nahkoda_temp || '');
-            $('#nip_nahkoda_temp').val(data.nip_nahkoda_temp || '');
-            $('#nama_kkm_temp').val(data.nama_kkm_temp || '');
-            $('#nip_kkm_temp').val(data.nip_kkm_temp || '');
-            $('#an_nakhoda_temp').prop('checked', data.an_nakhoda_temp == 1);
-            $('#an_kkm_temp').prop('checked', data.an_kkm_temp == 1);
-
-            // Load BA Peminjaman dropdown
-            if (data.kapal) {
-                loadBaPeminjamanData(data.kapal.m_kapal_id);
-            }
-        }
-
-        // Utility functions
-        function formatDateForInput(dateString) {
-            if (!dateString) return '';
-            const date = new Date(dateString);
-            return date.toISOString().split('T')[0];
-        }
-
-        function formatTimeForInput(timeString) {
-            if (!timeString) return '';
-            return timeString.substring(0, 5);
-        }
-
-        // Initialize
-        initDataTable();
-    });
-
-</script>
+</div>
 @endsection

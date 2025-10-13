@@ -94,7 +94,7 @@
                         </a>
                         <div class="overflow-hidden transform translate transition-all duration-300 ease-in-out" :class="(selected === 'Monitoring BBM') ? 'block' :'hidden'">
                             <ul :class="sidebarToggle ? 'lg:hidden' : 'flex'" class="flex flex-col gap-1 mt-2 menu-dropdown pl-9 transition-all duration-300 ease-in-out">
-                                <li><a href="{{ route('bbm.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Data BBM</a></li>
+                                {{-- <li><a href="{{ route('bbm.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Data BBM</a></li> --}}
                                 <li><a href="{{ route('ba-sebelum-pengisian.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Sebelum Pengisian</a></li>
                                 <li><a href="{{ route('ba-sebelum-pelayaran.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Sebelum Pelayaran</a></li>
                                 <li><a href="{{ route('ba-sesudah-pelayaran.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Sesudah Pelayaran</a></li>
@@ -146,11 +146,11 @@
                         </a>
                         <div class="overflow-hidden transform translate transition-all duration-300 ease-in-out" :class="(selected === 'Monitoring HIBAH') ? 'block' :'hidden'">
                             <ul :class="sidebarToggle ? 'lg:hidden' : 'flex'" class="flex flex-col gap-1 mt-2 menu-dropdown pl-9 transition-all duration-300 ease-in-out">
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Pemberi Hibah BBM Kapal Pengawas</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Penerima Hibah BBM Kapal Pengawas</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Pemberi Hibah BBM Dengan Instansi Lain</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Penerima Hibah BBM Dengan Instansi Lain</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Penerimaan Hibah BBM</a></li>
+                                <li><a href="{{ route('ba-pemberi-hibah-bbm-kapal-pengawas.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Pemberi Hibah BBM Kapal Pengawas</a></li>
+                                <li><a href="{{ route('ba-penerima-hibah-bbm-kapal-pengawas.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Penerima Hibah BBM Kapal Pengawas</a></li>
+                                <li><a href="{{ route('ba-pemberi-hibah-bbm-dengan-instansi-lain.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Pemberi Hibah BBM Dengan Instansi Lain</a></li>
+                                <li><a href="{{ route('ba-penerima-hibah-bbm-dengan-instansi-lain.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Penerima Hibah BBM Dengan Instansi Lain</a></li>
+                                <li><a href="{{ route('ba-penerimaan-hibah-bbm.index') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">BA Penerimaan Hibah BBM</a></li>
                             </ul>
                         </div>
                     </li>
@@ -169,16 +169,16 @@
                         </a>
                         <div class="overflow-hidden transform translate transition-all duration-300 ease-in-out" :class="(selected === 'Anggaran dan Realisasi') ? 'block' :'hidden'">
                             <ul :class="sidebarToggle ? 'lg:hidden' : 'flex'" class="flex flex-col gap-1 mt-2 menu-dropdown pl-9 transition-all duration-300 ease-in-out">
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Entri Anggaran</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Perubahan Anggaran</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Approval Anggaran</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Entry Realisasi</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Approval Realisasi</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Pembatalan Realisasi</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Tanggal SPPD</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Entry Anggaran Internal</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Approval Anggaran Internal</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Pembatalan Anggaran Internal</a></li>
+                                <li><a href="{{ route('anggaran.entri-anggaran') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Entri Anggaran</a></li>
+                                <l i><a href="{{ route('anggaran.perubahan-anggaran') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Perubahan Anggaran</a></l>
+                                <li><a href="{{ route('anggaran.approval-anggaran') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Approval Anggaran</a></li>
+                                <li><a href="{{ route('anggaran.entry-realisasi') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Entry Realisasi</a></li>
+                                <li><a href="{{ route('anggaran.approval-realisasi') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Approval Realisasi</a></li>
+                                <li><a href="{{ route('anggaran.pembatalan-realisasi') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Pembatalan Realisasi</a></li>
+                                <li><a href="{{ route('anggaran.tanggal-sppd') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Tanggal SPPD</a></li>
+                                <li><a href="{{ route('anggaran.entry-anggaran-internal') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Entry Anggaran Internal</a></li>
+                                <li><a href="{{ route('anggaran.approval-anggaran-internal') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Approval Anggaran Internal</a></li>
+                                <li><a href="{{ route('anggaran.pembatalan-anggaran-internal') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Pembatalan Anggaran Internal</a></li>
                             </ul>
                         </div>
                     </li>
@@ -200,20 +200,20 @@
                         </a>
                         <div class="overflow-hidden transform translate transition-all duration-300 ease-in-out" :class="(selected === 'Laporan BBM') ? 'block' :'hidden'">
                             <ul :class="sidebarToggle ? 'lg:hidden' : 'flex'" class="flex flex-col gap-1 mt-2 menu-dropdown pl-9 transition-all duration-300 ease-in-out">
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">LAP Total Penerimaan & Penggunaan BBM</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">LAP Detail Penggunaan & Penerimaan BBM</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">History Penerimaan & Penggunaan BBM</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan BBM Akhir Bulan</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Penerimaan BBM</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Penitipan BBM</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Pengembalian BBM</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Peminjaman</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Pengembalian Pinjaman</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Pinjaman Belum di Kembalikan</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Hibah Antar Kapal Pengawas</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Pemberi Hibah BBM Instansi Lain</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Penerima Hibah BBM Instansi Lain</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Penerimaan Hibah BBM</a></li>
+                                <li><a href="{{ route('laporan-bbm.total-penerimaan-penggunaan') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">LAP Total Penerimaan & Penggunaan BBM</a></li>
+                                <li><a href="{{ route('laporan-bbm.detail-penggunaan-penerimaan') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">LAP Detail Penggunaan & Penerimaan BBM</a></li>
+                                <li><a href="{{ route('laporan-bbm.history-penerimaan-penggunaan') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">History Penerimaan & Penggunaan BBM</a></li>
+                                <li><a href="{{ route('laporan-bbm.akhir-bulan') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan BBM Akhir Bulan</a></li>
+                                <li><a href="{{ route('laporan-bbm.penerimaan') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Penerimaan BBM</a></li>
+                                <li><a href="{{ route('laporan-bbm.penitipan') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Penitipan BBM</a></li>
+                                <li><a href="{{ route('laporan-bbm.pengembalian') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Pengembalian BBM</a></li>
+                                <li><a href="{{ route('laporan-bbm.peminjaman') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Peminjaman</a></li>
+                                <li><a href="{{ route('laporan-bbm.pengembalian-pinjaman') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Pengembalian Pinjaman</a></li>
+                                <li><a href="{{ route('laporan-bbm.pinjaman-belum-dikembalikan') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Pinjaman Belum di Kembalikan</a></li>
+                                <li><a href="{{ route('laporan-bbm.hibah-antar-kapal-pengawas') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Hibah Antar Kapal Pengawas</a></li>
+                                <li><a href="{{ route('laporan-bbm.pemberi-hibah-instansi-lain') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Pemberi Hibah BBM Instansi Lain</a></li>
+                                <li><a href="{{ route('laporan-bbm.penerima-hibah-instansi-lain') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Penerima Hibah BBM Instansi Lain</a></li>
+                                <li><a href="{{ route('laporan-bbm.penerimaan-hibah') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Penerimaan Hibah BBM</a></li>
                             </ul>
                         </div>
                     </li>
@@ -235,13 +235,13 @@
                         </a>
                         <div class="overflow-hidden transform translate transition-all duration-300 ease-in-out" :class="(selected === 'Laporan Anggaran') ? 'block' :'hidden'">
                             <ul :class="sidebarToggle ? 'lg:hidden' : 'flex'" class="flex flex-col gap-1 mt-2 menu-dropdown pl-9 transition-all duration-300 ease-in-out">
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Anggaran</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Riwayat Anggaran & Realisasi ALL</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Realisasi per Periode</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Transaksi Realisasi UPT</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Transaksi Perubahan Anggaran Internal UPT</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Berita Acara Pembayaran Tagihan</a></li>
-                                <li><a href="#" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Verifikasi Tagihan</a></li>
+                                <li><a href="{{ route('laporan-anggaran.anggaran') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Anggaran</a></li>
+                                <li><a href="{{ route('laporan-anggaran.riwayat-all') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Riwayat Anggaran & Realisasi ALL</a></li>
+                                <li><a href="{{ route('laporan-anggaran.realisasi-periode') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Realisasi per Periode</a></li>
+                                <li><a href="{{ route('laporan-anggaran.transaksi-realisasi-upt') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Transaksi Realisasi UPT</a></li>
+                                <li><a href="{{ route('laporan-anggaran.perubahan-anggaran-internal') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Transaksi Perubahan Anggaran Internal UPT</a></li>
+                                <li><a href="{{ route('laporan-anggaran.berita-acara-pembayaran') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Berita Acara Pembayaran Tagihan</a></li>
+                                <li><a href="{{ route('laporan-anggaran.verifikasi-tagihan') }}" class="menu-dropdown-item group menu-dropdown-item-inactive">Laporan Verifikasi Tagihan</a></li>
                             </ul>
                         </div>
                     </li>

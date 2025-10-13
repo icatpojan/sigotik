@@ -10,12 +10,20 @@
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Manajemen UPT</h1>
             <p class="text-gray-600 dark:text-gray-400">Kelola data Unit Pelaksana Teknis</p>
         </div>
-        <button id="createUptBtn" class="inline-flex items-center px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 dark:border-blue-700 dark:hover:border-blue-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            Tambah UPT
-        </button>
+        <div class="flex gap-2">
+            <button id="helpBtn" class="inline-flex items-center px-4 py-2 text-green-600 bg-green-50 hover:bg-green-100 border border-green-200 hover:border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50 dark:border-green-700 dark:hover:border-green-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Bantuan
+            </button>
+            <button id="createUptBtn" class="inline-flex items-center px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 dark:border-blue-700 dark:hover:border-blue-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Tambah UPT
+            </button>
+        </div>
     </div>
 
     <!-- Filter and UPTs Table in One Card -->
@@ -103,7 +111,182 @@
     </div>
 </div>
 
+<!-- Help Modal -->
+<div id="helpModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full hidden z-[99999]">
+    <div class="relative mx-auto p-5 border w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 shadow-lg rounded-lg bg-white dark:bg-gray-800 mt-10 mb-10 max-h-[90vh] overflow-y-auto help-modal-scroll">
+        <div class="mt-3">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between pb-4">
+                <h3 class="text-xl font-medium text-gray-900 dark:text-white">Panduan Manajemen UPT</h3>
+                <button id="closeHelpModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="space-y-6">
+                <!-- Overview -->
+                <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
+                    <h4 class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">📋 Overview</h4>
+                    <p class="text-blue-800 dark:text-blue-200">
+                        Halaman ini untuk mengelola data Unit Pelaksana Teknis (UPT). Anda dapat menambah, mengedit, melihat detail, dan menghapus data UPT.
+                    </p>
+                </div>
+
+                <!-- Features -->
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">🔧 Fitur Utama</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">🔍 Pencarian & Filter</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Cari UPT berdasarkan nama, kode, atau kota. Gunakan filter untuk menemukan data dengan cepat.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">➕ Tambah UPT</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Klik tombol "Tambah UPT" untuk menambahkan data UPT baru.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">✏️ Edit UPT</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Klik tombol edit untuk mengubah data UPT yang sudah ada.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">👁️ Lihat Detail</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Klik tombol detail untuk melihat informasi lengkap UPT.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">🗑️ Hapus UPT</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Klik tombol hapus untuk menghapus data UPT (dengan konfirmasi).
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">📄 Pagination</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Navigasi halaman untuk melihat data lebih banyak.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Fields -->
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">📝 Field Form UPT</h4>
+                    <div class="space-y-3">
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">🏢 Informasi Dasar</h5>
+                            <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                <li>• <strong>Nama UPT:</strong> Nama lengkap Unit Pelaksana Teknis</li>
+                                <li>• <strong>Kode UPT:</strong> Kode unik untuk identifikasi UPT</li>
+                                <li>• <strong>Kota:</strong> Lokasi kota UPT</li>
+                                <li>• <strong>Alamat:</strong> Alamat lengkap UPT</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">👤 Informasi Petugas</h5>
+                            <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                <li>• <strong>Nama Petugas:</strong> Nama petugas yang bertanggung jawab</li>
+                                <li>• <strong>Jabatan Petugas:</strong> Jabatan atau posisi petugas</li>
+                                <li>• <strong>Pangkat Petugas:</strong> Pangkat atau golongan petugas</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tips -->
+                <div class="bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-lg">
+                    <h4 class="text-lg font-semibold text-yellow-900 dark:text-yellow-100 mb-2">💡 Tips</h4>
+                    <ul class="text-yellow-800 dark:text-yellow-200 space-y-1">
+                        <li>• Gunakan pencarian untuk menemukan UPT tertentu dengan cepat</li>
+                        <li>• Pastikan kode UPT unik dan tidak duplikat</li>
+                        <li>• Isi semua field yang wajib diisi (bertanda *)</li>
+                        <li>• Gunakan pagination untuk melihat data lebih banyak</li>
+                        <li>• Klik detail untuk melihat informasi lengkap UPT</li>
+                        <li>• Hapus data dengan hati-hati karena tidak dapat dibatalkan</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <button id="closeHelpModalBtn" class="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+<style>
+    /* Custom scrollbar for help modal */
+    .help-modal-scroll::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .help-modal-scroll::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .help-modal-scroll::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 4px;
+    }
+
+    .help-modal-scroll::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+
+    /* Dark mode scrollbar */
+    .dark .help-modal-scroll::-webkit-scrollbar-track {
+        background: #374151;
+    }
+
+    .dark .help-modal-scroll::-webkit-scrollbar-thumb {
+        background: #6b7280;
+    }
+
+    .dark .help-modal-scroll::-webkit-scrollbar-thumb:hover {
+        background: #9ca3af;
+    }
+
+</style>
+
+<script>
+    // Configure Toastr
+    toastr.options = {
+        "closeButton": true
+        , "debug": false
+        , "newestOnTop": false
+        , "progressBar": true
+        , "positionClass": "toast-top-right"
+        , "preventDuplicates": false
+        , "onclick": null
+        , "showDuration": "300"
+        , "hideDuration": "1000"
+        , "timeOut": "5000"
+        , "extendedTimeOut": "1000"
+        , "showEasing": "swing"
+        , "hideEasing": "linear"
+        , "showMethod": "fadeIn"
+        , "hideMethod": "fadeOut"
+    };
+
+</script>
+
 <script>
     let currentPage = 1;
     let currentFilters = {};
@@ -111,6 +294,16 @@
     $(document).ready(function() {
         // Load initial data
         loadUpts();
+
+        // Help button
+        $('#helpBtn').click(function() {
+            $('#helpModal').removeClass('hidden').addClass('flex items-center justify-center');
+        });
+
+        // Help modal controls
+        $('#closeHelpModal, #closeHelpModalBtn').click(function() {
+            $('#helpModal').addClass('hidden').removeClass('flex items-center justify-center');
+        });
 
         // Modal controls
         $('#createUptBtn, #createFirstUptBtn').click(function() {
@@ -166,10 +359,11 @@
                 , contentType: false
                 , success: function(response) {
                     if (response.success) {
+                        toastr.success(response.message);
                         $('#uptModal').addClass('hidden');
                         loadUpts(); // Reload data instead of page reload
                     } else {
-                        alert(response.message);
+                        toastr.error(response.message);
                     }
                 }
                 , error: function(xhr) {
@@ -182,9 +376,9 @@
                         for (let field in errors) {
                             errorMessage += `- ${errors[field][0]}\n`;
                         }
-                        alert(errorMessage);
+                        toastr.error(errorMessage);
                     } else {
-                        alert('Terjadi kesalahan saat menyimpan data');
+                        toastr.error('Terjadi kesalahan saat menyimpan data');
                     }
                 }
             });
@@ -412,7 +606,7 @@
                     // Session expired, redirect to login
                     window.location.href = '/login';
                 } else {
-                    alert('Terjadi kesalahan saat mengambil data UPT');
+                    toastr.error('Terjadi kesalahan saat mengambil data UPT');
                 }
             }
         });
@@ -485,7 +679,7 @@
                     // Session expired, redirect to login
                     window.location.href = '/login';
                 } else {
-                    alert('Terjadi kesalahan saat mengambil data UPT');
+                    toastr.error('Terjadi kesalahan saat mengambil data UPT');
                 }
             }
         });
@@ -502,9 +696,10 @@
                 }
                 , success: function(response) {
                     if (response.success) {
+                        toastr.success(response.message);
                         loadUpts(currentPage); // Reload current page instead of page reload
                     } else {
-                        alert(response.message);
+                        toastr.error(response.message);
                     }
                 }
                 , error: function(xhr) {
@@ -512,7 +707,7 @@
                         // Session expired, redirect to login
                         window.location.href = '/login';
                     } else {
-                        alert('Terjadi kesalahan saat menghapus data');
+                        toastr.error('Terjadi kesalahan saat menghapus data');
                     }
                 }
             });

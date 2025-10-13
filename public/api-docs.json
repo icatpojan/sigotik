@@ -1,0 +1,1615 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Sigotik API",
+        "description": "API untuk Sistem Manajemen BBM Kapal (Sigotik)",
+        "contact": {
+            "name": "Sigotik Support Team",
+            "email": "support@sigotik.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Development Server"
+        },
+        {
+            "url": "https://api.sigotik.com",
+            "description": "Production Server"
+        },
+        {
+            "url": "/Users/mac/codingan/new/sigotik"
+        }
+    ],
+    "paths": {
+        "/api/v1/auth/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "User login",
+                "description": "Authenticate user and return access token",
+                "operationId": "8a9942ee312d1b1cb1ddd31002fb4fae",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "example": "admin"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Login berhasil"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "user": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "username": {
+                                                            "type": "string",
+                                                            "example": "admin"
+                                                        },
+                                                        "nama_lengkap": {
+                                                            "type": "string",
+                                                            "example": "Administrator"
+                                                        },
+                                                        "email": {
+                                                            "type": "string",
+                                                            "example": "admin@example.com"
+                                                        },
+                                                        "nip": {
+                                                            "type": "string",
+                                                            "example": "123456789"
+                                                        },
+                                                        "golongan": {
+                                                            "type": "string",
+                                                            "example": "IV/a"
+                                                        },
+                                                        "m_upt_code": {
+                                                            "type": "string",
+                                                            "example": "UPT001"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "token": {
+                                                    "type": "string",
+                                                    "example": "1|abcdef123456..."
+                                                },
+                                                "token_type": {
+                                                    "type": "string",
+                                                    "example": "Bearer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid credentials",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Username atau password salah"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validasi gagal"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "User logout",
+                "description": "Logout user and revoke access token",
+                "operationId": "b6c4ba40408df2630fbbc5c6d9c02aee",
+                "responses": {
+                    "200": {
+                        "description": "Logout successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Logout berhasil"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/bbm": {
+            "get": {
+                "tags": [
+                    "BBM Management"
+                ],
+                "summary": "Get BBM list",
+                "description": "Retrieve paginated list of BBM transactions with filtering options",
+                "operationId": "0949d991abfe6b552f03f531cda21a33",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page (10, 20, 50, 100)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 20
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term for nomor surat, kapal, or lokasi",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "BA/001"
+                        }
+                    },
+                    {
+                        "name": "status_ba",
+                        "in": "query",
+                        "description": "Filter by status BA (1-15)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "status_trans",
+                        "in": "query",
+                        "description": "Filter by transaction status (0=Input, 1=Approval, 2=Batal)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 0
+                        }
+                    },
+                    {
+                        "name": "kapal",
+                        "in": "query",
+                        "description": "Filter by kapal code",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "KAP001"
+                        }
+                    },
+                    {
+                        "name": "date_from",
+                        "in": "query",
+                        "description": "Filter from date (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2024-01-01"
+                        }
+                    },
+                    {
+                        "name": "date_to",
+                        "in": "query",
+                        "description": "Filter to date (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2024-12-31"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "BBM list retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "trans_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "kapal_code": {
+                                                        "type": "string",
+                                                        "example": "KAP001"
+                                                    },
+                                                    "nomor_surat": {
+                                                        "type": "string",
+                                                        "example": "BA/001/2024"
+                                                    },
+                                                    "tanggal_surat": {
+                                                        "type": "string",
+                                                        "format": "date",
+                                                        "example": "2024-01-15"
+                                                    },
+                                                    "jam_surat": {
+                                                        "type": "string",
+                                                        "example": "08:00:00"
+                                                    },
+                                                    "zona_waktu_surat": {
+                                                        "type": "string",
+                                                        "example": "WIB"
+                                                    },
+                                                    "lokasi_surat": {
+                                                        "type": "string",
+                                                        "example": "Pelabuhan Jakarta"
+                                                    },
+                                                    "status_ba": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "volume_sisa": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 1000.5
+                                                    },
+                                                    "volume_sebelum": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 800
+                                                    },
+                                                    "volume_pengisian": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 200.5
+                                                    },
+                                                    "volume_pemakaian": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 0
+                                                    },
+                                                    "nama_nahkoda": {
+                                                        "type": "string",
+                                                        "example": "John Doe"
+                                                    },
+                                                    "nip_nahkoda": {
+                                                        "type": "string",
+                                                        "example": "123456789"
+                                                    },
+                                                    "nama_kkm": {
+                                                        "type": "string",
+                                                        "example": "Jane Smith"
+                                                    },
+                                                    "nip_kkm": {
+                                                        "type": "string",
+                                                        "example": "987654321"
+                                                    },
+                                                    "an_nakhoda": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "an_kkm": {
+                                                        "type": "integer",
+                                                        "example": 0
+                                                    },
+                                                    "status_trans": {
+                                                        "type": "integer",
+                                                        "example": 0
+                                                    },
+                                                    "kapal": {
+                                                        "properties": {
+                                                            "nama_kapal": {
+                                                                "type": "string",
+                                                                "example": "Kapal Patroli 001"
+                                                            },
+                                                            "code_kapal": {
+                                                                "type": "string",
+                                                                "example": "KAP001"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "user_input": {
+                                                        "properties": {
+                                                            "nama_lengkap": {
+                                                                "type": "string",
+                                                                "example": "Admin User"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "pagination": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 20
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 100
+                                                },
+                                                "from": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "to": {
+                                                    "type": "integer",
+                                                    "example": 20
+                                                },
+                                                "has_more_pages": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/kapals": {
+            "get": {
+                "tags": [
+                    "Master Data"
+                ],
+                "summary": "Get Kapal list",
+                "description": "Retrieve list of all kapals with optional filtering",
+                "operationId": "446d90aa9c299235cef5c80362328fcc",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term for nama kapal or code kapal",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Patroli"
+                        }
+                    },
+                    {
+                        "name": "m_upt_code",
+                        "in": "query",
+                        "description": "Filter by UPT code",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "UPT001"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Kapal list retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "m_kapal_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nama_kapal": {
+                                                        "type": "string",
+                                                        "example": "Kapal Patroli 001"
+                                                    },
+                                                    "code_kapal": {
+                                                        "type": "string",
+                                                        "example": "KAP001"
+                                                    },
+                                                    "m_upt_code": {
+                                                        "type": "string",
+                                                        "example": "UPT001"
+                                                    },
+                                                    "bobot": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 150.5
+                                                    },
+                                                    "panjang": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 25.5
+                                                    },
+                                                    "tinggi": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 8.199999999999999289457264239899814128875732421875
+                                                    },
+                                                    "lebar": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 6.5
+                                                    },
+                                                    "main_engine": {
+                                                        "type": "string",
+                                                        "example": "Caterpillar C18"
+                                                    },
+                                                    "jml_main_engine": {
+                                                        "type": "integer",
+                                                        "example": 2
+                                                    },
+                                                    "pk_main_engine": {
+                                                        "type": "string",
+                                                        "example": "500 HP"
+                                                    },
+                                                    "kapasitas_tangki": {
+                                                        "type": "string",
+                                                        "example": "2000 Liter"
+                                                    },
+                                                    "jml_tangki": {
+                                                        "type": "integer",
+                                                        "example": 4
+                                                    },
+                                                    "tahun_buat": {
+                                                        "type": "integer",
+                                                        "example": 2020
+                                                    },
+                                                    "jml_abk": {
+                                                        "type": "integer",
+                                                        "example": 12
+                                                    },
+                                                    "nama_nakoda": {
+                                                        "type": "string",
+                                                        "example": "John Doe"
+                                                    },
+                                                    "nip_nakoda": {
+                                                        "type": "string",
+                                                        "example": "123456789"
+                                                    },
+                                                    "nama_kkm": {
+                                                        "type": "string",
+                                                        "example": "Jane Smith"
+                                                    },
+                                                    "nip_kkm": {
+                                                        "type": "string",
+                                                        "example": "987654321"
+                                                    },
+                                                    "upt": {
+                                                        "properties": {
+                                                            "nama": {
+                                                                "type": "string",
+                                                                "example": "UPT Jakarta"
+                                                            },
+                                                            "alamat1": {
+                                                                "type": "string",
+                                                                "example": "Jl. Sudirman No. 1"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Master Data"
+                ],
+                "summary": "Create new Kapal",
+                "description": "Create a new kapal record",
+                "operationId": "79600b51f9d52499f352ff2ec052d388",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nama_kapal",
+                                    "code_kapal",
+                                    "m_upt_code"
+                                ],
+                                "properties": {
+                                    "nama_kapal": {
+                                        "type": "string",
+                                        "example": "Kapal Patroli 002"
+                                    },
+                                    "code_kapal": {
+                                        "type": "string",
+                                        "example": "KAP002"
+                                    },
+                                    "m_upt_code": {
+                                        "type": "string",
+                                        "example": "UPT001"
+                                    },
+                                    "bobot": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 150.5
+                                    },
+                                    "panjang": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 25.5
+                                    },
+                                    "tinggi": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 8.199999999999999289457264239899814128875732421875
+                                    },
+                                    "lebar": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 6.5
+                                    },
+                                    "main_engine": {
+                                        "type": "string",
+                                        "example": "Caterpillar C18"
+                                    },
+                                    "jml_main_engine": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "pk_main_engine": {
+                                        "type": "string",
+                                        "example": "500 HP"
+                                    },
+                                    "kapasitas_tangki": {
+                                        "type": "string",
+                                        "example": "2000 Liter"
+                                    },
+                                    "jml_tangki": {
+                                        "type": "integer",
+                                        "example": 4
+                                    },
+                                    "tahun_buat": {
+                                        "type": "integer",
+                                        "example": 2020
+                                    },
+                                    "jml_abk": {
+                                        "type": "integer",
+                                        "example": 12
+                                    },
+                                    "nama_nakoda": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "nip_nakoda": {
+                                        "type": "string",
+                                        "example": "123456789"
+                                    },
+                                    "nama_kkm": {
+                                        "type": "string",
+                                        "example": "Jane Smith"
+                                    },
+                                    "nip_kkm": {
+                                        "type": "string",
+                                        "example": "987654321"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Kapal created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Kapal berhasil dibuat"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validasi gagal"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/kapals/{id}": {
+            "get": {
+                "tags": [
+                    "Master Data"
+                ],
+                "summary": "Get Kapal detail",
+                "description": "Retrieve detailed information of a specific kapal",
+                "operationId": "8c493e93eb6a873d2ec1680873bb74c2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Kapal ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Kapal detail retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Kapal not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Kapal tidak ditemukan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Master Data"
+                ],
+                "summary": "Update Kapal",
+                "description": "Update an existing kapal record",
+                "operationId": "493832f4bb7eb587963a8f5cdbefcc50",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Kapal ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nama_kapal": {
+                                        "type": "string",
+                                        "example": "Kapal Patroli 002 Updated"
+                                    },
+                                    "bobot": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 160.5
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Kapal updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Kapal berhasil diperbarui"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Kapal not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Kapal tidak ditemukan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Master Data"
+                ],
+                "summary": "Delete Kapal",
+                "description": "Delete a kapal record",
+                "operationId": "e639b85ccb10356bb5133b392117108b",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Kapal ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Kapal deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Kapal berhasil dihapus"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Kapal not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Kapal tidak ditemukan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/upts": {
+            "get": {
+                "tags": [
+                    "Master Data"
+                ],
+                "summary": "Get UPT list",
+                "description": "Retrieve list of all UPTs with optional filtering",
+                "operationId": "64bd448fd968b87f16900807c9436347",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term for nama or code",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "Jakarta"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "UPT list retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "m_upt_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "nama": {
+                                                        "type": "string",
+                                                        "example": "UPT Jakarta"
+                                                    },
+                                                    "code": {
+                                                        "type": "string",
+                                                        "example": "UPT001"
+                                                    },
+                                                    "alamat1": {
+                                                        "type": "string",
+                                                        "example": "Jl. Sudirman No. 1"
+                                                    },
+                                                    "alamat2": {
+                                                        "type": "string",
+                                                        "example": "Jakarta Pusat"
+                                                    },
+                                                    "alamat3": {
+                                                        "type": "string",
+                                                        "example": "DKI Jakarta"
+                                                    },
+                                                    "kota": {
+                                                        "type": "string",
+                                                        "example": "Jakarta"
+                                                    },
+                                                    "zona_waktu_upt": {
+                                                        "type": "string",
+                                                        "example": "WIB"
+                                                    },
+                                                    "nama_petugas": {
+                                                        "type": "string",
+                                                        "example": "Admin UPT"
+                                                    },
+                                                    "nip_petugas": {
+                                                        "type": "string",
+                                                        "example": "123456789"
+                                                    },
+                                                    "jabatan_petugas": {
+                                                        "type": "string",
+                                                        "example": "Kepala UPT"
+                                                    },
+                                                    "pangkat_petugas": {
+                                                        "type": "string",
+                                                        "example": "IV/a"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Master Data"
+                ],
+                "summary": "Create new UPT",
+                "description": "Create a new UPT record",
+                "operationId": "40a608c88d88339ea3c85f2006ccd90d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "nama",
+                                    "code"
+                                ],
+                                "properties": {
+                                    "nama": {
+                                        "type": "string",
+                                        "example": "UPT Jakarta"
+                                    },
+                                    "code": {
+                                        "type": "string",
+                                        "example": "UPT001"
+                                    },
+                                    "alamat1": {
+                                        "type": "string",
+                                        "example": "Jl. Sudirman No. 1"
+                                    },
+                                    "alamat2": {
+                                        "type": "string",
+                                        "example": "Jakarta Pusat"
+                                    },
+                                    "alamat3": {
+                                        "type": "string",
+                                        "example": "DKI Jakarta"
+                                    },
+                                    "kota": {
+                                        "type": "string",
+                                        "example": "Jakarta"
+                                    },
+                                    "zona_waktu_upt": {
+                                        "type": "string",
+                                        "enum": [
+                                            "WIB",
+                                            "WITA",
+                                            "WIT"
+                                        ],
+                                        "example": "WIB"
+                                    },
+                                    "nama_petugas": {
+                                        "type": "string",
+                                        "example": "Admin UPT"
+                                    },
+                                    "nip_petugas": {
+                                        "type": "string",
+                                        "example": "123456789"
+                                    },
+                                    "jabatan_petugas": {
+                                        "type": "string",
+                                        "example": "Kepala UPT"
+                                    },
+                                    "pangkat_petugas": {
+                                        "type": "string",
+                                        "example": "IV/a"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "UPT created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "UPT berhasil dibuat"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validasi gagal"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/upts/{id}": {
+            "get": {
+                "tags": [
+                    "Master Data"
+                ],
+                "summary": "Get UPT detail",
+                "description": "Retrieve detailed information of a specific UPT",
+                "operationId": "e75b2442dfa04b910d5a09de9d5b5bab",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UPT ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "UPT detail retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "UPT not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "UPT tidak ditemukan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Master Data"
+                ],
+                "summary": "Update UPT",
+                "description": "Update an existing UPT record",
+                "operationId": "55bbce6dd4ad53b2a833e5034a84b7ee",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UPT ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "nama": {
+                                        "type": "string",
+                                        "example": "UPT Jakarta Updated"
+                                    },
+                                    "alamat1": {
+                                        "type": "string",
+                                        "example": "Jl. Sudirman No. 2"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "UPT updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "UPT berhasil diperbarui"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "UPT not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "UPT tidak ditemukan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Master Data"
+                ],
+                "summary": "Delete UPT",
+                "description": "Delete a UPT record",
+                "operationId": "40df09f55203f784f5358ea5c1d680b8",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "UPT ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "UPT deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "UPT berhasil dihapus"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "UPT not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "UPT tidak ditemukan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api": {
+            "get": {
+                "tags": [
+                    "General"
+                ],
+                "summary": "API Information",
+                "description": "Get basic information about the Sigotik API",
+                "operationId": "c2a7581cad406b97c01ecea27d6df804",
+                "responses": {
+                    "200": {
+                        "description": "API information retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sigotik API v1.0"
+                                        },
+                                        "version": {
+                                            "type": "string",
+                                            "example": "1.0.0"
+                                        },
+                                        "endpoints": {
+                                            "properties": {
+                                                "authentication": {
+                                                    "type": "string",
+                                                    "example": "/api/v1/auth/login"
+                                                },
+                                                "bbm": {
+                                                    "type": "string",
+                                                    "example": "/api/v1/bbm"
+                                                },
+                                                "kapal": {
+                                                    "type": "string",
+                                                    "example": "/api/v1/kapals"
+                                                },
+                                                "upt": {
+                                                    "type": "string",
+                                                    "example": "/api/v1/upts"
+                                                },
+                                                "ba_modules": {
+                                                    "type": "string",
+                                                    "example": "/api/v1/ba-*"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Authentication",
+            "description": "API endpoints for user authentication"
+        },
+        {
+            "name": "BBM Management",
+            "description": "API endpoints for BBM (Bahan Bakar Minyak) management"
+        },
+        {
+            "name": "Master Data",
+            "description": "API endpoints for master data management (UPT, Kapal, Users)"
+        },
+        {
+            "name": "General",
+            "description": "General"
+        }
+    ],
+    "security": [
+        {
+            "bearerAuth": []
+        }
+    ]
+}

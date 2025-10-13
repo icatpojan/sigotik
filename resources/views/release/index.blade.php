@@ -10,6 +10,14 @@
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Release BBM Kapal Trans</h1>
             <p class="text-gray-600 dark:text-gray-400">Daftar transaksi BBM kapal</p>
         </div>
+        <div class="flex gap-2">
+            <button id="helpBtn" class="inline-flex items-center px-4 py-2 text-green-600 bg-green-50 hover:bg-green-100 border border-green-200 hover:border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50 dark:border-green-700 dark:hover:border-green-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Bantuan
+            </button>
+        </div>
     </div>
 
     <!-- Filter and Data Table in One Card -->
@@ -133,14 +141,218 @@
     </div>
 </div>
 
+<!-- Help Modal -->
+<div id="helpModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full hidden z-[99999]">
+    <div class="relative mx-auto p-5 border w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 shadow-lg rounded-lg bg-white dark:bg-gray-800 mt-10 mb-10 max-h-[90vh] overflow-y-auto help-modal-scroll">
+        <div class="mt-3">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between pb-4">
+                <h3 class="text-xl font-medium text-gray-900 dark:text-white">Panduan Release BBM Kapal Trans</h3>
+                <button id="closeHelpModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="space-y-6">
+                <!-- Overview -->
+                <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
+                    <h4 class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">📋 Overview</h4>
+                    <p class="text-blue-800 dark:text-blue-200">
+                        Halaman ini menampilkan daftar transaksi BBM kapal yang dapat di-release.
+                        Release data akan menghapus file upload yang terkait dan mereset status upload.
+                    </p>
+                </div>
+
+                <!-- Features -->
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">🔧 Fitur Utama</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">🔍 Pencarian & Filter</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Cari berdasarkan nomor surat, lokasi, nama nahkoda, KKM, AN, nomor nota, atau nama kapal.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">📊 Filter Status</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Filter berdasarkan status transaksi: Input, Approval, atau Batal.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">🚢 Filter Kapal</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Filter berdasarkan kapal tertentu untuk melihat transaksi spesifik.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">📅 Filter Tanggal</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Filter berdasarkan rentang tanggal transaksi.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">👁️ Detail Transaksi</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Klik tombol detail untuk melihat informasi lengkap transaksi.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">📄 Pagination</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Navigasi halaman untuk melihat data lebih banyak.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">🔄 Release Data</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Hanya admin yang dapat me-release data untuk menghapus file upload.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Options -->
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">🔧 Opsi Filter</h4>
+                    <div class="space-y-3">
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">🔍 Search Box</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Ketik kata kunci untuk mencari transaksi berdasarkan nomor surat, lokasi, nama nahkoda, KKM, AN, nomor nota, atau nama kapal.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">🚢 Filter Kapal</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Pilih kapal tertentu untuk melihat transaksi yang terkait dengan kapal tersebut.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">📊 Status Transaksi</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Lihat status transaksi: Input, Approval, atau Batal.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">📄 Pagination</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Navigasi halaman untuk melihat data lebih banyak.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">🔄 Release Data</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Hanya admin yang dapat me-release data untuk menghapus file upload.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tips -->
+                <div class="bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-lg">
+                    <h4 class="text-lg font-semibold text-yellow-900 dark:text-yellow-100 mb-2">💡 Tips</h4>
+                    <ul class="text-yellow-800 dark:text-yellow-200 space-y-1">
+                        <li>• Gunakan filter untuk menemukan transaksi tertentu dengan cepat</li>
+                        <li>• Klik "Clear Filter" untuk mereset semua filter</li>
+                        <li>• Gunakan pagination untuk melihat data lebih banyak</li>
+                        <li>• Status warna menunjukkan kondisi transaksi</li>
+                        <li>• Klik detail untuk melihat informasi lengkap</li>
+                        <li>• Button Release hanya muncul untuk admin (group_id = 1)</li>
+                        <li>• Release akan menghapus file upload dan reset status upload</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <button id="closeHelpModalBtn" class="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+<style>
+    /* Custom scrollbar for help modal */
+    .help-modal-scroll::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .help-modal-scroll::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .help-modal-scroll::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 4px;
+    }
+
+    .help-modal-scroll::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+
+    /* Dark mode scrollbar */
+    .dark .help-modal-scroll::-webkit-scrollbar-track {
+        background: #374151;
+    }
+
+    .dark .help-modal-scroll::-webkit-scrollbar-thumb {
+        background: #6b7280;
+    }
+
+    .dark .help-modal-scroll::-webkit-scrollbar-thumb:hover {
+        background: #9ca3af;
+    }
+
+</style>
+
+
 <script>
     let currentPage = 1;
     let currentFilters = {};
 
+    // Configure Toastr
+    toastr.options = {
+        "closeButton": true
+        , "debug": false
+        , "newestOnTop": true
+        , "progressBar": true
+        , "positionClass": "toast-top-right"
+        , "preventDuplicates": false
+        , "onclick": null
+        , "showDuration": "300"
+        , "hideDuration": "1000"
+        , "timeOut": "5000"
+        , "extendedTimeOut": "1000"
+        , "showEasing": "swing"
+        , "hideEasing": "linear"
+        , "showMethod": "fadeIn"
+        , "hideMethod": "fadeOut"
+    };
+
     $(document).ready(function() {
         // Load initial data
         loadBbmKapaltrans();
+
+        // Help button
+        $('#helpBtn').click(function() {
+            $('#helpModal').removeClass('hidden').addClass('flex items-center justify-center');
+        });
+
+        // Help modal controls
+        $('#closeHelpModal, #closeHelpModalBtn').click(function() {
+            $('#helpModal').addClass('hidden').removeClass('flex items-center justify-center');
+        });
 
         // Filter form submission
         $('#filterForm').on('change', 'select, input', function() {
@@ -327,6 +539,13 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                 </svg>
                             </button>
+                            ${bbm.can_release ? `
+                            <button onclick="releaseBbmKapaltrans(${bbm.trans_id})" class="p-2 text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 hover:border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 dark:border-red-700 dark:hover:border-red-600 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md" title="Release Data">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                            ` : ''}
                         </div>
                     </td>
                 </tr>
@@ -398,6 +617,37 @@
                 </td>
             </tr>
         `);
+    }
+
+    // Function to release BBM kapal trans data
+    function releaseBbmKapaltrans(transId) {
+        if (confirm('Apakah Anda yakin ingin me-release data ini?')) {
+            $.ajax({
+                url: '/release/release'
+                , type: 'POST'
+                , data: {
+                    trans_id: transId
+                    , _token: $('meta[name="csrf-token"]').attr('content')
+                }
+                , success: function(response) {
+                    if (response.success) {
+                        toastr.success(response.message);
+                        loadBbmKapaltrans(currentPage); // Reload data
+                    } else {
+                        toastr.error(response.message);
+                    }
+                }
+                , error: function(xhr) {
+                    if (xhr.status === 401) {
+                        window.location.href = '/login';
+                    } else if (xhr.status === 403) {
+                        toastr.error('Anda tidak memiliki izin untuk melakukan aksi ini');
+                    } else {
+                        toastr.error('Terjadi kesalahan saat me-release data');
+                    }
+                }
+            });
+        }
     }
 
     // Global functions
@@ -522,7 +772,7 @@
                 if (xhr.status === 401) {
                     window.location.href = '/login';
                 } else {
-                    alert('Terjadi kesalahan saat mengambil data BBM kapal trans');
+                    toastr.error('Terjadi kesalahan saat mengambil data BBM kapal trans');
                 }
             }
         });

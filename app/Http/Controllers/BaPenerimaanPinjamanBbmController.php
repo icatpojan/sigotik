@@ -115,27 +115,80 @@ class BaPenerimaanPinjamanBbmController extends Controller
      */
     public function getBaData(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'kapal_id' => 'required|exists:m_kapal,m_kapal_id',
-            'tanggal_surat' => 'required|date',
-        ]);
+        // Jika ada trans_id, ambil data BA Peminjaman berdasarkan trans_id
+        if ($request->has('trans_id') && $request->trans_id) {
+            try {
+                $baPeminjaman = BbmKapaltrans::where('trans_id', $request->trans_id)
+                    ->where('status_ba', 10) // BA Peminjaman BBM
+                    ->first();
 
-        if ($validator->fails()) {
+                if ($baPeminjaman) {
+                    return response()->json([
+                        'success' => true,
+                        'data' => [
+                            'trans_id' => $baPeminjaman->trans_id,
+                            'nomor_surat' => $baPeminjaman->nomor_surat,
+                            'tanggal_surat' => $baPeminjaman->tanggal_surat,
+                            'volume_sisa' => $baPeminjaman->volume_sisa,
+                            'volume_pemakaian' => $baPeminjaman->volume_pemakaian,
+                            'keterangan_jenis_bbm' => $baPeminjaman->keterangan_jenis_bbm,
+                            'sebab_temp' => $baPeminjaman->sebab_temp,
+                            'kapal_code_temp' => $baPeminjaman->kapal_code_temp,
+                            'nama_nahkoda_temp' => $baPeminjaman->nama_nahkoda_temp,
+                            'pangkat_nahkoda_temp' => $baPeminjaman->pangkat_nahkoda_temp,
+                            'nip_nahkoda_temp' => $baPeminjaman->nip_nahkoda_temp,
+                            'nama_kkm_temp' => $baPeminjaman->nama_kkm_temp,
+                            'nip_kkm_temp' => $baPeminjaman->nip_kkm_temp,
+                            'an_nakhoda_temp' => $baPeminjaman->an_nakhoda_temp,
+                            'an_kkm_temp' => $baPeminjaman->an_kkm_temp,
+                            'nama_nakoda' => $baPeminjaman->nama_nakoda,
+                            'pangkat_nahkoda' => $baPeminjaman->pangkat_nahkoda,
+                            'nip_nakoda' => $baPeminjaman->nip_nakoda,
+                            'nama_kkm' => $baPeminjaman->nama_kkm,
+                            'nip_kkm' => $baPeminjaman->nip_kkm,
+                            'an_nakhoda' => $baPeminjaman->an_nakhoda,
+                            'an_kkm' => $baPeminjaman->an_kkm,
+                        ]
+                    ]);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'BA Peminjaman tidak ditemukan'
+                    ], 404);
+                }
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+                ], 500);
+            }
+        }
+
+        // Jika tidak ada trans_id, ambil daftar BA Peminjaman berdasarkan kapal
+        $kapalId = $request->kapal_id;
+
+        if (!$kapalId) {
             return response()->json([
                 'success' => false,
-                'message' => 'Validasi gagal',
-                'errors' => $validator->errors()
-            ], 422);
+                'message' => 'Kapal ID diperlukan'
+            ], 400);
         }
 
         try {
-            $kapal = MKapal::find($request->kapal_id);
-            $tanggalSurat = $request->tanggal_surat;
+            $kapal = MKapal::find($kapalId);
 
-            // Cari BA Peminjaman BBM (status_ba = 10) yang belum di-link untuk kapal ini
+            if (!$kapal) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Kapal tidak ditemukan'
+                ], 404);
+            }
+
+            // Cari BA Peminjaman BBM (status_ba = 10) yang belum diterima kembali (status_temp = 0)
+            // Kapal saat ini adalah yang menerima kembali, jadi kapal_code_temp harus sama dengan code_kapal
             $baPeminjaman = BbmKapaltrans::where('kapal_code_temp', $kapal->code_kapal)
                 ->where('status_ba', 10) // BA Peminjaman BBM
-                ->where('status_temp', 0) // Belum di-link
+                ->where('status_temp', 0) // Belum diterima kembali
                 ->orderBy('tanggal_surat', 'desc')
                 ->orderBy('jam_surat', 'desc')
                 ->get();
@@ -289,33 +342,76 @@ class BaPenerimaanPinjamanBbmController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(BbmKapaltrans $baPenggunaanBbm)
+    public function show(BbmKapaltrans $baPenerimaanPinjamanBbm)
     {
+        // Get data BA Peminjaman yang di-link
+        $baPeminjaman = null;
+        if ($baPenerimaanPinjamanBbm->link_modul_temp) {
+            $baPeminjaman = BbmKapaltrans::where('nomor_surat', $baPenerimaanPinjamanBbm->link_modul_temp)
+                ->where('status_ba', 10)
+                ->first();
+        }
+
+        $data = $baPenerimaanPinjamanBbm->load('kapal.upt');
+
+        // Add data kapal pemberi dari BA Peminjaman
+        if ($baPeminjaman) {
+            $data->trans_id_peminjam = $baPeminjaman->trans_id;
+            $data->link_modul_temp = $baPeminjaman->nomor_surat;
+            $data->volume_sebelum = $baPeminjaman->volume_sisa;
+            $data->keterangan_jenis_bbm = $baPeminjaman->keterangan_jenis_bbm;
+            $data->sebab_temp = $baPeminjaman->sebab_temp;
+            $data->kapal_code_temp = $baPeminjaman->kapal_code_temp;
+            $data->nama_nahkoda_temp = $baPeminjaman->nama_nahkoda_temp;
+            $data->pangkat_nahkoda_temp = $baPeminjaman->pangkat_nahkoda_temp;
+            $data->nip_nahkoda_temp = $baPeminjaman->nip_nahkoda_temp;
+            $data->nama_kkm_temp = $baPeminjaman->nama_kkm_temp;
+            $data->nip_kkm_temp = $baPeminjaman->nip_kkm_temp;
+            $data->an_nakhoda_temp = $baPeminjaman->an_nakhoda_temp;
+            $data->an_kkm_temp = $baPeminjaman->an_kkm_temp;
+        }
+
+        // Convert to array to ensure all data is included
+        $responseData = $data->toArray();
+
+        // Add kapal pemberi data to response array
+        if ($baPeminjaman) {
+            $responseData['trans_id_peminjam'] = $baPeminjaman->trans_id;
+            $responseData['link_modul_temp'] = $baPeminjaman->nomor_surat;
+            $responseData['volume_sebelum'] = $baPeminjaman->volume_sisa;
+            $responseData['keterangan_jenis_bbm'] = $baPeminjaman->keterangan_jenis_bbm;
+            $responseData['sebab_temp'] = $baPeminjaman->sebab_temp;
+            $responseData['kapal_code_temp'] = $baPeminjaman->kapal_code_temp;
+            $responseData['nama_nahkoda_temp'] = $baPeminjaman->nama_nahkoda_temp;
+            $responseData['pangkat_nahkoda_temp'] = $baPeminjaman->pangkat_nahkoda_temp;
+            $responseData['nip_nahkoda_temp'] = $baPeminjaman->nip_nahkoda_temp;
+            $responseData['nama_kkm_temp'] = $baPeminjaman->nama_kkm_temp;
+            $responseData['nip_kkm_temp'] = $baPeminjaman->nip_kkm_temp;
+            $responseData['an_nakhoda_temp'] = $baPeminjaman->an_nakhoda_temp;
+            $responseData['an_kkm_temp'] = $baPeminjaman->an_kkm_temp;
+        }
+
         return response()->json([
             'success' => true,
-            'data' => $baPenggunaanBbm->load('kapal.upt')
+            'data' => $responseData
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, BbmKapaltrans $baPenggunaanBbm)
+    public function update(Request $request, BbmKapaltrans $baPenerimaanPinjamanBbm)
     {
         $validator = Validator::make($request->all(), [
             'kapal_id' => 'required|exists:m_kapal,m_kapal_id',
-            'nomor_surat' => 'required|string|max:50|unique:bbm_kapaltrans,nomor_surat,' . $baPenggunaanBbm->trans_id . ',trans_id',
+            'nomor_surat' => 'required|string|max:50|unique:bbm_kapaltrans,nomor_surat,' . $baPenerimaanPinjamanBbm->trans_id . ',trans_id',
             'tanggal_surat' => 'required|date',
             'jam_surat' => 'required|date_format:H:i',
             'zona_waktu_surat' => 'required|in:WIB,WITA,WIT',
             'lokasi_surat' => 'required|string',
-            'volume_sebelum' => 'required|numeric|min:0',
-            'tanggal_sebelum' => 'required|date',
+            'trans_id_peminjam' => 'required|exists:bbm_kapaltrans,trans_id',
             'volume_pengisian' => 'required|numeric|min:0',
-            'tanggal_pengisian' => 'required|date',
-            'volume_pemakaian' => 'required|numeric|min:0',
             'keterangan_jenis_bbm' => 'required|string|max:50',
-            'peruntukan' => 'nullable|string|max:100',
             'jabatan_staf_pangkalan' => 'nullable|string|max:30',
             'nama_staf_pagkalan' => 'nullable|string|max:30',
             'nip_staf' => 'nullable|string|max:20',
@@ -326,7 +422,6 @@ class BaPenerimaanPinjamanBbmController extends Controller
             'an_staf' => 'nullable|in:0,1',
             'an_nakhoda' => 'nullable|in:0,1',
             'an_kkm' => 'nullable|in:0,1',
-            'link_ba' => 'nullable|string|max:50',
         ]);
 
         if ($validator->fails()) {
@@ -343,10 +438,19 @@ class BaPenerimaanPinjamanBbmController extends Controller
             // Get kapal data
             $kapal = MKapal::find($request->kapal_id);
 
-            // Calculate volume usage
-            $volumeSisa = ($request->volume_sebelum + $request->volume_pengisian) - $request->volume_pemakaian;
+            // Get BA Peminjaman data
+            $baPeminjaman = BbmKapaltrans::find($request->trans_id_peminjam);
+            if (!$baPeminjaman) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'BA Peminjaman tidak ditemukan'
+                ], 404);
+            }
 
-            $baPenggunaanBbm->update([
+            // Calculate volume sisa
+            $volumeSisa = $baPeminjaman->volume_sisa + $request->volume_pengisian;
+
+            $baPenerimaanPinjamanBbm->update([
                 'kapal_code' => $kapal->code_kapal,
                 'nomor_surat' => $request->nomor_surat,
                 'tanggal_surat' => $request->tanggal_surat,
@@ -354,13 +458,9 @@ class BaPenerimaanPinjamanBbmController extends Controller
                 'zona_waktu_surat' => $request->zona_waktu_surat,
                 'lokasi_surat' => $request->lokasi_surat,
                 'volume_sisa' => $volumeSisa,
-                'volume_sebelum' => $request->volume_sebelum,
-                'tanggal_sebelum' => $request->tanggal_sebelum,
+                'volume_sebelum' => $baPeminjaman->volume_sisa,
                 'volume_pengisian' => $request->volume_pengisian,
-                'tanggal_pengisian' => $request->tanggal_pengisian,
-                'volume_pemakaian' => $request->volume_pemakaian,
                 'keterangan_jenis_bbm' => $request->keterangan_jenis_bbm,
-                'peruntukan' => $request->peruntukan,
                 'jabatan_staf_pangkalan' => $request->jabatan_staf_pangkalan,
                 'nama_staf_pagkalan' => $request->nama_staf_pagkalan,
                 'nip_staf' => $request->nip_staf,
@@ -371,7 +471,7 @@ class BaPenerimaanPinjamanBbmController extends Controller
                 'an_staf' => (int)($request->an_staf == '1'),
                 'an_nakhoda' => (int)($request->an_nakhoda == '1'),
                 'an_kkm' => (int)($request->an_kkm == '1'),
-                'link_modul_ba' => $request->link_ba,
+                'link_modul_temp' => $baPeminjaman->nomor_surat,
                 'user_input' => (string)(auth()->user()->conf_user_id ?? 1),
                 'updated_at' => now(),
             ]);
@@ -381,7 +481,7 @@ class BaPenerimaanPinjamanBbmController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'BA Penerimaan Pinjaman BBM berhasil diperbarui',
-                'data' => $baPenggunaanBbm->load('kapal')
+                'data' => $baPenerimaanPinjamanBbm->load('kapal')
             ]);
         } catch (\Exception $e) {
             DB::rollback();
@@ -395,10 +495,10 @@ class BaPenerimaanPinjamanBbmController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(BbmKapaltrans $baPenggunaanBbm)
+    public function destroy(BbmKapaltrans $baPenerimaanPinjamanBbm)
     {
         try {
-            $baPenggunaanBbm->delete();
+            $baPenerimaanPinjamanBbm->delete();
 
             return response()->json([
                 'success' => true,
@@ -415,14 +515,14 @@ class BaPenerimaanPinjamanBbmController extends Controller
     /**
      * Generate PDF for the specified resource.
      */
-    public function generatePdf(BbmKapaltrans $baPenggunaanBbm)
+    public function generatePdf(BbmKapaltrans $baPenerimaanPinjamanBbm)
     {
         try {
             // Load relationship data
-            $baPenggunaanBbm->load(['kapal.upt']);
+            $baPenerimaanPinjamanBbm->load(['kapal.upt']);
 
             // Get data
-            $data = $baPenggunaanBbm;
+            $data = $baPenerimaanPinjamanBbm;
             $kapal = $data->kapal;
             $upt = $kapal ? $kapal->upt : null;
 

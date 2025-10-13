@@ -1,0 +1,89 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Dokumentasi SIGOTIK",
+        "description": "Dokumentasi API untuk sistem SIGOTIK menggunakan L5-Swagger",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Server lokal"
+        }
+    ],
+    "paths": {
+        "/login": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Tampilkan halaman login",
+                "operationId": "f7b4ef8fc52419b0ee14744a8d7885a2",
+                "responses": {
+                    "200": {
+                        "description": "Halaman login berhasil ditampilkan"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Proses login user",
+                "operationId": "2dd578ff7aba2721293dac66833b27d1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "username": {
+                                        "type": "string",
+                                        "example": "admin"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "123456"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "302": {
+                        "description": "Redirect ke dashboard jika login berhasil"
+                    },
+                    "401": {
+                        "description": "Username atau password salah"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout user",
+                "operationId": "68a6108af04af5e3bc1ea68a6c6f1299",
+                "responses": {
+                    "302": {
+                        "description": "Redirect ke halaman login setelah logout"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Auth"
+        }
+    ]
+}

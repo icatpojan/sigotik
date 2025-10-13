@@ -10,12 +10,20 @@
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Manajemen Menu</h1>
             <p class="text-gray-600 dark:text-gray-400">Kelola menu sistem aplikasi</p>
         </div>
-        <button id="addMenuBtn" class="inline-flex items-center px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 dark:border-blue-700 dark:hover:border-blue-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            Tambah Menu
-        </button>
+        <div class="flex gap-2">
+            <button id="helpBtn" class="inline-flex items-center px-4 py-2 text-green-600 bg-green-50 hover:bg-green-100 border border-green-200 hover:border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50 dark:border-green-700 dark:hover:border-green-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Bantuan
+            </button>
+            <button id="addMenuBtn" class="inline-flex items-center px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 dark:border-blue-700 dark:hover:border-blue-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Tambah Menu
+            </button>
+        </div>
     </div>
 
     <!-- Filter and Menus Table in One Card -->
@@ -113,16 +121,227 @@
         </div>
     </div>
 </div>
+
+<!-- Help Modal -->
+<div id="helpModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full hidden z-[99999]">
+    <div class="relative mx-auto p-5 border w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 shadow-lg rounded-lg bg-white dark:bg-gray-800 mt-10 mb-10 max-h-[90vh] overflow-y-auto help-modal-scroll">
+        <div class="mt-3">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between pb-4">
+                <h3 class="text-xl font-medium text-gray-900 dark:text-white">Panduan Manajemen Menu</h3>
+                <button id="closeHelpModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="mt-6 space-y-6">
+                <!-- Overview -->
+                <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
+                    <h4 class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">📋 Overview</h4>
+                    <p class="text-blue-800 dark:text-blue-200">
+                        Halaman ini digunakan untuk mengelola menu sistem aplikasi SIGOTIK. Menu menentukan struktur navigasi dan akses yang tersedia untuk user.
+                    </p>
+                </div>
+
+                <!-- Features -->
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">🔧 Fitur Utama</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">➕ Tambah Menu</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Klik tombol "Tambah Menu" untuk membuat menu baru.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">🔍 Pencarian & Filter</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Gunakan filter untuk mencari menu berdasarkan level, parent, dll.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">✏️ Edit Menu</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Klik ikon pensil untuk mengedit menu.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">🗑️ Hapus Menu</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Klik ikon trash untuk menghapus menu.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Menu Types -->
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">📁 Jenis Menu</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm font-medium">1</span>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Menu Utama (Level 1)</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">Menu utama yang muncul di sidebar, biasanya memiliki icon</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm font-medium">2</span>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Sub Menu (Level 2)</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">Menu yang berada di bawah menu utama, memiliki parent menu</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Fields -->
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">📝 Field Form Menu</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm font-medium">1</span>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Menu Level</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">Pilih level menu: Menu Utama (1) atau Sub Menu (2)</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm font-medium">2</span>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Parent Menu</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">Hanya muncul untuk Sub Menu, pilih menu utama sebagai parent</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm font-medium">3</span>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Menu Name</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">Nama menu yang akan ditampilkan (wajib diisi)</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm font-medium">4</span>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Link</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">URL atau route yang akan dituju (wajib untuk Sub Menu)</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm font-medium">5</span>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Icon</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">Class icon FontAwesome (wajib untuk Menu Utama)</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <span class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm font-medium">6</span>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Urutan</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-300">Urutan tampil menu (wajib diisi, angka)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tips -->
+                <div class="bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-lg">
+                    <h4 class="text-lg font-semibold text-yellow-900 dark:text-yellow-100 mb-2">💡 Tips</h4>
+                    <ul class="text-yellow-800 dark:text-yellow-200 space-y-1">
+                        <li>• Menu Utama harus memiliki icon, Sub Menu harus memiliki link</li>
+                        <li>• Urutan menu menentukan posisi tampil di sidebar</li>
+                        <li>• Icon menggunakan format FontAwesome (contoh: fa fa-home)</li>
+                        <li>• Link untuk Sub Menu harus sesuai dengan route yang ada</li>
+                        <li>• Hapus menu dengan hati-hati, pastikan tidak ada yang menggunakan</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <button id="closeHelpModalBtn" class="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+<style>
+    /* Custom scrollbar for help modal */
+    .help-modal-scroll::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .help-modal-scroll::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .help-modal-scroll::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 4px;
+    }
+
+    .help-modal-scroll::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+
+    /* Dark mode scrollbar */
+    .dark .help-modal-scroll::-webkit-scrollbar-track {
+        background: #374151;
+    }
+
+    .dark .help-modal-scroll::-webkit-scrollbar-thumb {
+        background: #6b7280;
+    }
+
+    .dark .help-modal-scroll::-webkit-scrollbar-thumb:hover {
+        background: #9ca3af;
+    }
+
+</style>
+
 <script>
     let currentPage = 1;
     let currentFilters = {};
+
+    // Configure Toastr
+    toastr.options = {
+        "closeButton": true
+        , "debug": false
+        , "newestOnTop": true
+        , "progressBar": true
+        , "positionClass": "toast-top-right"
+        , "preventDuplicates": false
+        , "onclick": null
+        , "showDuration": "300"
+        , "hideDuration": "1000"
+        , "timeOut": "5000"
+        , "extendedTimeOut": "1000"
+        , "showEasing": "swing"
+        , "hideEasing": "linear"
+        , "showMethod": "fadeIn"
+        , "hideMethod": "fadeOut"
+    };
 
     $(document).ready(function() {
         console.log('Menu page loaded, initializing...');
 
         // Load menus on page load
         loadMenus();
+
+        // Help button
+        $('#helpBtn').click(function() {
+            $('#helpModal').removeClass('hidden').addClass('flex items-center justify-center');
+        });
 
         // Load parent menus for dropdown
         loadParentMenus();
@@ -208,9 +427,9 @@
                     if (response.success) {
                         $('#menuModal').addClass('hidden').hide();
                         loadMenus(currentPage);
-                        alert(response.message);
+                        toastr.success(response.message || 'Menu berhasil disimpan');
                     } else {
-                        alert(response.message);
+                        toastr.error(response.message || 'Gagal menyimpan menu');
                     }
                 }
                 , error: function(xhr) {
@@ -218,13 +437,13 @@
                         window.location.href = '/login';
                     } else if (xhr.status === 422) {
                         const errors = xhr.responseJSON.errors;
-                        let errorMessage = 'Validasi gagal:\n';
+                        let errorMessage = 'Validasi gagal: ';
                         for (let field in errors) {
-                            errorMessage += `- ${errors[field][0]}\n`;
+                            errorMessage += `${errors[field][0]} `;
                         }
-                        alert(errorMessage);
+                        toastr.error(errorMessage);
                     } else {
-                        alert('Terjadi kesalahan saat menyimpan data');
+                        toastr.error('Terjadi kesalahan saat menyimpan data');
                     }
                 }
             });
@@ -331,7 +550,7 @@
                     if (xhr.status === 401) {
                         window.location.href = '/login';
                     } else {
-                        alert('Terjadi kesalahan saat memuat data menu: ' + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));
+                        toastr.error('Terjadi kesalahan saat memuat data menu: ' + (xhr.responseJSON ? xhr.responseJSON.message : xhr.statusText));
                     }
                 }
             });
@@ -528,14 +747,14 @@
                     if (response.success) {
                         openMenuModal(response.data);
                     } else {
-                        alert(response.message);
+                        toastr.error(response.message || 'Gagal memuat data menu');
                     }
                 }
                 , error: function(xhr) {
                     if (xhr.status === 401) {
                         window.location.href = '/login';
                     } else {
-                        alert('Terjadi kesalahan saat memuat data menu');
+                        toastr.error('Terjadi kesalahan saat memuat data menu');
                     }
                 }
             });
@@ -557,16 +776,16 @@
                     , success: function(response) {
                         if (response.success) {
                             loadMenus(currentPage);
-                            alert(response.message);
+                            toastr.success(response.message || 'Menu berhasil dihapus');
                         } else {
-                            alert(response.message);
+                            toastr.error(response.message || 'Gagal menghapus menu');
                         }
                     }
                     , error: function(xhr) {
                         if (xhr.status === 401) {
                             window.location.href = '/login';
                         } else {
-                            alert('Terjadi kesalahan saat menghapus data');
+                            toastr.error('Terjadi kesalahan saat menghapus data');
                         }
                     }
                 });
@@ -574,10 +793,16 @@
         };
 
         window.loadMenus = loadMenus;
+
+        // Help modal controls
+        $('#closeHelpModal, #closeHelpModalBtn').click(function() {
+            $('#helpModal').addClass('hidden').removeClass('flex items-center justify-center');
+        });
     });
 
 </script>
 @endsection
+
 
 @section('modals')
 <!-- Menu Modal -->

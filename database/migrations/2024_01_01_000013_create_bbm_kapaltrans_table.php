@@ -48,7 +48,7 @@ class CreateBbmKapaltransTable extends Migration
             $table->string('file_upload', 50)->default(''); // DIKURANGI DARI 100
             $table->string('link_modul_ba', 50)->nullable(); // DIKURANGI DARI 100
             $table->string('link_modul_ba_tamb', 50)->nullable(); // DIKURANGI DARI 100
-            $table->string('link_modul_temp', 30)->nullable(); // DIKURANGI DARI 50
+            $table->string('link_modul_temp', 50)->nullable(); // DIKURANGI DARI 50
             $table->string('no_so', 15)->nullable(); // DIKURANGI DARI 20
 
             // Informasi Pejabat UPT/Staf Pangkalan (Saksi)
