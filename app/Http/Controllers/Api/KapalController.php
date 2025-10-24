@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\MKapal;
 use App\Models\MUpt;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @OA\Tag(
@@ -86,7 +87,27 @@ class KapalController extends Controller
      */
     public function index(Request $request)
     {
+        $user = $request->user();
         $query = MKapal::with('upt');
+
+        // Role-based filtering
+        if ($user->conf_group_id != 1) { // Jika bukan admin
+            // Ambil kapal yang terkait dengan user melalui sys_user_kapal
+            $userKapalIds = DB::table('sys_user_kapal')
+                ->where('conf_user_id', $user->conf_user_id)
+                ->pluck('m_kapal_id')
+                ->toArray();
+
+            if (!empty($userKapalIds)) {
+                $query->whereIn('m_kapal_id', $userKapalIds);
+            } else {
+                // Jika user tidak memiliki kapal, return empty
+                return response()->json([
+                    'success' => true,
+                    'data' => []
+                ]);
+            }
+        }
 
         // Search functionality
         if ($request->has('search') && $request->search) {
@@ -100,6 +121,10 @@ class KapalController extends Controller
         // Filter by UPT
         if ($request->has('m_upt_code') && $request->m_upt_code) {
             $query->where('m_upt_code', $request->m_upt_code);
+        }
+
+        if ($request->m_kapal_id) {
+            $query->where('m_kapal_id', $request->m_kapal_id);
         }
 
         $kapals = $query->orderBy('nama_kapal', 'asc')->get();
@@ -142,9 +167,30 @@ class KapalController extends Controller
      *     )
      * )
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $kapal = MKapal::with('upt')->find($id);
+        $user = $request->user();
+        $query = MKapal::with('upt');
+
+        // Role-based filtering
+        if ($user->conf_group_id != 1) { // Jika bukan admin
+            // Ambil kapal yang terkait dengan user melalui sys_user_kapal
+            $userKapalIds = DB::table('sys_user_kapal')
+                ->where('conf_user_id', $user->conf_user_id)
+                ->pluck('m_kapal_id')
+                ->toArray();
+
+            if (!empty($userKapalIds)) {
+                $query->whereIn('m_kapal_id', $userKapalIds);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Kapal tidak ditemukan'
+                ], 404);
+            }
+        }
+
+        $kapal = $query->find($id);
 
         if (!$kapal) {
             return response()->json([

@@ -14,6 +14,8 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
+            // Seed data sesuai dengan sigotik.sql
+            ConfUserSeeder::class,
             MUptSeeder::class,
             MKapalSeeder::class,
             ConfGroupSeeder::class,
@@ -30,7 +32,8 @@ class DatabaseSeeder extends Seeder
             BbmTagihanSeeder::class,
             BbmTransdetailSeeder::class,
             SysUserKapalSeeder::class,
-            ConfUserSeeder::class,
+            TipeBaSeeder::class,
+            TipeDokumenSeeder::class,
         ]);
     }
 }

@@ -87,12 +87,13 @@
                     <tr>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">No</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Periode</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Perubahan Ke</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Total Anggaran</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Keterangan</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">User Input</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Tanggal Input</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Status</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Tgl Input</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Status Approval</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">User Approval</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Tgl Approval</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Aksi</th>
                     </tr>
                 </thead>
@@ -103,13 +104,6 @@
         </div>
     </div>
 
-    <!-- Loading Indicator -->
-    <div id="loadingIndicator" class="hidden items-center justify-center py-8">
-        <div class="flex items-center justify-center">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <span class="ml-2 text-gray-600 dark:text-gray-400">Memuat data...</span>
-        </div>
-    </div>
 </div>
 
 <!-- Add/Edit Modal -->
@@ -265,11 +259,25 @@
             loadData();
         });
 
+        // Auto-filter on change
+        $('#status, #dateFrom, #dateTo').change(function() {
+            loadData();
+        });
+
         // Search on enter
         $('#search').keypress(function(e) {
             if (e.which == 13) {
                 loadData();
             }
+        });
+
+        // Search on input with debounce
+        let searchTimeout;
+        $('#search').on('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(function() {
+                loadData();
+            }, 500);
         });
     });
 
@@ -329,7 +337,17 @@
     }
 
     function loadData() {
-        $('#loadingIndicator').removeClass('hidden');
+        // Show loading in table
+        $('#dataTableBody').html(`
+            <tr>
+                <td colspan="10" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                    <div class="flex items-center justify-center">
+                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                        <span class="ml-2">Memuat data...</span>
+                    </div>
+                </td>
+            </tr>
+        `);
 
         // Get filter parameters
         const search = $('#search').val();
@@ -343,12 +361,10 @@
             , date_from: dateFrom
             , date_to: dateTo
         }, function(response) {
-            $('#loadingIndicator').addClass('hidden');
-
             if (!response.data || response.data.length === 0) {
                 $('#dataTableBody').html(`
                     <tr>
-                        <td colspan="9" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                        <td colspan="10" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                             Tidak ada data perubahan anggaran
                         </td>
                     </tr>
@@ -359,28 +375,46 @@
             let html = '';
             response.data.forEach(function(item, index) {
                 const statusBadge = item.statusanggaran == 1 ?
-                    '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">Disetujui</span>' :
+                    '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">Sudah Di Setujui</span>' :
                     '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">Belum Disetujui</span>';
 
                 const tanggalInput = new Date(item.tanggal_input).toLocaleDateString('id-ID');
+                const tanggalApproval = item.tanggal_app ? new Date(item.tanggal_app).toLocaleDateString('id-ID') : '-';
                 const totalAnggaran = 'Rp. ' + new Intl.NumberFormat('id-ID').format(item.total_anggaran || 0);
 
+                // Format periode dengan perubahan ke
+                const periodeDisplay = item.perubahan_ke > 0 ?
+                    `${item.periode}<br><span class="text-xs text-gray-500">Perubahan Ke - ${item.perubahan_ke}</span>` :
+                    item.periode;
+
                 let actions = '<div class="flex items-center justify-end space-x-1">';
-                actions += '<button onclick="viewAnggaran(\'' + item.periode + '\', \'' + item.perubahan_ke + '\')" class="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 dark:border-blue-700 dark:hover:border-blue-600 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md" title="Lihat Detail"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></button>';
+
+                // Tombol Upload/Pengajuan (biru dengan icon cloud-upload)
+                // Logika sesuai project_ci: hanya tampil untuk status 0 atau status 1 yang merupakan perubahan terakhir
                 if (item.statusanggaran == 0) {
-                    actions += '<button onclick="editAnggaran(\'' + item.periode + '\', \'' + item.perubahan_ke + '\')" class="p-2 text-yellow-600 bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 hover:border-yellow-300 dark:bg-yellow-900/30 dark:text-yellow-400 dark:hover:bg-yellow-900/50 dark:border-yellow-700 dark:hover:border-yellow-600 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md" title="Edit"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button>';
-                    actions += '<button onclick="deleteAnggaran(\'' + item.periode + '\', \'' + item.perubahan_ke + '\')" class="p-2 text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 hover:border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 dark:border-red-700 dark:hover:border-red-600 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md" title="Hapus"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>';
+                    // Status "Belum Disetujui" - selalu tampilkan tombol
+                    actions += '<button onclick="uploadAnggaran(\'' + item.periode + '\', \'' + item.perubahan_ke + '\')" class="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 dark:border-blue-700 dark:hover:border-blue-600 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md" title="Pengajuan Anggaran"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg></button>';
+                } else if (item.statusanggaran == 1 && item.is_latest_approved) {
+                    // Status "Sudah Disetujui" - hanya tampilkan jika ini perubahan terakhir yang sudah disetujui
+                    actions += '<button onclick="uploadAnggaran(\'' + item.periode + '\', \'' + item.perubahan_ke + '\')" class="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 dark:border-blue-700 dark:hover:border-blue-600 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md" title="Pengajuan Anggaran"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg></button>';
                 }
+                // Jika status = 1 tapi bukan perubahan terakhir, tombol tidak ditampilkan
+
+                // Tombol Edit (kuning dengan icon pencil) - hanya untuk status belum disetujui
+                if (item.statusanggaran == 0) {
+                    actions += '<button onclick="editAnggaran(\'' + item.periode + '\', \'' + item.perubahan_ke + '\')" class="p-2 text-yellow-600 bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 hover:border-yellow-300 dark:bg-yellow-900/30 dark:text-yellow-400 dark:hover:bg-yellow-900/50 dark:border-yellow-700 dark:hover:border-yellow-600 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md" title="Edit Anggaran"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg></button>';
+                }
+
+                // Tombol Lihat (abu-abu dengan icon eye) - selalu ada
+                actions += '<button onclick="viewAnggaran(\'' + item.periode + '\', \'' + item.perubahan_ke + '\')" class="p-2 text-gray-600 bg-gray-50 hover:bg-gray-100 border border-gray-200 hover:border-gray-300 dark:bg-gray-900/30 dark:text-gray-400 dark:hover:bg-gray-900/50 dark:border-gray-700 dark:hover:border-gray-600 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md" title="Lihat"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></button>';
+
                 actions += '</div>';
 
                 html += `
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                         <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">${index + 1}</td>
                         <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
-                            <div class="text-sm font-medium text-gray-900 dark:text-white">${item.periode}</div>
-                        </td>
-                        <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
-                            <div class="text-sm font-medium text-gray-900 dark:text-white">${item.perubahan_ke}</div>
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">${periodeDisplay}</div>
                         </td>
                         <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
                             <div class="text-sm font-medium text-gray-900 dark:text-white">${totalAnggaran}</div>
@@ -389,13 +423,19 @@
                             <div class="text-sm text-gray-900 dark:text-white">${item.keterangan || '-'}</div>
                         </td>
                         <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
-                            <div class="text-sm text-gray-900 dark:text-white">${item.user_input || '-'}</div>
+                            <div class="text-sm text-gray-900 dark:text-white">${item.user_input ? (item.user_input.nama_lengkap || item.user_input.username) : '-'}</div>
                         </td>
                         <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
                             <div class="text-sm text-gray-900 dark:text-white">${tanggalInput}</div>
                         </td>
                         <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
                             ${statusBadge}
+                        </td>
+                        <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
+                            <div class="text-sm text-gray-900 dark:text-white">${item.user_app || '-'}</div>
+                        </td>
+                        <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
+                            <div class="text-sm text-gray-900 dark:text-white">${tanggalApproval}</div>
                         </td>
                         <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
                             ${actions}
@@ -405,9 +445,19 @@
             });
             $('#dataTableBody').html(html);
         }).fail(function(xhr, status, error) {
-            $('#loadingIndicator').addClass('hidden');
             console.error('Error loading data:', error);
-            toastr.error('Gagal memuat data');
+            $('#dataTableBody').html(`
+                <tr>
+                    <td colspan="10" class="px-6 py-4 text-center text-red-500">
+                        <div class="flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Error loading data: ${error}
+                        </div>
+                    </td>
+                </tr>
+            `);
         });
     }
 
@@ -635,6 +685,30 @@
             $('#anggaranModalLabel').text('Edit Perubahan Anggaran');
             $('#anggaranModal').removeClass('hidden');
         });
+    }
+
+    function uploadAnggaran(periode, perubahanKe) {
+        // Fungsi untuk mengajukan perubahan anggaran
+        if (confirm('Apakah Anda yakin ingin mengajukan perubahan anggaran ini?')) {
+            $.ajax({
+                url: '{{ route("anggaran.perubahan-anggaran.upload", [":periode", ":perubahanKe"]) }}'.replace(':periode', periode).replace(':perubahanKe', perubahanKe)
+                , type: 'POST'
+                , headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+                , success: function(response) {
+                    if (response.success) {
+                        toastr.success('Pengajuan perubahan anggaran berhasil');
+                        loadData();
+                    } else {
+                        toastr.error(response.message);
+                    }
+                }
+                , error: function(xhr) {
+                    toastr.error(xhr.responseJSON.message || 'Gagal mengajukan perubahan anggaran');
+                }
+            });
+        }
     }
 
     function deleteAnggaran(periode, perubahanKe) {

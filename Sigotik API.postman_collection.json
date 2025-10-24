@@ -1,0 +1,2132 @@
+{
+	"info": {
+		"_postman_id": "51c276f7-d3af-4915-9603-9f668ad7b222",
+		"name": "Sigotik API",
+		"description": "Collection untuk API Sistem Manajemen BBM Kapal (Sigotik)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13546099",
+		"_collection_link": "https://bold-zodiac-442628.postman.co/workspace/FAUZAN~3a7f907d-3e36-477e-8b76-857a08602c37/collection/13546099-51c276f7-d3af-4915-9603-9f668ad7b222?action=share&source=collection_link&creator=13546099"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin2\",\n    \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/auth/login",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login user dan mendapatkan access token"
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"password123\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/auth/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Login berhasil\",\n    \"data\": {\n        \"user\": {\n            \"id\": 1,\n            \"username\": \"admin\",\n            \"nama_lengkap\": \"Administrator\",\n            \"email\": \"admin@example.com\",\n            \"nip\": \"123456789\",\n            \"golongan\": \"IV/a\",\n            \"m_upt_code\": \"UPT001\"\n        },\n        \"token\": \"1|abcdef1234567890...\",\n        \"token_type\": \"Bearer\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "s6|pFagyA8WqNQr5hcbzIxAUUy1ivb15ALd0I038KUO",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{access_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/auth/logout",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Logout user dan revoke access token"
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/auth/logout",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"logout"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"Logout berhasil\"\n}"
+						}
+					]
+				},
+				{
+					"name": "get profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "8|Di7QF2gJI0sm4ZCiDE87C4ZGN3wHWWnWcOdO5mkV",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/user/profile",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"profile"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "get profile",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/user/profile",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"user",
+										"profile"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "Text",
+							"header": [
+								{
+									"key": "Host",
+									"value": "localhost:8000"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 09 Oct 2025 10:07:07 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 09 Oct 2025 10:07:07 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "close"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.33"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"user\": {\n        \"conf_user_id\": 1,\n        \"username\": \"admin\",\n        \"m_upt_code\": \"000\",\n        \"conf_group_id\": 1,\n        \"email\": \"admin@sigotik.com\",\n        \"is_active\": \"1\",\n        \"nama_lengkap\": \"Administrator\",\n        \"nip\": \"000000000000000000\",\n        \"golongan\": \"IV/a\",\n        \"date_insert\": \"2025-10-09T07:25:53.000000Z\",\n        \"user_insert\": \"system\",\n        \"date_update\": \"2025-10-09T07:25:53.000000Z\",\n        \"user_update\": \"system\"\n    }\n}"
+						}
+					]
+				}
+			],
+			"description": "Endpoints untuk autentikasi user"
+		},
+		{
+			"name": "Data Master - UPT",
+			"item": [
+				{
+					"name": "Get All UPT",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/public/upts",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"public",
+								"upts"
+							]
+						},
+						"description": "Mendapatkan daftar semua UPT (Unit Pelaksana Teknis)"
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/public/upts",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"public",
+										"upts"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"upt_id\": 1,\n            \"upt_code\": \"UPT001\",\n            \"upt_name\": \"Unit Pelaksana Teknis Jakarta\",\n            \"upt_address\": \"Jl. Sudirman No. 1, Jakarta\",\n            \"upt_phone\": \"021-1234567\",\n            \"upt_email\": \"upt.jakarta@example.com\",\n            \"is_active\": 1\n        }\n    ]\n}"
+						}
+					]
+				}
+			],
+			"description": "Endpoints untuk manajemen UPT (Unit Pelaksana Teknis)"
+		},
+		{
+			"name": "Data Master - Kapal",
+			"item": [
+				{
+					"name": "Get All Kapal",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "https://earthier-alani-uprightly.ngrok-free.dev/",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/public/kapals",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"public",
+								"kapals"
+							]
+						},
+						"description": "Mendapatkan daftar semua Kapal"
+					},
+					"response": [
+						{
+							"name": "Success Response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{base_url_develop}}/api/v1/public/kapals",
+									"host": [
+										"{{base_url_develop}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"public",
+										"kapals"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": null,
+							"header": [
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 15 Oct 2025 00:35:51 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 15 Oct 2025 00:35:51 GMT"
+								},
+								{
+									"key": "Host",
+									"value": "earthier-alani-uprightly.ngrok-free.dev"
+								},
+								{
+									"key": "Ngrok-Agent-Ips",
+									"value": "182.253.59.176"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.33"
+								},
+								{
+									"key": "X-Ratelimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-Ratelimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"m_kapal_id\": 5,\n            \"nama_kapal\": \"KRI Arjuna\",\n            \"code_kapal\": \"KAPAL-005\",\n            \"m_upt_code\": \"000\",\n            \"bobot\": \"60.00\",\n            \"panjang\": \"24.00\",\n            \"tinggi\": \"6.00\",\n            \"lebar\": \"9.00\",\n            \"main_engine\": \"YANMAR 6AY-WGT\",\n            \"jml_main_engine\": 2,\n            \"pk_main_engine\": \"600 HP\",\n            \"aux_engine_utama\": \"MITSUBISHI 4D 30\",\n            \"jml_aux_engine_utama\": 1,\n            \"pk_aux_engine_utama\": \"120 HP\",\n            \"gerak_engine\": \"Diesel\",\n            \"aux_engine_emergency\": \"Emergency Engine\",\n            \"galangan_pembuat\": \"PT. Galangan Indonesia\",\n            \"kapasitas_tangki\": \"7000\",\n            \"jml_tangki\": 2,\n            \"tahun_buat\": 2022,\n            \"jml_abk\": 14,\n            \"nama_nakoda\": \"Kapten Laut (P) Abdul Rahman\",\n            \"nip_nakoda\": \"789016543210987654\",\n            \"jabatan_nakoda\": \"Nakhoda\",\n            \"pangkat_nakoda\": \"III/d\",\n            \"golongan_nakoda\": \"III/d\",\n            \"gambar_kapal\": \"kri-arjuna.jpg\",\n            \"lampiran_kapal\": \"lampiran-kri-arjuna.pdf\",\n            \"nama_kkm\": \"Fatimah Zahra\",\n            \"nip_kkm\": \"890127654321098765\",\n            \"jabatan_kkm\": \"KKM\",\n            \"pangkat_kkm\": \"III/c\",\n            \"golongan_kkm\": \"III/c\",\n            \"date_insert\": \"2025-10-15T00:33:10.000000Z\",\n            \"user_insert\": \"admin\",\n            \"date_update\": \"2025-10-15T00:33:10.000000Z\",\n            \"user_update\": \"admin\",\n            \"upt\": {\n                \"m_upt_id\": 1,\n                \"nama\": \"UPT Pusat Jakarta\",\n                \"code\": \"000\",\n                \"alamat1\": \"Jl. Medan Merdeka Selatan No. 1\",\n                \"alamat2\": \"Gambir, Jakarta Pusat\",\n                \"alamat3\": \"DKI Jakarta\",\n                \"kota\": \"Jakarta\",\n                \"zona_waktu_upt\": \"WIB\",\n                \"nama_petugas\": \"Dr. Bambang Sutrisno, M.M.\",\n                \"nip_petugas\": \"196501011990031001\",\n                \"jabatan_petugas\": \"Kepala UPT\",\n                \"pangkat_petugas\": \"IV/a\",\n                \"date_insert\": \"2025-10-15T00:33:10.000000Z\",\n                \"user_insert\": \"system\",\n                \"date_update\": \"2025-10-15T00:33:10.000000Z\",\n                \"user_update\": \"system\"\n            }\n        },\n        {\n            \"m_kapal_id\": 3,\n            \"nama_kapal\": \"KRI Bahari\",\n            \"code_kapal\": \"KAPAL-003\",\n            \"m_upt_code\": \"000\",\n            \"bobot\": \"55.00\",\n            \"panjang\": \"22.00\",\n            \"tinggi\": \"5.50\",\n            \"lebar\": \"8.50\",\n            \"main_engine\": \"YANMAR 6AY-WGT\",\n            \"jml_main_engine\": 2,\n            \"pk_main_engine\": \"550 HP\",\n            \"aux_engine_utama\": \"MITSUBISHI 4D 30\",\n            \"jml_aux_engine_utama\": 1,\n            \"pk_aux_engine_utama\": \"110 HP\",\n            \"gerak_engine\": \"Diesel\",\n            \"aux_engine_emergency\": \"Emergency Engine\",\n            \"galangan_pembuat\": \"PT. Galangan Indonesia\",\n            \"kapasitas_tangki\": \"6000\",\n            \"jml_tangki\": 2,\n            \"tahun_buat\": 2021,\n            \"jml_abk\": 12,\n            \"nama_nakoda\": \"Kapten Laut (P) Maria Santos\",\n            \"nip_nakoda\": \"567890123456789012\",\n            \"jabatan_nakoda\": \"Nakhoda\",\n            \"pangkat_nakoda\": \"III/d\",\n            \"golongan_nakoda\": \"III/d\",\n            \"gambar_kapal\": \"kri-bahari.jpg\",\n            \"lampiran_kapal\": \"lampiran-kri-bahari.pdf\",\n            \"nama_kkm\": \"Carlos Rodriguez\",\n            \"nip_kkm\": \"678901234567890123\",\n            \"jabatan_kkm\": \"KKM\",\n            \"pangkat_kkm\": \"III/c\",\n            \"golongan_kkm\": \"III/c\",\n            \"date_insert\": \"2025-10-15T00:33:10.000000Z\",\n            \"user_insert\": \"admin\",\n            \"date_update\": \"2025-10-15T00:33:10.000000Z\",\n            \"user_update\": \"admin\",\n            \"upt\": {\n                \"m_upt_id\": 1,\n                \"nama\": \"UPT Pusat Jakarta\",\n                \"code\": \"000\",\n                \"alamat1\": \"Jl. Medan Merdeka Selatan No. 1\",\n                \"alamat2\": \"Gambir, Jakarta Pusat\",\n                \"alamat3\": \"DKI Jakarta\",\n                \"kota\": \"Jakarta\",\n                \"zona_waktu_upt\": \"WIB\",\n                \"nama_petugas\": \"Dr. Bambang Sutrisno, M.M.\",\n                \"nip_petugas\": \"196501011990031001\",\n                \"jabatan_petugas\": \"Kepala UPT\",\n                \"pangkat_petugas\": \"IV/a\",\n                \"date_insert\": \"2025-10-15T00:33:10.000000Z\",\n                \"user_insert\": \"system\",\n                \"date_update\": \"2025-10-15T00:33:10.000000Z\",\n                \"user_update\": \"system\"\n            }\n        },\n        {\n            \"m_kapal_id\": 6,\n            \"nama_kapal\": \"KRI Bima Sakti\",\n            \"code_kapal\": \"KAPAL-006\",\n            \"m_upt_code\": \"000\",\n            \"bobot\": \"65.00\",\n            \"panjang\": \"26.00\",\n            \"tinggi\": \"6.50\",\n            \"lebar\": \"9.50\",\n            \"main_engine\": \"YANMAR 6AY-WGT\",\n            \"jml_main_engine\": 2,\n            \"pk_main_engine\": \"650 HP\",\n            \"aux_engine_utama\": \"MITSUBISHI 4D 30\",\n            \"jml_aux_engine_utama\": 1,\n            \"pk_aux_engine_utama\": \"130 HP\",\n            \"gerak_engine\": \"Diesel\",\n            \"aux_engine_emergency\": \"Emergency Engine\",\n            \"galangan_pembuat\": \"PT. Galangan Indonesia\",\n            \"kapasitas_tangki\": \"8000\",\n            \"jml_tangki\": 2,\n            \"tahun_buat\": 2023,\n            \"jml_abk\": 16,\n            \"nama_nakoda\": \"Kapten Laut (P) Bima Sakti\",\n            \"nip_nakoda\": \"901234567890123456\",\n            \"jabatan_nakoda\": \"Nakhoda\",\n            \"pangkat_nakoda\": \"IV/a\",\n            \"golongan_nakoda\": \"IV/a\",\n            \"gambar_kapal\": \"kri-bima-sakti.jpg\",\n            \"lampiran_kapal\": \"lampiran-kri-bima-sakti.pdf\",\n            \"nama_kkm\": \"Sari Dewi\",\n            \"nip_kkm\": \"012345678901234567\",\n            \"jabatan_kkm\": \"KKM\",\n            \"pangkat_kkm\": \"IV/a\",\n            \"golongan_kkm\": \"IV/a\",\n            \"date_insert\": \"2025-10-15T00:33:10.000000Z\",\n            \"user_insert\": \"admin\",\n            \"date_update\": \"2025-10-15T00:33:10.000000Z\",\n            \"user_update\": \"admin\",\n            \"upt\": {\n                \"m_upt_id\": 1,\n                \"nama\": \"UPT Pusat Jakarta\",\n                \"code\": \"000\",\n                \"alamat1\": \"Jl. Medan Merdeka Selatan No. 1\",\n                \"alamat2\": \"Gambir, Jakarta Pusat\",\n                \"alamat3\": \"DKI Jakarta\",\n                \"kota\": \"Jakarta\",\n                \"zona_waktu_upt\": \"WIB\",\n                \"nama_petugas\": \"Dr. Bambang Sutrisno, M.M.\",\n                \"nip_petugas\": \"196501011990031001\",\n                \"jabatan_petugas\": \"Kepala UPT\",\n                \"pangkat_petugas\": \"IV/a\",\n                \"date_insert\": \"2025-10-15T00:33:10.000000Z\",\n                \"user_insert\": \"system\",\n                \"date_update\": \"2025-10-15T00:33:10.000000Z\",\n                \"user_update\": \"system\"\n            }\n        },\n        {\n            \"m_kapal_id\": 7,\n            \"nama_kapal\": \"KRI Gajah Mada\",\n            \"code_kapal\": \"KAPAL-007\",\n            \"m_upt_code\": \"000\",\n            \"bobot\": \"70.00\",\n            \"panjang\": \"28.00\",\n            \"tinggi\": \"7.00\",\n            \"lebar\": \"10.00\",\n            \"main_engine\": \"YANMAR 6AY-WGT\",\n            \"jml_main_engine\": 2,\n            \"pk_main_engine\": \"700 HP\",\n            \"aux_engine_utama\": \"MITSUBISHI 4D 30\",\n            \"jml_aux_engine_utama\": 1,\n            \"pk_aux_engine_utama\": \"140 HP\",\n            \"gerak_engine\": \"Diesel\",\n            \"aux_engine_emergency\": \"Emergency Engine\",\n            \"galangan_pembuat\": \"PT. Galangan Indonesia\",\n            \"kapasitas_tangki\": \"9000\",\n            \"jml_tangki\": 2,\n            \"tahun_buat\": 2024,\n            \"jml_abk\": 18,\n            \"nama_nakoda\": \"Kapten Laut (P) Gajah Mada\",\n            \"nip_nakoda\": \"123456789012345678\",\n            \"jabatan_nakoda\": \"Nakhoda\",\n            \"pangkat_nakoda\": \"IV/b\",\n            \"golongan_nakoda\": \"IV/b\",\n            \"gambar_kapal\": \"kri-gajah-mada.jpg\",\n            \"lampiran_kapal\": \"lampiran-kri-gajah-mada.pdf\",\n            \"nama_kkm\": \"Kartika Sari\",\n            \"nip_kkm\": \"234567890123456789\",\n            \"jabatan_kkm\": \"KKM\",\n            \"pangkat_kkm\": \"IV/b\",\n            \"golongan_kkm\": \"IV/b\",\n            \"date_insert\": \"2025-10-15T00:33:10.000000Z\",\n            \"user_insert\": \"admin\",\n            \"date_update\": \"2025-10-15T00:33:10.000000Z\",\n            \"user_update\": \"admin\",\n            \"upt\": {\n                \"m_upt_id\": 1,\n                \"nama\": \"UPT Pusat Jakarta\",\n                \"code\": \"000\",\n                \"alamat1\": \"Jl. Medan Merdeka Selatan No. 1\",\n                \"alamat2\": \"Gambir, Jakarta Pusat\",\n                \"alamat3\": \"DKI Jakarta\",\n                \"kota\": \"Jakarta\",\n                \"zona_waktu_upt\": \"WIB\",\n                \"nama_petugas\": \"Dr. Bambang Sutrisno, M.M.\",\n                \"nip_petugas\": \"196501011990031001\",\n                \"jabatan_petugas\": \"Kepala UPT\",\n                \"pangkat_petugas\": \"IV/a\",\n                \"date_insert\": \"2025-10-15T00:33:10.000000Z\",\n                \"user_insert\": \"system\",\n                \"date_update\": \"2025-10-15T00:33:10.000000Z\",\n                \"user_update\": \"system\"\n            }\n        },\n        {\n            \"m_kapal_id\": 4,\n            \"nama_kapal\": \"KRI Maritim\",\n            \"code_kapal\": \"KAPAL-004\",\n            \"m_upt_code\": \"000\",\n            \"bobot\": \"40.00\",\n            \"panjang\": \"16.00\",\n            \"tinggi\": \"4.00\",\n            \"lebar\": \"7.00\",\n            \"main_engine\": \"YANMAR 6GH-UTE\",\n            \"jml_main_engine\": 2,\n            \"pk_main_engine\": \"400 HP\",\n            \"aux_engine_utama\": \"MITSUBISHI 4D 30\",\n            \"jml_aux_engine_utama\": 1,\n            \"pk_aux_engine_utama\": \"80 HP\",\n            \"gerak_engine\": \"Diesel\",\n            \"aux_engine_emergency\": \"Emergency Engine\",\n            \"galangan_pembuat\": \"PT. Galangan Indonesia\",\n            \"kapasitas_tangki\": \"3000\",\n            \"jml_tangki\": 2,\n            \"tahun_buat\": 2018,\n            \"jml_abk\": 6,\n            \"nama_nakoda\": \"Kapten Laut (P) David Lee\",\n            \"nip_nakoda\": \"123450987654321098\",\n            \"jabatan_nakoda\": \"Nakhoda\",\n            \"pangkat_nakoda\": \"III/c\",\n            \"golongan_nakoda\": \"III/c\",\n            \"gambar_kapal\": \"kri-maritim.jpg\",\n            \"lampiran_kapal\": \"lampiran-kri-maritim.pdf\",\n            \"nama_kkm\": \"Lisa Chen\",\n            \"nip_kkm\": \"234561098765432109\",\n            \"jabatan_kkm\": \"KKM\",\n            \"pangkat_kkm\": \"III/b\",\n            \"golongan_kkm\": \"III/b\",\n            \"date_insert\": \"2025-10-15T00:33:10.000000Z\",\n            \"user_insert\": \"admin\",\n            \"date_update\": \"2025-10-15T00:33:10.000000Z\",\n            \"user_update\": \"admin\",\n            \"upt\": {\n                \"m_upt_id\": 1,\n                \"nama\": \"UPT Pusat Jakarta\",\n                \"code\": \"000\",\n                \"alamat1\": \"Jl. Medan Merdeka Selatan No. 1\",\n                \"alamat2\": \"Gambir, Jakarta Pusat\",\n                \"alamat3\": \"DKI Jakarta\",\n                \"kota\": \"Jakarta\",\n                \"zona_waktu_upt\": \"WIB\",\n                \"nama_petugas\": \"Dr. Bambang Sutrisno, M.M.\",\n                \"nip_petugas\": \"196501011990031001\",\n                \"jabatan_petugas\": \"Kepala UPT\",\n                \"pangkat_petugas\": \"IV/a\",\n                \"date_insert\": \"2025-10-15T00:33:10.000000Z\",\n                \"user_insert\": \"system\",\n                \"date_update\": \"2025-10-15T00:33:10.000000Z\",\n                \"user_update\": \"system\"\n            }\n        },\n        {\n            \"m_kapal_id\": 1,\n            \"nama_kapal\": \"KRI Nusantara\",\n            \"code_kapal\": \"KAPAL-001\",\n            \"m_upt_code\": \"000\",\n            \"bobot\": \"50.00\",\n            \"panjang\": \"20.00\",\n            \"tinggi\": \"5.00\",\n            \"lebar\": \"8.00\",\n            \"main_engine\": \"YANMAR 6GH-UTE\",\n            \"jml_main_engine\": 2,\n            \"pk_main_engine\": \"500 HP\",\n            \"aux_engine_utama\": \"MITSUBISHI 4D 30\",\n            \"jml_aux_engine_utama\": 1,\n            \"pk_aux_engine_utama\": \"100 HP\",\n            \"gerak_engine\": \"Diesel\",\n            \"aux_engine_emergency\": \"Emergency Engine\",\n            \"galangan_pembuat\": \"PT. Galangan Indonesia\",\n            \"kapasitas_tangki\": \"5000\",\n            \"jml_tangki\": 2,\n            \"tahun_buat\": 2020,\n            \"jml_abk\": 10,\n            \"nama_nakoda\": \"Kapten Laut (P) Bambang Sutrisno\",\n            \"nip_nakoda\": \"123456789012345678\",\n            \"jabatan_nakoda\": \"Nakhoda\",\n            \"pangkat_nakoda\": \"III/c\",\n            \"golongan_nakoda\": \"III/c\",\n            \"gambar_kapal\": \"kri-nusantara.jpg\",\n            \"lampiran_kapal\": \"lampiran-kri-nusantara.pdf\",\n            \"nama_kkm\": \"Siti Aminah\",\n            \"nip_kkm\": \"987654321098765432\",\n            \"jabatan_kkm\": \"KKM\",\n            \"pangkat_kkm\": \"III/b\",\n            \"golongan_kkm\": \"III/b\",\n            \"date_insert\": \"2025-10-15T00:33:10.000000Z\",\n            \"user_insert\": \"admin\",\n            \"date_update\": \"2025-10-15T00:33:10.000000Z\",\n            \"user_update\": \"admin\",\n            \"upt\": {\n                \"m_upt_id\": 1,\n                \"nama\": \"UPT Pusat Jakarta\",\n                \"code\": \"000\",\n                \"alamat1\": \"Jl. Medan Merdeka Selatan No. 1\",\n                \"alamat2\": \"Gambir, Jakarta Pusat\",\n                \"alamat3\": \"DKI Jakarta\",\n                \"kota\": \"Jakarta\",\n                \"zona_waktu_upt\": \"WIB\",\n                \"nama_petugas\": \"Dr. Bambang Sutrisno, M.M.\",\n                \"nip_petugas\": \"196501011990031001\",\n                \"jabatan_petugas\": \"Kepala UPT\",\n                \"pangkat_petugas\": \"IV/a\",\n                \"date_insert\": \"2025-10-15T00:33:10.000000Z\",\n                \"user_insert\": \"system\",\n                \"date_update\": \"2025-10-15T00:33:10.000000Z\",\n                \"user_update\": \"system\"\n            }\n        },\n        {\n            \"m_kapal_id\": 2,\n            \"nama_kapal\": \"KRI Samudera\",\n            \"code_kapal\": \"KAPAL-002\",\n            \"m_upt_code\": \"000\",\n            \"bobot\": \"45.00\",\n            \"panjang\": \"18.00\",\n            \"tinggi\": \"4.50\",\n            \"lebar\": \"7.50\",\n            \"main_engine\": \"YANMAR 6AY-WGT\",\n            \"jml_main_engine\": 2,\n            \"pk_main_engine\": \"450 HP\",\n            \"aux_engine_utama\": \"MITSUBISHI 4D 30\",\n            \"jml_aux_engine_utama\": 1,\n            \"pk_aux_engine_utama\": \"90 HP\",\n            \"gerak_engine\": \"Diesel\",\n            \"aux_engine_emergency\": \"Emergency Engine\",\n            \"galangan_pembuat\": \"PT. Galangan Indonesia\",\n            \"kapasitas_tangki\": \"4000\",\n            \"jml_tangki\": 2,\n            \"tahun_buat\": 2019,\n            \"jml_abk\": 8,\n            \"nama_nakoda\": \"Kapten Laut (P) Ahmad Rahman\",\n            \"nip_nakoda\": \"234567890123456789\",\n            \"jabatan_nakoda\": \"Nakhoda\",\n            \"pangkat_nakoda\": \"IV/a\",\n            \"golongan_nakoda\": \"IV/a\",\n            \"gambar_kapal\": \"kri-samudera.jpg\",\n            \"lampiran_kapal\": \"lampiran-kri-samudera.pdf\",\n            \"nama_kkm\": \"Siti Nurhaliza\",\n            \"nip_kkm\": \"345678901234567890\",\n            \"jabatan_kkm\": \"KKM\",\n            \"pangkat_kkm\": \"III/d\",\n            \"golongan_kkm\": \"III/d\",\n            \"date_insert\": \"2025-10-15T00:33:10.000000Z\",\n            \"user_insert\": \"admin\",\n            \"date_update\": \"2025-10-15T00:33:10.000000Z\",\n            \"user_update\": \"admin\",\n            \"upt\": {\n                \"m_upt_id\": 1,\n                \"nama\": \"UPT Pusat Jakarta\",\n                \"code\": \"000\",\n                \"alamat1\": \"Jl. Medan Merdeka Selatan No. 1\",\n                \"alamat2\": \"Gambir, Jakarta Pusat\",\n                \"alamat3\": \"DKI Jakarta\",\n                \"kota\": \"Jakarta\",\n                \"zona_waktu_upt\": \"WIB\",\n                \"nama_petugas\": \"Dr. Bambang Sutrisno, M.M.\",\n                \"nip_petugas\": \"196501011990031001\",\n                \"jabatan_petugas\": \"Kepala UPT\",\n                \"pangkat_petugas\": \"IV/a\",\n                \"date_insert\": \"2025-10-15T00:33:10.000000Z\",\n                \"user_insert\": \"system\",\n                \"date_update\": \"2025-10-15T00:33:10.000000Z\",\n                \"user_update\": \"system\"\n            }\n        }\n    ]\n}"
+						}
+					]
+				}
+			],
+			"description": "Endpoints untuk manajemen Kapal"
+		},
+		{
+			"name": "Public Data",
+			"item": [
+				{
+					"name": "Get Status BA Options",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/public/status-ba-options",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"public",
+								"status-ba-options"
+							]
+						},
+						"description": "Mendapatkan opsi status BA (Berita Acara)"
+					},
+					"response": [
+						{
+							"name": "Get Status BA Options",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{base_url_develop}}/api/v1/public/status-ba-options",
+									"host": [
+										"{{base_url_develop}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"public",
+										"status-ba-options"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "Text",
+							"header": [
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 13 Oct 2025 02:03:33 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 13 Oct 2025 02:03:33 GMT"
+								},
+								{
+									"key": "Host",
+									"value": "earthier-alani-uprightly.ngrok-free.dev"
+								},
+								{
+									"key": "Ngrok-Agent-Ips",
+									"value": "182.253.59.176"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.33"
+								},
+								{
+									"key": "X-Ratelimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-Ratelimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        \"BA Default\",\n        \"BA Penerimaan BBM\",\n        \"BA Peminjaman BBM\",\n        \"BA Penitipan BBM\",\n        \"BA Pemeriksaan Sarana Pengisian\",\n        \"BA Penerimaan Hibah BBM\",\n        \"BA Sebelum Pelayaran\",\n        \"BA Penggunaan BBM\",\n        \"BA Pengembalian BBM\",\n        \"BA Penerimaan Pengembalian BBM\",\n        \"BA Penerimaan Pinjaman BBM\",\n        \"BA Pengembalian Pinjaman BBM\",\n        \"BA Pemberi Hibah BBM Kapal Pengawas\",\n        \"BA Penerima Hibah BBM Kapal Pengawas\",\n        \"BA Penerima Hibah BBM Instansi Lain\",\n        \"BA Akhir Bulan\"\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Status Trans Options",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/public/status-trans-options",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"public",
+								"status-trans-options"
+							]
+						},
+						"description": "Mendapatkan opsi status transaksi"
+					},
+					"response": [
+						{
+							"name": "Get Status Trans Options",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{base_url_develop}}/api/v1/public/status-trans-options",
+									"host": [
+										"{{base_url_develop}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"public",
+										"status-trans-options"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "Text",
+							"header": [
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 13 Oct 2025 02:04:01 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Mon, 13 Oct 2025 02:04:01 GMT"
+								},
+								{
+									"key": "Host",
+									"value": "earthier-alani-uprightly.ngrok-free.dev"
+								},
+								{
+									"key": "Ngrok-Agent-Ips",
+									"value": "182.253.59.176"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.33"
+								},
+								{
+									"key": "X-Ratelimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-Ratelimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        \"Input\",\n        \"Approval\",\n        \"Batal\"\n    ]\n}"
+						}
+					]
+				}
+			],
+			"description": "Endpoints untuk data publik yang tidak memerlukan autentikasi"
+		},
+		{
+			"name": "BA Sebelum Pengisian",
+			"item": [
+				{
+					"name": "Get BA Sebelum Pengisian Data",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "8|ezRG5ZS5YiGoyt7g52iCP3aAt2XCHepSbqg0QAQn",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/ba-sebelum-pengisian/data",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-sebelum-pengisian",
+								"data"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get BA Sebelum Pengisian Data",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{base_url_develop}}/api/v1/ba-sebelum-pengisian/data",
+									"host": [
+										"{{base_url_develop}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"ba-sebelum-pengisian",
+										"data"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "Text",
+							"header": [
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 14 Oct 2025 01:02:27 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 14 Oct 2025 01:02:27 GMT"
+								},
+								{
+									"key": "Host",
+									"value": "earthier-alani-uprightly.ngrok-free.dev"
+								},
+								{
+									"key": "Ngrok-Agent-Ips",
+									"value": "182.253.59.176"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.33"
+								},
+								{
+									"key": "X-Ratelimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-Ratelimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"trans_id\": 9,\n            \"kapal_code\": \"KAPAL-002\",\n            \"nomor_surat\": \"B.213/PSDKPLan.5/HIU.05/PW.380/IX/2025321\",\n            \"tanggal_surat\": \"2025-10-11T00:00:00.000000Z\",\n            \"jam_surat\": \"00:29\",\n            \"zona_waktu_surat\": \"WIB\",\n            \"lokasi_surat\": \"Jakarta\",\n            \"volume_sisa\": \"240.00\",\n            \"volume_sebelum\": \"0.00\",\n            \"tanggal_sebelum\": null,\n            \"volume_pengisian\": \"0.00\",\n            \"tanggal_pengisian\": null,\n            \"volume_pemakaian\": \"0.00\",\n            \"nomor_nota\": \"\",\n            \"keterangan_jenis_bbm\": \"\",\n            \"penyedia\": \"\",\n            \"status_ba\": 2,\n            \"jenis_tranport\": \"0\",\n            \"status_segel\": 1,\n            \"gambar_segel\": null,\n            \"status_flowmeter\": 1,\n            \"gambar_flowmeter\": null,\n            \"kesimpulan\": 1,\n            \"status_modul\": 0,\n            \"status_trans\": 0,\n            \"no_tagihan\": \"\",\n            \"status_bayar\": 0,\n            \"status_upload\": 0,\n            \"file_upload\": \"\",\n            \"link_modul_ba\": null,\n            \"link_modul_ba_tamb\": null,\n            \"link_modul_temp\": null,\n            \"no_so\": null,\n            \"jabatan_staf_pangkalan\": \"Administrator\",\n            \"nama_staf_pangkalan\": \"\",\n            \"nip_staf\": \"000000000000000000\",\n            \"an_staf\": 0,\n            \"nama_nahkoda\": \"Ahmad Rahman\",\n            \"nip_nahkoda\": \"234567890123456789\",\n            \"jabatan_nahkoda\": null,\n            \"pangkat_nahkoda\": null,\n            \"golongan_nahkoda\": null,\n            \"an_nakhoda\": 0,\n            \"nama_kkm\": \"Siti Nurhaliza\",\n            \"nama_staf_pagkalan\": \"Administrator\",\n            \"nip_kkm\": \"345678901234567890\",\n            \"jabatan_kkm\": null,\n            \"pangkat_kkm\": null,\n            \"golongan_kkm\": null,\n            \"an_kkm\": 0,\n            \"nama_an\": null,\n            \"nip_an\": null,\n            \"jabatan_an\": null,\n            \"pangkat_an\": null,\n            \"golongan_an\": null,\n            \"peruntukan\": null,\n            \"penggunaan\": null,\n            \"nama_penitip\": null,\n            \"jabatan_penitip\": null,\n            \"alamat_penitip\": null,\n            \"penyedia_penitip\": null,\n            \"alamat_penyedia_penitip\": null,\n            \"kapal_code_temp\": null,\n            \"nama_nahkoda_temp\": null,\n            \"nip_nahkoda_temp\": null,\n            \"jabatan_nahkoda_temp\": null,\n            \"pangkat_nahkoda_temp\": null,\n            \"golongan_nahkoda_temp\": null,\n            \"nama_kkm_temp\": null,\n            \"nip_kkm_temp\": null,\n            \"jabatan_kkm_temp\": null,\n            \"pangkat_kkm_temp\": null,\n            \"golongan_kkm_temp\": null,\n            \"nama_an_temp\": null,\n            \"nip_an_temp\": null,\n            \"jabatan_an_temp\": null,\n            \"pangkat_an_temp\": null,\n            \"golongan_an_temp\": null,\n            \"an_nakhoda_temp\": null,\n            \"an_kkm_temp\": null,\n            \"status_temp\": null,\n            \"sebab_temp\": null,\n            \"nama_penyedia\": null,\n            \"instansi_temp\": null,\n            \"alamat_instansi_temp\": null,\n            \"nomer_persetujuan\": null,\n            \"tgl_persetujuan\": null,\n            \"m_persetujuan_id\": null,\n            \"lokasi_temp\": null,\n            \"user_input\": \"1\",\n            \"created_at\": \"2025-10-11T17:29:41.000000Z\",\n            \"updated_at\": \"2025-10-11T17:29:41.000000Z\",\n            \"user_app\": \"\",\n            \"tanggal_app\": null,\n            \"kapal\": {\n                \"m_kapal_id\": 2,\n                \"nama_kapal\": \"Kapal Patroli 002\",\n                \"code_kapal\": \"KAPAL-002\",\n                \"m_upt_code\": \"000\",\n                \"bobot\": \"45.00\",\n                \"panjang\": \"18.00\",\n                \"tinggi\": \"4.50\",\n                \"lebar\": \"7.50\",\n                \"main_engine\": \"YANMAR 6AY-WGT\",\n                \"jml_main_engine\": 2,\n                \"pk_main_engine\": \"450 HP\",\n                \"aux_engine_utama\": \"MITSUBISHI 4D 30\",\n                \"jml_aux_engine_utama\": 1,\n                \"pk_aux_engine_utama\": \"90 HP\",\n                \"gerak_engine\": \"Diesel\",\n                \"aux_engine_emergency\": \"Emergency Engine\",\n                \"galangan_pembuat\": \"PT. Galangan Indonesia\",\n                \"kapasitas_tangki\": \"4000\",\n                \"jml_tangki\": 2,\n                \"tahun_buat\": 2019,\n                \"jml_abk\": 8,\n                \"nama_nakoda\": \"Ahmad Rahman\",\n                \"nip_nakoda\": \"234567890123456789\",\n                \"jabatan_nakoda\": \"Nakhoda\",\n                \"pangkat_nakoda\": \"IV/a\",\n                \"golongan_nakoda\": \"IV/a\",\n                \"gambar_kapal\": \"kapal-002.jpg\",\n                \"lampiran_kapal\": \"lampiran-002.pdf\",\n                \"nama_kkm\": \"Siti Nurhaliza\",\n                \"nip_kkm\": \"345678901234567890\",\n                \"jabatan_kkm\": \"KKM\",\n                \"pangkat_kkm\": \"III/d\",\n                \"golongan_kkm\": \"III/d\",\n                \"date_insert\": \"2025-10-09T23:47:11.000000Z\",\n                \"user_insert\": \"admin\",\n                \"date_update\": \"2025-10-09T23:47:11.000000Z\",\n                \"user_update\": \"admin\"\n            }\n        }\n    ],\n    \"pagination\": {\n        \"current_page\": 1,\n        \"last_page\": 1,\n        \"per_page\": 10,\n        \"total\": 1,\n        \"from\": 1,\n        \"to\": 1,\n        \"has_more_pages\": false\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Kapal Data for BA Sebelum Pengisian",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "9|SfFRSEveZEBBqsAGG6nNaMVDUlT9IywODwkMtlu4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/ba-sebelum-pengisian/kapal-data",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-sebelum-pengisian",
+								"kapal-data"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get Kapal Data for BA Sebelum Pengisian",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{base_url_develop}}/api/v1/ba-sebelum-pengisian/kapal-data",
+									"host": [
+										"{{base_url_develop}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"ba-sebelum-pengisian",
+										"kapal-data"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "Text",
+							"header": [
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 14 Oct 2025 01:13:17 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 14 Oct 2025 01:13:17 GMT"
+								},
+								{
+									"key": "Host",
+									"value": "earthier-alani-uprightly.ngrok-free.dev"
+								},
+								{
+									"key": "Ngrok-Agent-Ips",
+									"value": "182.253.59.176"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.33"
+								},
+								{
+									"key": "X-Ratelimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-Ratelimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"data\": [\n        {\n            \"m_kapal_id\": 1,\n            \"nama_kapal\": \"Kapal Patroli 001\",\n            \"code_kapal\": \"KAPAL-001\",\n            \"m_upt_code\": \"000\",\n            \"bobot\": \"50.00\",\n            \"panjang\": \"20.00\",\n            \"tinggi\": \"5.00\",\n            \"lebar\": \"8.00\",\n            \"main_engine\": \"YANMAR 6GH-UTE\",\n            \"jml_main_engine\": 2,\n            \"pk_main_engine\": \"500 HP\",\n            \"aux_engine_utama\": \"MITSUBISHI 4D 30\",\n            \"jml_aux_engine_utama\": 1,\n            \"pk_aux_engine_utama\": \"100 HP\",\n            \"gerak_engine\": \"Diesel\",\n            \"aux_engine_emergency\": \"Emergency Engine\",\n            \"galangan_pembuat\": \"PT. Galangan Indonesia\",\n            \"kapasitas_tangki\": \"5000\",\n            \"jml_tangki\": 2,\n            \"tahun_buat\": 2020,\n            \"jml_abk\": 10,\n            \"nama_nakoda\": \"John Doe\",\n            \"nip_nakoda\": \"123456789012345678\",\n            \"jabatan_nakoda\": \"Nakhoda\",\n            \"pangkat_nakoda\": \"III/c\",\n            \"golongan_nakoda\": \"III/c\",\n            \"gambar_kapal\": \"kapal-001.jpg\",\n            \"lampiran_kapal\": \"lampiran-001.pdf\",\n            \"nama_kkm\": \"Jane Doe\",\n            \"nip_kkm\": \"987654321098765432\",\n            \"jabatan_kkm\": \"KKM\",\n            \"pangkat_kkm\": \"III/b\",\n            \"golongan_kkm\": \"III/b\",\n            \"date_insert\": \"2025-10-09T23:47:11.000000Z\",\n            \"user_insert\": \"admin\",\n            \"date_update\": \"2025-10-09T23:47:11.000000Z\",\n            \"user_update\": \"admin\",\n            \"upt\": {\n                \"m_upt_id\": 1,\n                \"nama\": \"Pusat\",\n                \"code\": \"000\",\n                \"alamat1\": \"Jakarta\",\n                \"alamat2\": \"Indonesia\",\n                \"alamat3\": \"\",\n                \"kota\": \"Jakarta\",\n                \"zona_waktu_upt\": \"WIB\",\n                \"nama_petugas\": \"Administrator\",\n                \"nip_petugas\": \"000000000000000000\",\n                \"jabatan_petugas\": \"Administrator\",\n                \"pangkat_petugas\": \"IV/a\",\n                \"date_insert\": \"2025-10-09T23:47:11.000000Z\",\n                \"user_insert\": \"system\",\n                \"date_update\": \"2025-10-09T23:47:11.000000Z\",\n                \"user_update\": \"system\"\n            }\n        },\n        {\n            \"m_kapal_id\": 2,\n            \"nama_kapal\": \"Kapal Patroli 002\",\n            \"code_kapal\": \"KAPAL-002\",\n            \"m_upt_code\": \"000\",\n            \"bobot\": \"45.00\",\n            \"panjang\": \"18.00\",\n            \"tinggi\": \"4.50\",\n            \"lebar\": \"7.50\",\n            \"main_engine\": \"YANMAR 6AY-WGT\",\n            \"jml_main_engine\": 2,\n            \"pk_main_engine\": \"450 HP\",\n            \"aux_engine_utama\": \"MITSUBISHI 4D 30\",\n            \"jml_aux_engine_utama\": 1,\n            \"pk_aux_engine_utama\": \"90 HP\",\n            \"gerak_engine\": \"Diesel\",\n            \"aux_engine_emergency\": \"Emergency Engine\",\n            \"galangan_pembuat\": \"PT. Galangan Indonesia\",\n            \"kapasitas_tangki\": \"4000\",\n            \"jml_tangki\": 2,\n            \"tahun_buat\": 2019,\n            \"jml_abk\": 8,\n            \"nama_nakoda\": \"Ahmad Rahman\",\n            \"nip_nakoda\": \"234567890123456789\",\n            \"jabatan_nakoda\": \"Nakhoda\",\n            \"pangkat_nakoda\": \"IV/a\",\n            \"golongan_nakoda\": \"IV/a\",\n            \"gambar_kapal\": \"kapal-002.jpg\",\n            \"lampiran_kapal\": \"lampiran-002.pdf\",\n            \"nama_kkm\": \"Siti Nurhaliza\",\n            \"nip_kkm\": \"345678901234567890\",\n            \"jabatan_kkm\": \"KKM\",\n            \"pangkat_kkm\": \"III/d\",\n            \"golongan_kkm\": \"III/d\",\n            \"date_insert\": \"2025-10-09T23:47:11.000000Z\",\n            \"user_insert\": \"admin\",\n            \"date_update\": \"2025-10-09T23:47:11.000000Z\",\n            \"user_update\": \"admin\",\n            \"upt\": {\n                \"m_upt_id\": 1,\n                \"nama\": \"Pusat\",\n                \"code\": \"000\",\n                \"alamat1\": \"Jakarta\",\n                \"alamat2\": \"Indonesia\",\n                \"alamat3\": \"\",\n                \"kota\": \"Jakarta\",\n                \"zona_waktu_upt\": \"WIB\",\n                \"nama_petugas\": \"Administrator\",\n                \"nip_petugas\": \"000000000000000000\",\n                \"jabatan_petugas\": \"Administrator\",\n                \"pangkat_petugas\": \"IV/a\",\n                \"date_insert\": \"2025-10-09T23:47:11.000000Z\",\n                \"user_insert\": \"system\",\n                \"date_update\": \"2025-10-09T23:47:11.000000Z\",\n                \"user_update\": \"system\"\n            }\n        },\n        {\n            \"m_kapal_id\": 3,\n            \"nama_kapal\": \"Kapal Patroli 003\",\n            \"code_kapal\": \"KAPAL-003\",\n            \"m_upt_code\": \"000\",\n            \"bobot\": \"55.00\",\n            \"panjang\": \"22.00\",\n            \"tinggi\": \"5.50\",\n            \"lebar\": \"8.50\",\n            \"main_engine\": \"YANMAR 6AY-WGT\",\n            \"jml_main_engine\": 2,\n            \"pk_main_engine\": \"550 HP\",\n            \"aux_engine_utama\": \"MITSUBISHI 4D 30\",\n            \"jml_aux_engine_utama\": 1,\n            \"pk_aux_engine_utama\": \"110 HP\",\n            \"gerak_engine\": \"Diesel\",\n            \"aux_engine_emergency\": \"Emergency Engine\",\n            \"galangan_pembuat\": \"PT. Galangan Indonesia\",\n            \"kapasitas_tangki\": \"6000\",\n            \"jml_tangki\": 2,\n            \"tahun_buat\": 2021,\n            \"jml_abk\": 12,\n            \"nama_nakoda\": \"Maria Santos\",\n            \"nip_nakoda\": \"567890123456789012\",\n            \"jabatan_nakoda\": \"Nakhoda\",\n            \"pangkat_nakoda\": \"III/d\",\n            \"golongan_nakoda\": \"III/d\",\n            \"gambar_kapal\": \"kapal-003.jpg\",\n            \"lampiran_kapal\": \"lampiran-003.pdf\",\n            \"nama_kkm\": \"Carlos Rodriguez\",\n            \"nip_kkm\": \"678901234567890123\",\n            \"jabatan_kkm\": \"KKM\",\n            \"pangkat_kkm\": \"III/c\",\n            \"golongan_kkm\": \"III/c\",\n            \"date_insert\": \"2025-10-09T23:47:11.000000Z\",\n            \"user_insert\": \"admin\",\n            \"date_update\": \"2025-10-09T23:47:11.000000Z\",\n            \"user_update\": \"admin\",\n            \"upt\": {\n                \"m_upt_id\": 1,\n                \"nama\": \"Pusat\",\n                \"code\": \"000\",\n                \"alamat1\": \"Jakarta\",\n                \"alamat2\": \"Indonesia\",\n                \"alamat3\": \"\",\n                \"kota\": \"Jakarta\",\n                \"zona_waktu_upt\": \"WIB\",\n                \"nama_petugas\": \"Administrator\",\n                \"nip_petugas\": \"000000000000000000\",\n                \"jabatan_petugas\": \"Administrator\",\n                \"pangkat_petugas\": \"IV/a\",\n                \"date_insert\": \"2025-10-09T23:47:11.000000Z\",\n                \"user_insert\": \"system\",\n                \"date_update\": \"2025-10-09T23:47:11.000000Z\",\n                \"user_update\": \"system\"\n            }\n        },\n        {\n            \"m_kapal_id\": 4,\n            \"nama_kapal\": \"Kapal Patroli 004\",\n            \"code_kapal\": \"KAPAL-004\",\n            \"m_upt_code\": \"000\",\n            \"bobot\": \"40.00\",\n            \"panjang\": \"16.00\",\n            \"tinggi\": \"4.00\",\n            \"lebar\": \"7.00\",\n            \"main_engine\": \"YANMAR 6GH-UTE\",\n            \"jml_main_engine\": 2,\n            \"pk_main_engine\": \"400 HP\",\n            \"aux_engine_utama\": \"MITSUBISHI 4D 30\",\n            \"jml_aux_engine_utama\": 1,\n            \"pk_aux_engine_utama\": \"80 HP\",\n            \"gerak_engine\": \"Diesel\",\n            \"aux_engine_emergency\": \"Emergency Engine\",\n            \"galangan_pembuat\": \"PT. Galangan Indonesia\",\n            \"kapasitas_tangki\": \"3000\",\n            \"jml_tangki\": 2,\n            \"tahun_buat\": 2018,\n            \"jml_abk\": 6,\n            \"nama_nakoda\": \"David Lee\",\n            \"nip_nakoda\": \"123450987654321098\",\n            \"jabatan_nakoda\": \"Nakhoda\",\n            \"pangkat_nakoda\": \"III/c\",\n            \"golongan_nakoda\": \"III/c\",\n            \"gambar_kapal\": \"kapal-004.jpg\",\n            \"lampiran_kapal\": \"lampiran-004.pdf\",\n            \"nama_kkm\": \"Lisa Chen\",\n            \"nip_kkm\": \"234561098765432109\",\n            \"jabatan_kkm\": \"KKM\",\n            \"pangkat_kkm\": \"III/b\",\n            \"golongan_kkm\": \"III/b\",\n            \"date_insert\": \"2025-10-09T23:47:11.000000Z\",\n            \"user_insert\": \"admin\",\n            \"date_update\": \"2025-10-09T23:47:11.000000Z\",\n            \"user_update\": \"admin\",\n            \"upt\": {\n                \"m_upt_id\": 1,\n                \"nama\": \"Pusat\",\n                \"code\": \"000\",\n                \"alamat1\": \"Jakarta\",\n                \"alamat2\": \"Indonesia\",\n                \"alamat3\": \"\",\n                \"kota\": \"Jakarta\",\n                \"zona_waktu_upt\": \"WIB\",\n                \"nama_petugas\": \"Administrator\",\n                \"nip_petugas\": \"000000000000000000\",\n                \"jabatan_petugas\": \"Administrator\",\n                \"pangkat_petugas\": \"IV/a\",\n                \"date_insert\": \"2025-10-09T23:47:11.000000Z\",\n                \"user_insert\": \"system\",\n                \"date_update\": \"2025-10-09T23:47:11.000000Z\",\n                \"user_update\": \"system\"\n            }\n        },\n        {\n            \"m_kapal_id\": 5,\n            \"nama_kapal\": \"Kapal Patroli 005\",\n            \"code_kapal\": \"KAPAL-005\",\n            \"m_upt_code\": \"000\",\n            \"bobot\": \"60.00\",\n            \"panjang\": \"24.00\",\n            \"tinggi\": \"6.00\",\n            \"lebar\": \"9.00\",\n            \"main_engine\": \"YANMAR 6AY-WGT\",\n            \"jml_main_engine\": 2,\n            \"pk_main_engine\": \"600 HP\",\n            \"aux_engine_utama\": \"MITSUBISHI 4D 30\",\n            \"jml_aux_engine_utama\": 1,\n            \"pk_aux_engine_utama\": \"120 HP\",\n            \"gerak_engine\": \"Diesel\",\n            \"aux_engine_emergency\": \"Emergency Engine\",\n            \"galangan_pembuat\": \"PT. Galangan Indonesia\",\n            \"kapasitas_tangki\": \"7000\",\n            \"jml_tangki\": 2,\n            \"tahun_buat\": 2022,\n            \"jml_abk\": 14,\n            \"nama_nakoda\": \"Abdul Rahman\",\n            \"nip_nakoda\": \"789016543210987654\",\n            \"jabatan_nakoda\": \"Nakhoda\",\n            \"pangkat_nakoda\": \"III/d\",\n            \"golongan_nakoda\": \"III/d\",\n            \"gambar_kapal\": \"kapal-005.jpg\",\n            \"lampiran_kapal\": \"lampiran-005.pdf\",\n            \"nama_kkm\": \"Fatimah Zahra\",\n            \"nip_kkm\": \"890127654321098765\",\n            \"jabatan_kkm\": \"KKM\",\n            \"pangkat_kkm\": \"III/c\",\n            \"golongan_kkm\": \"III/c\",\n            \"date_insert\": \"2025-10-09T23:47:11.000000Z\",\n            \"user_insert\": \"admin\",\n            \"date_update\": \"2025-10-09T23:47:11.000000Z\",\n            \"user_update\": \"admin\",\n            \"upt\": {\n                \"m_upt_id\": 1,\n                \"nama\": \"Pusat\",\n                \"code\": \"000\",\n                \"alamat1\": \"Jakarta\",\n                \"alamat2\": \"Indonesia\",\n                \"alamat3\": \"\",\n                \"kota\": \"Jakarta\",\n                \"zona_waktu_upt\": \"WIB\",\n                \"nama_petugas\": \"Administrator\",\n                \"nip_petugas\": \"000000000000000000\",\n                \"jabatan_petugas\": \"Administrator\",\n                \"pangkat_petugas\": \"IV/a\",\n                \"date_insert\": \"2025-10-09T23:47:11.000000Z\",\n                \"user_insert\": \"system\",\n                \"date_update\": \"2025-10-09T23:47:11.000000Z\",\n                \"user_update\": \"system\"\n            }\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Create BA Sebelum Pengisian",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "10|pW1rGqUpCI8V0ZgtOa4EfbLui3pAtvGMI8HKOHRt",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code_kapal\": \"KAPAL-001\",\n  \"lokasi_surat\": \"Jakarta\",\n  \"nomor_surat\": \"BA/SPG/001/20ddsa2a4\",\n  \"tanggal_surat\": \"1973-06-13\",\n  \"jam_surat\": \"04:34\",\n  \"zona_waktu_surat\": \"WIB\",\n  \"volume_sisa\": 58,\n  \"an_staf\": 1,\n  \"jabatan_staf_pangkalan\": \"Administrator\",\n  \"nama_staf_pagkalan\": \"Administrator\",\n  \"nip_staf\": \"000000000000000000\",\n  \"an_nakhoda\": 1,\n  \"nama_nahkoda\": \"John Doe\",\n  \"nip_nahkoda\": \"123456789012345678\",\n  \"an_kkm\": 1,\n  \"nama_kkm\": \"Jane Doe\",\n  \"nip_kkm\": \"987654321098765432\"\n}\n"
+						},
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/ba-sebelum-pengisian",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-sebelum-pengisian"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Create BA Sebelum Pengisian",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"code_kapal\": \"KAPAL-001\",\n  \"lokasi_surat\": \"Jakarta\",\n  \"nomor_surat\": \"BA/SPG/001/20ddsa2a4\",\n  \"tanggal_surat\": \"1973-06-13\",\n  \"jam_surat\": \"04:34\",\n  \"zona_waktu_surat\": \"WIB\",\n  \"volume_sisa\": 58,\n  \"an_staf\": 1,\n  \"jabatan_staf_pangkalan\": \"Administrator\",\n  \"nama_staf_pagkalan\": \"Administrator\",\n  \"nip_staf\": \"000000000000000000\",\n  \"an_nakhoda\": 1,\n  \"nama_nahkoda\": \"John Doe\",\n  \"nip_nahkoda\": \"123456789012345678\",\n  \"an_kkm\": 1,\n  \"nama_kkm\": \"Jane Doe\",\n  \"nip_kkm\": \"987654321098765432\"\n}\n"
+								},
+								"url": {
+									"raw": "{{base_url_develop}}/api/v1/ba-sebelum-pengisian",
+									"host": [
+										"{{base_url_develop}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"ba-sebelum-pengisian"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "Text",
+							"header": [
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 14 Oct 2025 01:23:16 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 14 Oct 2025 01:23:16 GMT"
+								},
+								{
+									"key": "Host",
+									"value": "earthier-alani-uprightly.ngrok-free.dev"
+								},
+								{
+									"key": "Ngrok-Agent-Ips",
+									"value": "182.253.59.176"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.33"
+								},
+								{
+									"key": "X-Ratelimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-Ratelimit-Remaining",
+									"value": "58"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"message\": \"BA Sebelum Pengisian berhasil dibuat\",\n    \"data\": {\n        \"trans_id\": 14,\n        \"kapal_code\": \"KAPAL-001\",\n        \"nomor_surat\": \"BA/SPG/001/20ddsa2a4\",\n        \"tanggal_surat\": \"1973-06-13T00:00:00.000000Z\",\n        \"jam_surat\": \"04:34\",\n        \"zona_waktu_surat\": \"WIB\",\n        \"lokasi_surat\": \"Jakarta\",\n        \"volume_sisa\": \"58.00\",\n        \"status_ba\": 2,\n        \"jabatan_staf_pangkalan\": \"Administrator\",\n        \"nama_staf_pagkalan\": \"Administrator\",\n        \"nip_staf\": \"000000000000000000\",\n        \"nama_nahkoda\": \"John Doe\",\n        \"nip_nahkoda\": \"123456789012345678\",\n        \"nama_kkm\": \"Jane Doe\",\n        \"nip_kkm\": \"987654321098765432\",\n        \"an_staf\": 1,\n        \"an_nakhoda\": 1,\n        \"an_kkm\": 1,\n        \"user_input\": \"1\",\n        \"status_trans\": 0,\n        \"updated_at\": \"2025-10-14T01:23:16.000000Z\",\n        \"created_at\": \"2025-10-14T01:23:16.000000Z\",\n        \"kapal\": {\n            \"m_kapal_id\": 1,\n            \"nama_kapal\": \"Kapal Patroli 001\",\n            \"code_kapal\": \"KAPAL-001\",\n            \"m_upt_code\": \"000\",\n            \"bobot\": \"50.00\",\n            \"panjang\": \"20.00\",\n            \"tinggi\": \"5.00\",\n            \"lebar\": \"8.00\",\n            \"main_engine\": \"YANMAR 6GH-UTE\",\n            \"jml_main_engine\": 2,\n            \"pk_main_engine\": \"500 HP\",\n            \"aux_engine_utama\": \"MITSUBISHI 4D 30\",\n            \"jml_aux_engine_utama\": 1,\n            \"pk_aux_engine_utama\": \"100 HP\",\n            \"gerak_engine\": \"Diesel\",\n            \"aux_engine_emergency\": \"Emergency Engine\",\n            \"galangan_pembuat\": \"PT. Galangan Indonesia\",\n            \"kapasitas_tangki\": \"5000\",\n            \"jml_tangki\": 2,\n            \"tahun_buat\": 2020,\n            \"jml_abk\": 10,\n            \"nama_nakoda\": \"John Doe\",\n            \"nip_nakoda\": \"123456789012345678\",\n            \"jabatan_nakoda\": \"Nakhoda\",\n            \"pangkat_nakoda\": \"III/c\",\n            \"golongan_nakoda\": \"III/c\",\n            \"gambar_kapal\": \"kapal-001.jpg\",\n            \"lampiran_kapal\": \"lampiran-001.pdf\",\n            \"nama_kkm\": \"Jane Doe\",\n            \"nip_kkm\": \"987654321098765432\",\n            \"jabatan_kkm\": \"KKM\",\n            \"pangkat_kkm\": \"III/b\",\n            \"golongan_kkm\": \"III/b\",\n            \"date_insert\": \"2025-10-09T23:47:11.000000Z\",\n            \"user_insert\": \"admin\",\n            \"date_update\": \"2025-10-09T23:47:11.000000Z\",\n            \"user_update\": \"admin\"\n        }\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update BA Sebelum Pengisian",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "10|pW1rGqUpCI8V0ZgtOa4EfbLui3pAtvGMI8HKOHRt",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code_kapal\": \"KAPAL-001\",\n  \"lokasi_surat\": \"Jakarta\",\n  \"nomor_surat\": \"BA/SPG/001/sdadsa\",\n  \"tanggal_surat\": \"1973-06-13\",\n  \"jam_surat\": \"04:34\",\n  \"zona_waktu_surat\": \"WIB\",\n  \"volume_sisa\": 58,\n  \"an_staf\": 1,\n  \"jabatan_staf_pangkalan\": \"Administrator\",\n  \"nama_staf_pagkalan\": \"Administrator\",\n  \"nip_staf\": \"000000000000000000\",\n  \"an_nakhoda\": 1,\n  \"nama_nahkoda\": \"John Doe\",\n  \"nip_nahkoda\": \"123456789012345678\",\n  \"an_kkm\": 1,\n  \"nama_kkm\": \"Jane Doe\",\n  \"nip_kkm\": \"987654321098765432\"\n}\n"
+						},
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/ba-sebelum-pengisian/14",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-sebelum-pengisian",
+								"14"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Hapus BA Sebelum Pengisian",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "10|pW1rGqUpCI8V0ZgtOa4EfbLui3pAtvGMI8HKOHRt",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code_kapal\": \"KAPAL-001\",\n  \"lokasi_surat\": \"Jakarta\",\n  \"nomor_surat\": \"BA/SPG/001/sdadsa\",\n  \"tanggal_surat\": \"1973-06-13\",\n  \"jam_surat\": \"04:34\",\n  \"zona_waktu_surat\": \"WIB\",\n  \"volume_sisa\": 58,\n  \"an_staf\": 1,\n  \"jabatan_staf_pangkalan\": \"Administrator\",\n  \"nama_staf_pagkalan\": \"Administrator\",\n  \"nip_staf\": \"000000000000000000\",\n  \"an_nakhoda\": 1,\n  \"nama_nahkoda\": \"John Doe\",\n  \"nip_nahkoda\": \"123456789012345678\",\n  \"an_kkm\": 1,\n  \"nama_kkm\": \"Jane Doe\",\n  \"nip_kkm\": \"987654321098765432\"\n}\n"
+						},
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/ba-sebelum-pengisian/14",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-sebelum-pengisian",
+								"14"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate PDF",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "10|pW1rGqUpCI8V0ZgtOa4EfbLui3pAtvGMI8HKOHRt",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code_kapal\": \"KAPAL-001\",\n  \"lokasi_surat\": \"Jakarta\",\n  \"nomor_surat\": \"BA/SPG/001/sdadsa\",\n  \"tanggal_surat\": \"1973-06-13\",\n  \"jam_surat\": \"04:34\",\n  \"zona_waktu_surat\": \"WIB\",\n  \"volume_sisa\": 58,\n  \"an_staf\": 1,\n  \"jabatan_staf_pangkalan\": \"Administrator\",\n  \"nama_staf_pagkalan\": \"Administrator\",\n  \"nip_staf\": \"000000000000000000\",\n  \"an_nakhoda\": 1,\n  \"nama_nahkoda\": \"John Doe\",\n  \"nip_nahkoda\": \"123456789012345678\",\n  \"an_kkm\": 1,\n  \"nama_kkm\": \"Jane Doe\",\n  \"nip_kkm\": \"987654321098765432\"\n}\n"
+						},
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/ba-sebelum-pengisian/13/pdf",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-sebelum-pengisian",
+								"13",
+								"pdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Dokumen",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "10|pW1rGqUpCI8V0ZgtOa4EfbLui3pAtvGMI8HKOHRt",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "document",
+									"type": "file",
+									"src": "postman-cloud:///1efe8e87-7de7-48a0-8147-c9fde792c21f"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/ba-sebelum-pengisian/13/upload",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-sebelum-pengisian",
+								"13",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get BA Sebelum Pengisian by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "10|pW1rGqUpCI8V0ZgtOa4EfbLui3pAtvGMI8HKOHRt",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/ba-sebelum-pengisian/13",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-sebelum-pengisian",
+								"13"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get BA Sebelum Pengisian by ID",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{base_url_develop}}/api/v1/ba-sebelum-pengisian/13",
+									"host": [
+										"{{base_url_develop}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"ba-sebelum-pengisian",
+										"13"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "Text",
+							"header": [
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 14 Oct 2025 01:26:12 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 14 Oct 2025 01:26:12 GMT"
+								},
+								{
+									"key": "Host",
+									"value": "earthier-alani-uprightly.ngrok-free.dev"
+								},
+								{
+									"key": "Ngrok-Agent-Ips",
+									"value": "182.253.59.176"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.33"
+								},
+								{
+									"key": "X-Ratelimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-Ratelimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"id\": \"13\",\n    \"data\": {\n        \"trans_id\": 13,\n        \"kapal_code\": \"KAPAL-001\",\n        \"nomor_surat\": \"BA/SPG/001/20d2a4\",\n        \"tanggal_surat\": \"1973-06-13T00:00:00.000000Z\",\n        \"jam_surat\": \"04:34\",\n        \"zona_waktu_surat\": \"WIB\",\n        \"lokasi_surat\": \"Jakarta\",\n        \"volume_sisa\": \"58.00\",\n        \"volume_sebelum\": \"0.00\",\n        \"tanggal_sebelum\": null,\n        \"volume_pengisian\": \"0.00\",\n        \"tanggal_pengisian\": null,\n        \"volume_pemakaian\": \"0.00\",\n        \"nomor_nota\": \"\",\n        \"keterangan_jenis_bbm\": \"\",\n        \"penyedia\": \"\",\n        \"status_ba\": 2,\n        \"jenis_tranport\": \"0\",\n        \"status_segel\": 1,\n        \"gambar_segel\": null,\n        \"status_flowmeter\": 1,\n        \"gambar_flowmeter\": null,\n        \"kesimpulan\": 1,\n        \"status_modul\": 0,\n        \"status_trans\": 0,\n        \"no_tagihan\": \"\",\n        \"status_bayar\": 0,\n        \"status_upload\": 0,\n        \"file_upload\": \"\",\n        \"link_modul_ba\": null,\n        \"link_modul_ba_tamb\": null,\n        \"link_modul_temp\": null,\n        \"no_so\": null,\n        \"jabatan_staf_pangkalan\": \"Administrator\",\n        \"nama_staf_pangkalan\": \"\",\n        \"nip_staf\": \"000000000000000000\",\n        \"an_staf\": 1,\n        \"nama_nahkoda\": \"John Doe\",\n        \"nip_nahkoda\": \"123456789012345678\",\n        \"jabatan_nahkoda\": null,\n        \"pangkat_nahkoda\": null,\n        \"golongan_nahkoda\": null,\n        \"an_nakhoda\": 1,\n        \"nama_kkm\": \"Jane Doe\",\n        \"nama_staf_pagkalan\": \"Administrator\",\n        \"nip_kkm\": \"987654321098765432\",\n        \"jabatan_kkm\": null,\n        \"pangkat_kkm\": null,\n        \"golongan_kkm\": null,\n        \"an_kkm\": 1,\n        \"nama_an\": null,\n        \"nip_an\": null,\n        \"jabatan_an\": null,\n        \"pangkat_an\": null,\n        \"golongan_an\": null,\n        \"peruntukan\": null,\n        \"penggunaan\": null,\n        \"nama_penitip\": null,\n        \"jabatan_penitip\": null,\n        \"alamat_penitip\": null,\n        \"penyedia_penitip\": null,\n        \"alamat_penyedia_penitip\": null,\n        \"kapal_code_temp\": null,\n        \"nama_nahkoda_temp\": null,\n        \"nip_nahkoda_temp\": null,\n        \"jabatan_nahkoda_temp\": null,\n        \"pangkat_nahkoda_temp\": null,\n        \"golongan_nahkoda_temp\": null,\n        \"nama_kkm_temp\": null,\n        \"nip_kkm_temp\": null,\n        \"jabatan_kkm_temp\": null,\n        \"pangkat_kkm_temp\": null,\n        \"golongan_kkm_temp\": null,\n        \"nama_an_temp\": null,\n        \"nip_an_temp\": null,\n        \"jabatan_an_temp\": null,\n        \"pangkat_an_temp\": null,\n        \"golongan_an_temp\": null,\n        \"an_nakhoda_temp\": null,\n        \"an_kkm_temp\": null,\n        \"status_temp\": null,\n        \"sebab_temp\": null,\n        \"nama_penyedia\": null,\n        \"instansi_temp\": null,\n        \"alamat_instansi_temp\": null,\n        \"nomer_persetujuan\": null,\n        \"tgl_persetujuan\": null,\n        \"m_persetujuan_id\": null,\n        \"lokasi_temp\": null,\n        \"user_input\": \"1\",\n        \"created_at\": \"2025-10-14T01:23:00.000000Z\",\n        \"updated_at\": \"2025-10-14T01:23:00.000000Z\",\n        \"user_app\": \"\",\n        \"tanggal_app\": null,\n        \"kapal\": {\n            \"m_kapal_id\": 1,\n            \"nama_kapal\": \"Kapal Patroli 001\",\n            \"code_kapal\": \"KAPAL-001\",\n            \"m_upt_code\": \"000\",\n            \"bobot\": \"50.00\",\n            \"panjang\": \"20.00\",\n            \"tinggi\": \"5.00\",\n            \"lebar\": \"8.00\",\n            \"main_engine\": \"YANMAR 6GH-UTE\",\n            \"jml_main_engine\": 2,\n            \"pk_main_engine\": \"500 HP\",\n            \"aux_engine_utama\": \"MITSUBISHI 4D 30\",\n            \"jml_aux_engine_utama\": 1,\n            \"pk_aux_engine_utama\": \"100 HP\",\n            \"gerak_engine\": \"Diesel\",\n            \"aux_engine_emergency\": \"Emergency Engine\",\n            \"galangan_pembuat\": \"PT. Galangan Indonesia\",\n            \"kapasitas_tangki\": \"5000\",\n            \"jml_tangki\": 2,\n            \"tahun_buat\": 2020,\n            \"jml_abk\": 10,\n            \"nama_nakoda\": \"John Doe\",\n            \"nip_nakoda\": \"123456789012345678\",\n            \"jabatan_nakoda\": \"Nakhoda\",\n            \"pangkat_nakoda\": \"III/c\",\n            \"golongan_nakoda\": \"III/c\",\n            \"gambar_kapal\": \"kapal-001.jpg\",\n            \"lampiran_kapal\": \"lampiran-001.pdf\",\n            \"nama_kkm\": \"Jane Doe\",\n            \"nip_kkm\": \"987654321098765432\",\n            \"jabatan_kkm\": \"KKM\",\n            \"pangkat_kkm\": \"III/b\",\n            \"golongan_kkm\": \"III/b\",\n            \"date_insert\": \"2025-10-09T23:47:11.000000Z\",\n            \"user_insert\": \"admin\",\n            \"date_update\": \"2025-10-09T23:47:11.000000Z\",\n            \"user_update\": \"admin\"\n        }\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "BA Pemeriksaan Sarana Pengisian",
+			"item": [
+				{
+					"name": "Get BA Pemeriksaan Sarana Pengisian",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "8|ezRG5ZS5YiGoyt7g52iCP3aAt2XCHepSbqg0QAQn",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/ba-pemeriksaan-sarana-pengisian/data",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-pemeriksaan-sarana-pengisian",
+								"data"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Kapal Data for BA Pemeriksaan Sarana Pengisian",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "9|SfFRSEveZEBBqsAGG6nNaMVDUlT9IywODwkMtlu4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/ba-pemeriksaan-sarana-pengisian/kapal-data",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-pemeriksaan-sarana-pengisian",
+								"kapal-data"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create BA Pemeriksaan Sarana Pengisian",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "10|pW1rGqUpCI8V0ZgtOa4EfbLui3pAtvGMI8HKOHRt",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code_kapal\": \"KAPAL-001\",\n  \"lokasi_surat\": \"Jakarta\",\n  \"nomor_surat\": \"BA/SPG/001/20ddsa2a4\",\n  \"tanggal_surat\": \"1973-06-13\",\n  \"jam_surat\": \"04:34\",\n  \"zona_waktu_surat\": \"WIB\",\n  \"volume_sisa\": 58,\n  \"an_staf\": 1,\n  \"jabatan_staf_pangkalan\": \"Administrator\",\n  \"nama_staf_pagkalan\": \"Administrator\",\n  \"nip_staf\": \"000000000000000000\",\n  \"an_nakhoda\": 1,\n  \"nama_nahkoda\": \"John Doe\",\n  \"nip_nahkoda\": \"123456789012345678\",\n  \"an_kkm\": 1,\n  \"nama_kkm\": \"Jane Doe\",\n  \"nip_kkm\": \"987654321098765432\"\n}\n"
+						},
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/ba-pemeriksaan-sarana-pengisian",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-pemeriksaan-sarana-pengisian"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update BA Pemeriksaan Sarana Pengisian",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "10|pW1rGqUpCI8V0ZgtOa4EfbLui3pAtvGMI8HKOHRt",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code_kapal\": \"KAPAL-001\",\n  \"lokasi_surat\": \"Jakarta\",\n  \"nomor_surat\": \"BA/SPG/001/sdadsa\",\n  \"tanggal_surat\": \"1973-06-13\",\n  \"jam_surat\": \"04:34\",\n  \"zona_waktu_surat\": \"WIB\",\n  \"volume_sisa\": 58,\n  \"an_staf\": 1,\n  \"jabatan_staf_pangkalan\": \"Administrator\",\n  \"nama_staf_pagkalan\": \"Administrator\",\n  \"nip_staf\": \"000000000000000000\",\n  \"an_nakhoda\": 1,\n  \"nama_nahkoda\": \"John Doe\",\n  \"nip_nahkoda\": \"123456789012345678\",\n  \"an_kkm\": 1,\n  \"nama_kkm\": \"Jane Doe\",\n  \"nip_kkm\": \"987654321098765432\"\n}\n"
+						},
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/ba-pemeriksaan-sarana-pengisian/14",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-pemeriksaan-sarana-pengisian",
+								"14"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Hapus BA Pemeriksaan Sarana Pengisian",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "10|pW1rGqUpCI8V0ZgtOa4EfbLui3pAtvGMI8HKOHRt",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code_kapal\": \"KAPAL-001\",\n  \"lokasi_surat\": \"Jakarta\",\n  \"nomor_surat\": \"BA/SPG/001/sdadsa\",\n  \"tanggal_surat\": \"1973-06-13\",\n  \"jam_surat\": \"04:34\",\n  \"zona_waktu_surat\": \"WIB\",\n  \"volume_sisa\": 58,\n  \"an_staf\": 1,\n  \"jabatan_staf_pangkalan\": \"Administrator\",\n  \"nama_staf_pagkalan\": \"Administrator\",\n  \"nip_staf\": \"000000000000000000\",\n  \"an_nakhoda\": 1,\n  \"nama_nahkoda\": \"John Doe\",\n  \"nip_nahkoda\": \"123456789012345678\",\n  \"an_kkm\": 1,\n  \"nama_kkm\": \"Jane Doe\",\n  \"nip_kkm\": \"987654321098765432\"\n}\n"
+						},
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/ba-pemeriksaan-sarana-pengisian/14",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-pemeriksaan-sarana-pengisian",
+								"14"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate PDF",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "10|pW1rGqUpCI8V0ZgtOa4EfbLui3pAtvGMI8HKOHRt",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"code_kapal\": \"KAPAL-001\",\n  \"lokasi_surat\": \"Jakarta\",\n  \"nomor_surat\": \"BA/SPG/001/sdadsa\",\n  \"tanggal_surat\": \"1973-06-13\",\n  \"jam_surat\": \"04:34\",\n  \"zona_waktu_surat\": \"WIB\",\n  \"volume_sisa\": 58,\n  \"an_staf\": 1,\n  \"jabatan_staf_pangkalan\": \"Administrator\",\n  \"nama_staf_pagkalan\": \"Administrator\",\n  \"nip_staf\": \"000000000000000000\",\n  \"an_nakhoda\": 1,\n  \"nama_nahkoda\": \"John Doe\",\n  \"nip_nahkoda\": \"123456789012345678\",\n  \"an_kkm\": 1,\n  \"nama_kkm\": \"Jane Doe\",\n  \"nip_kkm\": \"987654321098765432\"\n}\n"
+						},
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/ba-pemeriksaan-sarana-pengisian/13/pdf",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-pemeriksaan-sarana-pengisian",
+								"13",
+								"pdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Dokumen",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "10|pW1rGqUpCI8V0ZgtOa4EfbLui3pAtvGMI8HKOHRt",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "document",
+									"type": "file",
+									"src": "postman-cloud:///1efe8e87-7de7-48a0-8147-c9fde792c21f"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/ba-pemeriksaan-sarana-pengisian/13/upload",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-pemeriksaan-sarana-pengisian",
+								"13",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get BA Pemeriksaan Sarana Pengisian by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "10|pW1rGqUpCI8V0ZgtOa4EfbLui3pAtvGMI8HKOHRt",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url_develop}}/api/v1/ba-pemeriksaan-sarana-pengisian/13",
+							"host": [
+								"{{base_url_develop}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-pemeriksaan-sarana-pengisian",
+								"13"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Get BA Sebelum Pengisian by ID",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{base_url_develop}}/api/v1/ba-sebelum-pengisian/13",
+									"host": [
+										"{{base_url_develop}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"ba-sebelum-pengisian",
+										"13"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "Text",
+							"header": [
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 14 Oct 2025 01:26:12 GMT"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 14 Oct 2025 01:26:12 GMT"
+								},
+								{
+									"key": "Host",
+									"value": "earthier-alani-uprightly.ngrok-free.dev"
+								},
+								{
+									"key": "Ngrok-Agent-Ips",
+									"value": "182.253.59.176"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "PHP/7.4.33"
+								},
+								{
+									"key": "X-Ratelimit-Limit",
+									"value": "60"
+								},
+								{
+									"key": "X-Ratelimit-Remaining",
+									"value": "59"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"success\": true,\n    \"id\": \"13\",\n    \"data\": {\n        \"trans_id\": 13,\n        \"kapal_code\": \"KAPAL-001\",\n        \"nomor_surat\": \"BA/SPG/001/20d2a4\",\n        \"tanggal_surat\": \"1973-06-13T00:00:00.000000Z\",\n        \"jam_surat\": \"04:34\",\n        \"zona_waktu_surat\": \"WIB\",\n        \"lokasi_surat\": \"Jakarta\",\n        \"volume_sisa\": \"58.00\",\n        \"volume_sebelum\": \"0.00\",\n        \"tanggal_sebelum\": null,\n        \"volume_pengisian\": \"0.00\",\n        \"tanggal_pengisian\": null,\n        \"volume_pemakaian\": \"0.00\",\n        \"nomor_nota\": \"\",\n        \"keterangan_jenis_bbm\": \"\",\n        \"penyedia\": \"\",\n        \"status_ba\": 2,\n        \"jenis_tranport\": \"0\",\n        \"status_segel\": 1,\n        \"gambar_segel\": null,\n        \"status_flowmeter\": 1,\n        \"gambar_flowmeter\": null,\n        \"kesimpulan\": 1,\n        \"status_modul\": 0,\n        \"status_trans\": 0,\n        \"no_tagihan\": \"\",\n        \"status_bayar\": 0,\n        \"status_upload\": 0,\n        \"file_upload\": \"\",\n        \"link_modul_ba\": null,\n        \"link_modul_ba_tamb\": null,\n        \"link_modul_temp\": null,\n        \"no_so\": null,\n        \"jabatan_staf_pangkalan\": \"Administrator\",\n        \"nama_staf_pangkalan\": \"\",\n        \"nip_staf\": \"000000000000000000\",\n        \"an_staf\": 1,\n        \"nama_nahkoda\": \"John Doe\",\n        \"nip_nahkoda\": \"123456789012345678\",\n        \"jabatan_nahkoda\": null,\n        \"pangkat_nahkoda\": null,\n        \"golongan_nahkoda\": null,\n        \"an_nakhoda\": 1,\n        \"nama_kkm\": \"Jane Doe\",\n        \"nama_staf_pagkalan\": \"Administrator\",\n        \"nip_kkm\": \"987654321098765432\",\n        \"jabatan_kkm\": null,\n        \"pangkat_kkm\": null,\n        \"golongan_kkm\": null,\n        \"an_kkm\": 1,\n        \"nama_an\": null,\n        \"nip_an\": null,\n        \"jabatan_an\": null,\n        \"pangkat_an\": null,\n        \"golongan_an\": null,\n        \"peruntukan\": null,\n        \"penggunaan\": null,\n        \"nama_penitip\": null,\n        \"jabatan_penitip\": null,\n        \"alamat_penitip\": null,\n        \"penyedia_penitip\": null,\n        \"alamat_penyedia_penitip\": null,\n        \"kapal_code_temp\": null,\n        \"nama_nahkoda_temp\": null,\n        \"nip_nahkoda_temp\": null,\n        \"jabatan_nahkoda_temp\": null,\n        \"pangkat_nahkoda_temp\": null,\n        \"golongan_nahkoda_temp\": null,\n        \"nama_kkm_temp\": null,\n        \"nip_kkm_temp\": null,\n        \"jabatan_kkm_temp\": null,\n        \"pangkat_kkm_temp\": null,\n        \"golongan_kkm_temp\": null,\n        \"nama_an_temp\": null,\n        \"nip_an_temp\": null,\n        \"jabatan_an_temp\": null,\n        \"pangkat_an_temp\": null,\n        \"golongan_an_temp\": null,\n        \"an_nakhoda_temp\": null,\n        \"an_kkm_temp\": null,\n        \"status_temp\": null,\n        \"sebab_temp\": null,\n        \"nama_penyedia\": null,\n        \"instansi_temp\": null,\n        \"alamat_instansi_temp\": null,\n        \"nomer_persetujuan\": null,\n        \"tgl_persetujuan\": null,\n        \"m_persetujuan_id\": null,\n        \"lokasi_temp\": null,\n        \"user_input\": \"1\",\n        \"created_at\": \"2025-10-14T01:23:00.000000Z\",\n        \"updated_at\": \"2025-10-14T01:23:00.000000Z\",\n        \"user_app\": \"\",\n        \"tanggal_app\": null,\n        \"kapal\": {\n            \"m_kapal_id\": 1,\n            \"nama_kapal\": \"Kapal Patroli 001\",\n            \"code_kapal\": \"KAPAL-001\",\n            \"m_upt_code\": \"000\",\n            \"bobot\": \"50.00\",\n            \"panjang\": \"20.00\",\n            \"tinggi\": \"5.00\",\n            \"lebar\": \"8.00\",\n            \"main_engine\": \"YANMAR 6GH-UTE\",\n            \"jml_main_engine\": 2,\n            \"pk_main_engine\": \"500 HP\",\n            \"aux_engine_utama\": \"MITSUBISHI 4D 30\",\n            \"jml_aux_engine_utama\": 1,\n            \"pk_aux_engine_utama\": \"100 HP\",\n            \"gerak_engine\": \"Diesel\",\n            \"aux_engine_emergency\": \"Emergency Engine\",\n            \"galangan_pembuat\": \"PT. Galangan Indonesia\",\n            \"kapasitas_tangki\": \"5000\",\n            \"jml_tangki\": 2,\n            \"tahun_buat\": 2020,\n            \"jml_abk\": 10,\n            \"nama_nakoda\": \"John Doe\",\n            \"nip_nakoda\": \"123456789012345678\",\n            \"jabatan_nakoda\": \"Nakhoda\",\n            \"pangkat_nakoda\": \"III/c\",\n            \"golongan_nakoda\": \"III/c\",\n            \"gambar_kapal\": \"kapal-001.jpg\",\n            \"lampiran_kapal\": \"lampiran-001.pdf\",\n            \"nama_kkm\": \"Jane Doe\",\n            \"nip_kkm\": \"987654321098765432\",\n            \"jabatan_kkm\": \"KKM\",\n            \"pangkat_kkm\": \"III/b\",\n            \"golongan_kkm\": \"III/b\",\n            \"date_insert\": \"2025-10-09T23:47:11.000000Z\",\n            \"user_insert\": \"admin\",\n            \"date_update\": \"2025-10-09T23:47:11.000000Z\",\n            \"user_update\": \"admin\"\n        }\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "BA Penerimaan BBM",
+			"item": [
+				{
+					"name": "Get Kapal Data for BA Penerimaan BBM",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/ba-penerimaan-bbm/kapal-data",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-penerimaan-bbm",
+								"kapal-data"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get BA Data for BA Penerimaan BBM",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/ba-penerimaan-bbm/ba-data",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-penerimaan-bbm",
+								"ba-data"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create BA Penerimaan BBM",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nomor_surat\": \"BA/PBBM/001/2024\",\n    \"kapal_code\": \"KAPAL001\",\n    \"tanggal_surat\": \"2024-01-15\",\n    \"lokasi_surat\": \"Jakarta\",\n    \"status_ba\": 1,\n    \"status_trans\": 0,\n    \"keterangan\": \"BA Penerimaan BBM\",\n    \"volume_isi\": 1000,\n    \"harga_perliter\": 15000,\n    \"total_harga\": 15000000,\n    \"penyedia\": \"PT. Pertamina\",\n    \"no_invoice\": \"INV/001/2024\",\n    \"tanggal_invoice\": \"2024-01-15\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/ba-penerimaan-bbm",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-penerimaan-bbm"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get BA Penerimaan BBM by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/ba-penerimaan-bbm/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-penerimaan-bbm",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update BA Penerimaan BBM",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"nomor_surat\": \"BA/PBBM/001/2024\",\n    \"kapal_code\": \"KAPAL001\",\n    \"tanggal_surat\": \"2024-01-15\",\n    \"lokasi_surat\": \"Jakarta\",\n    \"status_ba\": 1,\n    \"status_trans\": 1,\n    \"keterangan\": \"BA Penerimaan BBM - Updated\",\n    \"volume_isi\": 1200,\n    \"harga_perliter\": 15000,\n    \"total_harga\": 18000000,\n    \"penyedia\": \"PT. Pertamina\",\n    \"no_invoice\": \"INV/001/2024\",\n    \"tanggal_invoice\": \"2024-01-15\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/ba-penerimaan-bbm/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-penerimaan-bbm",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete BA Penerimaan BBM",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/ba-penerimaan-bbm/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-penerimaan-bbm",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate PDF BA Penerimaan BBM",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/pdf"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/ba-penerimaan-bbm/1/pdf",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-penerimaan-bbm",
+								"1",
+								"pdf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Document BA Penerimaan BBM",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "document",
+									"type": "file",
+									"src": "/path/to/document.pdf"
+								},
+								{
+									"key": "description",
+									"value": "Document description",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/ba-penerimaan-bbm/1/upload",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"ba-penerimaan-bbm",
+								"1",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"description": "Token yang didapat dari login"
+		},
+		{
+			"key": "base_url_develop",
+			"value": ""
+		}
+	]
+}

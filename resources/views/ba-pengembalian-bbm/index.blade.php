@@ -2,6 +2,11 @@
 
 @section('title', 'BA Pengembalian Bbm')
 
+<!-- Toastr CSS and JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
 @section('content')
 <div class="space-y-6">
     <!-- Header Section -->
@@ -10,12 +15,20 @@
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">BA Pengembalian Bbm</h1>
             <p class="text-gray-600 dark:text-gray-400">Kelola Berita Acara Pengembalian Bbm</p>
         </div>
-        <button id="createBaBtn" class="inline-flex items-center px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 dark:border-blue-700 dark:hover:border-blue-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            Tambah BA
-        </button>
+        <div class="flex gap-2">
+            <button id="helpBtn" class="inline-flex items-center px-4 py-2 text-green-600 bg-green-50 hover:bg-green-100 border border-green-200 hover:border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50 dark:border-green-700 dark:hover:border-green-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Bantuan
+            </button>
+            <button id="createBaBtn" class="inline-flex items-center px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 dark:border-blue-700 dark:hover:border-blue-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Tambah BA
+            </button>
+        </div>
     </div>
 
     <!-- Filter and BA Table in One Card -->
@@ -91,7 +104,6 @@
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Kapal & Lokasi</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Penitip & BA Penitipan</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Volume Pengembalian</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Status</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Aksi</th>
                     </tr>
                 </thead>
@@ -132,6 +144,11 @@
         setupEventHandlers();
         setDefaultDates();
         setupDatePickers();
+
+        // Help button
+        $('#helpBtn').click(function() {
+            $('#helpModal').removeClass('hidden').addClass('flex items-center justify-center');
+        });
 
         // --- Utility Functions (Dipindahkan ke atas untuk akses mudah) ---
 
@@ -252,28 +269,6 @@
          * @param {number|string} status Kode status.
          * @returns {string} Nama warna.
          */
-        function getStatusColor(status) {
-            const colors = {
-                0: 'warning', // Input
-                1: 'success', // Approval
-                2: 'danger' // Batal
-            };
-            return colors[status] || 'secondary';
-        }
-
-        /**
-         * Mendapatkan teks status berdasarkan kode.
-         * @param {number|string} status Kode status.
-         * @returns {string} Teks status.
-         */
-        function getStatusText(status) {
-            const texts = {
-                0: 'Input'
-                , 1: 'Approval'
-                , 2: 'Batal'
-            };
-            return texts[status] || 'Unknown';
-        }
 
         // --- UI/UX Feedback Functions ---
 
@@ -310,8 +305,12 @@
             console.log('setDefaultDates called');
             try {
                 const today = new Date().toISOString().split('T')[0];
+                const now = new Date();
+                const currentTime = now.toTimeString().split(' ')[0].substring(0, 5); // HH:MM format
+
                 // Pastikan elemen tanggal ada sebelum mengatur nilainya
                 if ($('#tanggal_surat').length) $('#tanggal_surat').val(today);
+                if ($('#jam_surat').length) $('#jam_surat').val(currentTime);
                 // Field tanggal_sebelum dan tanggal_pengisian sudah tidak ada di BA Pengembalian BBM
                 console.log('setDefaultDates completed successfully');
             } catch (error) {
@@ -583,7 +582,7 @@
                         const data = response.data;
                         $('#link_ba').val(data.link_ba);
                         $('#volume_sebelum').val(data.volume_sisa);
-                        $('#keterangan_jenis_bbm').val(data.keterangan_jenis_bbm);
+                        $('#keterangan_keterangan_jenis_bbm').val(data.keterangan_keterangan_jenis_bbm);
                         calculateVolumeUsage(); // Hitung ulang setelah memuat data BA
                     } else {
                         // Jika tidak ada data BA sebelumnya, biarkan kosong atau atur ke default
@@ -593,7 +592,7 @@
                             $('#volume_sebelum').val('0');
                             $('#tanggal_sebelum').val('');
                         }
-                        $('#keterangan_jenis_bbm').val('');
+                        $('#keterangan_keterangan_jenis_bbm').val('');
                     }
                 }
                 , error: function(xhr) {
@@ -618,8 +617,12 @@
                 // Clear field baru untuk BA Pengembalian BBM
                 $('#penyedia').val('');
                 $('#no_so').val('');
+                $('#lokasi_surat').val('');
+                $('#volume_sebelum').val('');
+                $('#volume_tangki_saat_ini').val('');
+                $('#volume_pemakaian').val('');
+                $('#keterangan_jenis_bbm').val('');
                 // alamat_penyedia_penitip tidak dihapus, user bisa tetap mengisi manual
-                // Field volume_sebelum dan tanggal_sebelum sudah tidak ada di BA Pengembalian BBM
                 console.log('clearKapalData completed successfully');
             } catch (error) {
                 console.error('Error in clearKapalData:', error);
@@ -630,9 +633,9 @@
         function calculateVolumePengembalian() {
             console.log('calculateVolumePengembalian called');
             try {
-                const volumeSebelum = parseFloat($('#volume_sebelum').val()) || 0;
-                const volumePemakaian = parseFloat($('#volume_pemakaian').val()) || 0;
-                const volumePengembalian = volumeSebelum - volumePemakaian;
+                const volumeTangkiSebelumnya = parseFloat($('#volume_sebelum').val()) || 0;
+                const volumeTangkiSaatIni = parseFloat($('#volume_tangki_saat_ini').val()) || 0;
+                const volumePengembalian = volumeTangkiSebelumnya - volumeTangkiSaatIni;
 
                 if ($('#volumePengembalian').length > 0) {
                     $('#volumePengembalian').text(volumePengembalian.toLocaleString('id-ID', {
@@ -680,17 +683,16 @@
                     if (response.success && response.data) {
                         const baPenitipan = response.data;
 
-                        // Isi data BA Penitipan
+                        // Isi data BA Penitipan (hanya yang otomatis)
                         $('#link_modul_ba').val(baPenitipan.nomor_surat);
-                        $('#penggunaan').val(baPenitipan.penggunaan);
-                        $('#volume_sebelum').val(baPenitipan.volume_sebelum);
+                        // Field volume dan jenis BBM sekarang bisa diinput manual, tidak diisi otomatis
                         $('#penyedia_penitip').val(baPenitipan.penyedia_penitip);
                         $('#nama_penitip').val(baPenitipan.nama_penitip);
                         $('#jabatan_penitip').val(baPenitipan.jabatan_penitip);
                         $('#alamat_penitip').val(baPenitipan.alamat_penitip);
                         // alamat_penyedia_penitip tidak diisi otomatis, user harus input manual
-                        $('#keterangan_jenis_bbm').val(baPenitipan.keterangan_jenis_bbm);
-                        $('#peruntukan').val(baPenitipan.peruntukan);
+                        $('#keterangan_keterangan_jenis_bbm').val(baPenitipan.keterangan_keterangan_jenis_bbm);
+                        $('#penggunaan').val(baPenitipan.penggunaan);
 
                         // Hitung volume pengembalian
                         calculateVolumePengembalian();
@@ -711,14 +713,13 @@
         // Function untuk membersihkan data BA Penitipan
         function clearBaPenitipanData() {
             $('#link_modul_ba').val('');
-            $('#penggunaan').val('');
-            $('#volume_sebelum').val('');
+            // Field volume dan jenis BBM tidak dihapus karena bisa diinput manual
             $('#penyedia_penitip').val('');
             $('#nama_penitip').val('');
             $('#jabatan_penitip').val('');
             $('#alamat_penitip').val('');
             // alamat_penyedia_penitip tidak dihapus, user bisa tetap mengisi manual
-            $('#keterangan_jenis_bbm').val('');
+            $('#keterangan_keterangan_jenis_bbm').val('');
             $('#peruntukan').val('');
             $('#volumePengembalian').text('0 Liter');
 
@@ -824,14 +825,9 @@
                     </td>
                     <td class="px-6 py-4 border border-gray-300 dark:border-gray-600">
                         <div class="text-sm text-gray-900 dark:text-white">
-                            <div class="font-medium">${formatNumber((ba.volume_sebelum || 0) - (ba.volume_pemakaian || 0))} Liter</div>
+                            <div class="font-medium">${formatNumber((ba.volume_sebelum || ba.volume_sebelum || 0) - (ba.volume_tangki_saat_ini || ba.volume_pemakaian || 0))} Liter</div>
                             <div class="text-gray-500 dark:text-gray-400">Volume Pengembalian</div>
                         </div>
-                    </td>
-                    <td class="px-6 py-4 border border-gray-300 dark:border-gray-600">
-                        <span class="px-2 py-1 text-xs font-medium rounded-full bg-${getStatusColor(ba.status_trans)}-100 text-${getStatusColor(ba.status_trans)}-800 dark:bg-${getStatusColor(ba.status_trans)}-900 dark:text-${getStatusColor(ba.status_trans)}-200">
-                            ${getStatusText(ba.status_trans)}
-                        </span>
                     </td>
                     <td class="px-6 py-4 text-right text-sm font-medium border border-gray-300 dark:border-gray-600">
            <div class="flex items-center space-x-2 justify-end">
@@ -994,20 +990,20 @@
                <h6 class="text-lg font-semibold text-orange-900 dark:text-orange-100 mb-4">Volume Pengembalian</h6>
                <div class="space-y-3">
                    <div class="flex justify-between">
-                       <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Volume Sebelumnya:</span>
-                       <span class="text-sm font-semibold text-gray-900 dark:text-white">${formatNumber(data.volume_sebelum || 0)} Liter</span>
+                       <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Volume Tangki Sebelumnya:</span>
+                       <span class="text-sm font-semibold text-gray-900 dark:text-white">${formatNumber(data.volume_sebelum || data.volume_sebelum || 0)} Liter</span>
                    </div>
                    <div class="flex justify-between">
-                       <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Volume Saat Ini:</span>
-                       <span class="text-sm font-semibold text-gray-900 dark:text-white">${formatNumber(data.volume_pemakaian || 0)} Liter</span>
+                       <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Volume Tangki Saat Ini:</span>
+                       <span class="text-sm font-semibold text-gray-900 dark:text-white">${formatNumber(data.volume_tangki_saat_ini || data.volume_pemakaian || 0)} Liter</span>
                    </div>
                    <div class="flex justify-between">
                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Jumlah Penitipan:</span>
-                       <span class="text-sm font-semibold text-gray-900 dark:text-white">${formatNumber(data.penggunaan || 0)} Liter</span>
+                       <span class="text-sm font-semibold text-gray-900 dark:text-white">${formatNumber(data.volume_pemakaian || data.penggunaan || 0)} Liter</span>
                    </div>
                    <div class="flex justify-between">
                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Volume Pengembalian:</span>
-                       <span class="text-sm font-bold text-blue-600 dark:text-blue-400">${formatNumber((data.volume_sebelum || 0) - (data.volume_pemakaian || 0))} Liter</span>
+                       <span class="text-sm font-bold text-blue-600 dark:text-blue-400">${formatNumber((data.volume_sebelum || data.volume_sebelum || 0) - (data.volume_tangki_saat_ini || data.volume_pemakaian || 0))} Liter</span>
                    </div>
                </div>
            </div>
@@ -1018,7 +1014,7 @@
                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                    <div class="flex justify-between">
                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Jenis BBM:</span>
-                       <span class="text-sm font-semibold text-gray-900 dark:text-white">${data.keterangan_jenis_bbm || '-'}</span>
+                       <span class="text-sm font-semibold text-gray-900 dark:text-white">${data.keterangan_keterangan_jenis_bbm || '-'}</span>
                    </div>
                    <div class="flex justify-between">
                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Peruntukan:</span>
@@ -1110,9 +1106,11 @@
 
             // Field untuk BA Pengembalian BBM
             $('#link_modul_ba').val(data.link_modul_ba || '');
-            $('#penggunaan').val(data.penggunaan || '');
+            $('#volume_pemakaian').val(data.penggunaan || ''); // Field "Jumlah Penitipan BBM" menggunakan data.penggunaan
             $('#volume_sebelum').val(data.volume_sebelum || '');
-            $('#volume_pemakaian').val(data.volume_pemakaian || '');
+            $('#volume_tangki_saat_ini').val(data.volume_pemakaian || ''); // Field "Volume Tangki Saat Ini" menggunakan data.volume_pemakaian
+            $('#keterangan_jenis_bbm').val(data.keterangan_jenis_bbm || '');
+            $('#lokasi_surat').val(data.lokasi_surat || '');
             $('#penyedia_penitip').val(data.penyedia_penitip || '');
             $('#nama_penitip').val(data.nama_penitip || '');
             $('#jabatan_penitip').val(data.jabatan_penitip || '');
@@ -1120,7 +1118,7 @@
             $('#alamat_penyedia_penitip').val(data.alamat_penyedia_penitip || '');
             $('#peruntukan').val(data.peruntukan || '');
 
-            $('#keterangan_jenis_bbm').val(data.keterangan_jenis_bbm || '');
+            $('#keterangan_keterangan_jenis_bbm').val(data.keterangan_keterangan_jenis_bbm || '');
             $('#jabatan_staf_pangkalan').val(data.jabatan_staf_pangkalan || '');
             $('#nama_staf_pangkalan').val(data.nama_staf_pangkalan || '');
             $('#nip_staf').val(data.nip_staf || '');
@@ -1128,6 +1126,7 @@
             $('#nip_nahkoda').val(data.nip_nahkoda || '');
             $('#nama_kkm').val(data.nama_kkm || '');
             $('#nip_kkm').val(data.nip_kkm || '');
+            $('#penggunaan').val(data.penggunaan || '');
 
             // Load kapal data hanya untuk field yang kosong (tidak mengoverride data yang sudah ada)
             if (data.kapal && data.kapal.m_kapal_id) {
@@ -1153,6 +1152,9 @@
             // Clear validation errors
             $('.is-invalid').removeClass('is-invalid');
             $('.invalid-feedback').remove();
+
+            // Hitung volume pengembalian setelah semua data diisi
+            calculateVolumePengembalian();
         }
 
 
@@ -1326,8 +1328,13 @@
             $('#cariBaPenitipan').on('click', cariBaPenitipan);
 
             // Event handler untuk menghitung volume pengembalian
-            $(document).on('input', '#volume_pemakaian', function() {
+            $(document).on('input', '#volume_sebelum, #volume_tangki_saat_ini', function() {
                 calculateVolumePengembalian();
+            });
+
+            // Help modal handlers
+            $('#closeHelpModal').on('click', function() {
+                $('#helpModal').addClass('hidden').removeClass('flex items-center justify-center');
             });
         }
 
@@ -1378,6 +1385,14 @@
                         const errors = xhr.responseJSON.errors;
                         displayValidationErrors(errors);
                         showError('Validasi gagal. Periksa input Anda.');
+                    } else if (xhr.status === 400) {
+                        // Handle business logic errors (like duplicate BA)
+                        const response = xhr.responseJSON;
+                        if (response && response.message) {
+                            showError(response.message);
+                        } else {
+                            showError('Terjadi kesalahan: ' + xhr.statusText);
+                        }
                     } else {
                         showError('Terjadi kesalahan saat menyimpan data');
                         console.error('AJAX Error handleFormSubmit:', xhr);
@@ -1604,80 +1619,49 @@
             });
         };
 
+        // Configure Toastr
+        toastr.options = {
+            "closeButton": true
+            , "debug": false
+            , "newestOnTop": true
+            , "progressBar": true
+            , "positionClass": "toast-top-right"
+            , "preventDuplicates": false
+            , "onclick": null
+            , "showDuration": "300"
+            , "hideDuration": "1000"
+            , "timeOut": "5000"
+            , "extendedTimeOut": "1000"
+            , "showEasing": "swing"
+            , "hideEasing": "linear"
+            , "showMethod": "fadeIn"
+            , "hideMethod": "fadeOut"
+        };
+
         // Notification function
         function showNotification(type, message) {
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 z-[100000] p-4 rounded-lg shadow-lg max-w-sm transition-all duration-300 transform translate-x-full`;
-
-            // Set notification styles based on type
-            switch (type) {
-                case 'success':
-                    notification.className += ' bg-green-500 text-white';
-                    notification.innerHTML = `
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <span>${message}</span>
-                        </div>
-                    `;
-                    break;
-                case 'error':
-                    notification.className += ' bg-red-500 text-white';
-                    notification.innerHTML = `
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                            <span>${message}</span>
-                        </div>
-                    `;
-                    break;
-                case 'info':
-                    notification.className += ' bg-blue-500 text-white';
-                    notification.innerHTML = `
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <span>${message}</span>
-                        </div>
-                    `;
-                    break;
-                default:
-                    notification.className += ' bg-gray-500 text-white';
-                    notification.innerHTML = `<span>${message}</span>`;
+            // Use Toastr for notifications
+            if (typeof toastr !== 'undefined') {
+                switch (type) {
+                    case 'success':
+                        toastr.success(message);
+                        break;
+                    case 'error':
+                        toastr.error(message);
+                        break;
+                    case 'warning':
+                        toastr.warning(message);
+                        break;
+                    case 'info':
+                        toastr.info(message);
+                        break;
+                    default:
+                        toastr.info(message);
+                }
+            } else {
+                // Fallback to alert if toastr is not available
+                alert(message);
             }
-
-            // Add close button
-            const closeBtn = document.createElement('button');
-            closeBtn.innerHTML = `
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            `;
-            closeBtn.className = 'ml-2 text-white hover:text-gray-200 transition-colors';
-            closeBtn.onclick = () => {
-                notification.style.transform = 'translateX(100%)';
-                setTimeout(() => notification.remove(), 300);
-            };
-
-            notification.querySelector('div').appendChild(closeBtn);
-
-            // Add to DOM
-            document.body.appendChild(notification);
-
-            // Animate in
-            setTimeout(() => {
-                notification.style.transform = 'translateX(0)';
-            }, 100);
-
-            // Auto remove after 5 seconds
-            setTimeout(() => {
-                notification.style.transform = 'translateX(100%)';
-                setTimeout(() => notification.remove(), 300);
-            }, 5000);
         }
 
         window.generatePdf = function(baId) {
@@ -1853,10 +1837,10 @@
                             </div>
                             <div>
                                 <label for="lokasi_surat" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    Lokasi Pembuatan BA <span class="text-red-500">*</span>
+                                    Lokasi Kapal <span class="text-red-500">*</span>
                                 </label>
-                                <textarea id="lokasi_surat" name="lokasi_surat" rows="3" required placeholder="Masukkan lokasi pembuatan BA..." class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:text-white transition-colors resize-none"></textarea>
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Contoh: Pelabuhan Tanjung Priok, Jakarta Utara</p>
+                                <textarea id="lokasi_surat" name="lokasi_surat" rows="3" required placeholder="Masukkan lokasi kapal..." class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:text-white transition-colors resize-none"></textarea>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Contoh: Jakarta, Surabaya, dll</p>
                             </div>
                         </div>
 
@@ -1916,7 +1900,7 @@
                                 <input type="date" id="tanggal_penitipan" name="tanggal_penitipan" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white transition-colors">
                                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Pilih tanggal penitipan BBM untuk mencari BA Penitipan (opsional)</p>
                             </div>
-                            <div>
+                            <div class="mt-6">
                                 <button type="button" id="cariBaPenitipan" class="w-full px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
                                     <i class="fas fa-search mr-2"></i>Cari BA Penitipan
                                 </button>
@@ -1982,12 +1966,13 @@
                         </div>
                         <div class="mt-4">
                             <label for="alamat_penyedia_penitip" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                Alamat Penyedia Penitip <span class="text-red-500">*</span>
+                                Alamat Penyedia <span class="text-red-500">*</span>
                             </label>
                             <textarea id="alamat_penyedia_penitip" name="alamat_penyedia_penitip" rows="3" required placeholder="Masukkan alamat lengkap penyedia penitip BBM..." class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white transition-colors resize-none"></textarea>
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Alamat lengkap penyedia penitip BBM</p>
                         </div>
                     </div>
+
 
                     <!-- Detail Pengembalian BBM -->
                     <div class="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4">
@@ -2000,17 +1985,33 @@
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <div>
                                 <label for="volume_sebelum" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    Volume Tangki Sebelumnya (Liter) <span class="text-red-500">*</span>
+                                    Volume Tangki Pengukuran Sebelumnya (Liter) <span class="text-red-500">*</span>
                                 </label>
-                                <input type="number" id="volume_sebelum" name="volume_sebelum" step="0.01" min="0" readonly placeholder="0" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 dark:text-white cursor-not-allowed">
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Volume tangki saat penitipan (akan terisi otomatis)</p>
+                                <input type="number" id="volume_sebelum" name="volume_sebelum" step="0.01" min="0" required placeholder="0" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white transition-colors">
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Volume tangki saat penitipan</p>
                             </div>
                             <div>
                                 <label for="volume_pemakaian" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    Volume Tangki Saat Ini (Liter) <span class="text-red-500">*</span>
+                                    Jumlah Penitipan BBM (Liter) <span class="text-red-500">*</span>
                                 </label>
-                                <input type="number" id="volume_pemakaian" name="volume_pemakaian" step="0.01" min="0" required placeholder="0" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white transition-colors">
+                                <input type="number" id="volume_pemakaian" name="penggunaan" step="0.01" min="0" required placeholder="0" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white transition-colors">
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Jumlah BBM yang dititipkan</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+                            <div>
+                                <label for="volume_tangki_saat_ini" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    Volume Tangki BBM Pengukuran Saat Ini (Liter) <span class="text-red-500">*</span>
+                                </label>
+                                <input type="number" id="volume_tangki_saat_ini" name="volume_pemakaian" step="0.01" min="0" required placeholder="0" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white transition-colors">
                                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Volume tangki saat pengembalian</p>
+                            </div>
+                            <div>
+                                <label for="keterangan_jenis_bbm" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    Jenis BBM <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="keterangan_jenis_bbm" name="keterangan_jenis_bbm" required placeholder="Masukkan jenis BBM..." class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white transition-colors">
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Jenis BBM yang dikembalikan</p>
                             </div>
                         </div>
                         <div class="mt-4 p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
@@ -2024,29 +2025,6 @@
                         </div>
                     </div>
 
-                    <!-- Informasi BBM -->
-                    <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
-                        <h4 class="text-lg font-medium text-yellow-900 dark:text-yellow-100 mb-4 flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            Informasi BBM
-                        </h4>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            <div>
-                                <label for="keterangan_jenis_bbm" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    Jenis BBM <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" id="keterangan_jenis_bbm" name="keterangan_jenis_bbm" readonly placeholder="Jenis BBM akan terisi otomatis" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 dark:text-white cursor-not-allowed">
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Jenis BBM yang dikembalikan</p>
-                            </div>
-                            <div>
-                                <label for="peruntukan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Peruntukan</label>
-                                <input type="text" id="peruntukan" name="peruntukan" readonly placeholder="Peruntukan akan terisi otomatis" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 dark:text-white cursor-not-allowed">
-                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Peruntukan BBM yang dikembalikan</p>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Pejabat/Staf UPT (Menyaksikan) -->
                     <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-4">
@@ -2061,7 +2039,7 @@
                                 <input type="checkbox" id="an_staf" name="an_staf" value="1" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                                 <input type="hidden" name="an_staf" value="0">
                                 <label for="an_staf" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    An. (Anak)
+                                    Tandai "An." di depan nama
                                 </label>
                             </div>
                         </div>
@@ -2094,7 +2072,7 @@
                                 <input type="checkbox" id="an_nakhoda" name="an_nakhoda" value="1" class="h-4 w-4 text-cyan-600 focus:ring-cyan-500 border-gray-300 rounded">
                                 <input type="hidden" name="an_nakhoda" value="0">
                                 <label for="an_nakhoda" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    An. (Anak)
+                                    Tandai "An." di depan nama
                                 </label>
                             </div>
                         </div>
@@ -2124,7 +2102,7 @@
                                 <input type="checkbox" id="an_kkm" name="an_kkm" value="1" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded">
                                 <input type="hidden" name="an_kkm" value="0">
                                 <label for="an_kkm" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    An. (Anak)
+                                    Tandai "An." di depan nama
                                 </label>
                             </div>
                         </div>
@@ -2256,6 +2234,113 @@
         <div class="p-6 overflow-auto max-h-[calc(90vh-120px)]">
             <div id="documentViewer" class="w-full h-full">
                 <!-- Document content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Help Modal -->
+<div id="helpModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full hidden z-[99999]">
+    <div class="relative mx-auto p-5 border w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 shadow-lg rounded-lg bg-white dark:bg-gray-800 mt-10 mb-10 max-h-[90vh] overflow-y-auto help-modal-scroll">
+        <div class="mt-3">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between pb-4">
+                <h3 class="text-xl font-medium text-gray-900 dark:text-white">Panduan BA Pengembalian BBM</h3>
+                <button id="closeHelpModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="space-y-6">
+                <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                    <h4 class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-3">Tentang BA Pengembalian BBM</h4>
+                    <p class="text-blue-800 dark:text-blue-200 text-sm leading-relaxed">
+                        Berita Acara Pengembalian BBM digunakan untuk mencatat pengembalian BBM dari penyedia ke kapal.
+                        Dokumen ini berisi informasi tentang volume BBM yang dikembalikan, penyedia, dan kondisi pengembalian.
+                    </p>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white">Langkah-langkah Pengisian:</h4>
+
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">1</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Pilih Kapal</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Pilih kapal yang akan mengembalikan BBM. Data kapal akan otomatis terisi.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">2</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Isi Informasi Umum</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Lengkapi nomor surat, tanggal, jam, zona waktu, dan lokasi pembuatan BA.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">3</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Data Volume BBM</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Isi volume tangki sebelumnya, volume tangki saat ini, jumlah penitipan BBM, dan jenis BBM.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">4</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Cari BA Penitipan</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Gunakan tombol "Cari BA Penitipan" untuk mengisi data otomatis dari BA Penitipan sebelumnya.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">5</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Informasi Petugas</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Lengkapi data staf pangkalan, nahkoda, dan KKM. Centang checkbox jika sebagai an.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">6</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Upload Dokumen</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Upload dokumen pendukung jika diperlukan (opsional).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
+                    <h4 class="text-lg font-semibold text-yellow-900 dark:text-yellow-100 mb-2">Catatan Penting:</h4>
+                    <ul class="text-yellow-800 dark:text-yellow-200 text-sm space-y-1">
+                        <li>• Pastikan data volume BBM akurat untuk perhitungan yang benar</li>
+                        <li>• Semua field bertanda (*) wajib diisi</li>
+                        <li>• Data kapal akan otomatis terisi saat memilih kapal</li>
+                        <li>• Jam surat akan otomatis terisi dengan waktu saat ini</li>
+                        <li>• Gunakan "Cari BA Penitipan" untuk mengisi data otomatis</li>
+                        <li>• Volume pengembalian akan dihitung otomatis: (Volume Sebelumnya - Volume Saat Ini)</li>
+                        <li>• Field "Peruntukan" telah dihapus sesuai permintaan</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

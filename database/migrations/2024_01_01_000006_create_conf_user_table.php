@@ -22,6 +22,7 @@ class CreateConfUserTable extends Migration
             $table->string('nama_lengkap', 100)->nullable();
             $table->string('nip', 30)->nullable();
             $table->string('golongan', 30)->nullable();
+            $table->text('ttd')->nullable();
             $table->datetime('date_insert')->nullable();
             $table->string('user_insert', 30)->nullable();
             $table->datetime('date_update')->nullable();

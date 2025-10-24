@@ -1,37 +1,46 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\GroupController;
-use App\Http\Controllers\MenuController;
-use App\Http\Controllers\UptController;
-use App\Http\Controllers\KapalController;
-use App\Http\Controllers\ReleaseController;
-use App\Http\Controllers\PortNewsController;
-use App\Http\Controllers\BbmController;
-use App\Http\Controllers\BaSebelumPelayaranController;
-use App\Http\Controllers\BaSesudahPelayaranController;
-use App\Http\Controllers\BaSebelumPengisianController;
-use App\Http\Controllers\BaPenggunaanBbmController;
-use App\Http\Controllers\BaPemeriksaanSaranaPengisianController;
-use App\Http\Controllers\BaAkhirBulanController;
-use App\Http\Controllers\BaPenerimaanBbmController;
-use App\Http\Controllers\BaPenitipanBbmController;
-use App\Http\Controllers\BaPengembalianBbmController;
-use App\Http\Controllers\AnggaranController;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Web\master\UserController;
+use App\Http\Controllers\Web\master\GroupController;
+use App\Http\Controllers\Web\master\MenuController;
+use App\Http\Controllers\Web\master\UptController;
+use App\Http\Controllers\Web\master\KapalController;
+use App\Http\Controllers\Web\master\ReleaseController;
+use App\Http\Controllers\Web\master\PortNewsController;
 
-use App\Http\Controllers\BaPeminjamanBbmController;
-use App\Http\Controllers\BaPenerimaanPinjamanBbmController;
-use App\Http\Controllers\BaPengembalianPinjamanBbmController;
-use App\Http\Controllers\BaPenerimaanPengembalianPinjamanBbmController;
-use App\Http\Controllers\BaPemberiHibahBbmKapalPengawasController;
-use App\Http\Controllers\BaPenerimaHibahBbmKapalPengawasController;
-use App\Http\Controllers\BaPemberiHibahBbmDenganInstansiLainController;
-use App\Http\Controllers\BaPenerimaHibahBbmDenganInstansiLainController;
-use App\Http\Controllers\BaPenerimaanHibahBbmController;
-use App\Http\Controllers\BbmReportController;
-use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\Web\monitoring\BbmController;
+use App\Http\Controllers\Web\monitoring\BaSebelumPelayaranController;
+use App\Http\Controllers\Web\monitoring\BaSesudahPelayaranController;
+use App\Http\Controllers\Web\monitoring\BaSebelumPengisianController;
+use App\Http\Controllers\Web\monitoring\BaPenggunaanBbmController;
+use App\Http\Controllers\Web\monitoring\BaPemeriksaanSaranaPengisianController;
+use App\Http\Controllers\Web\monitoring\BaAkhirBulanController;
+use App\Http\Controllers\Web\monitoring\BaPenerimaanBbmController;
+use App\Http\Controllers\Web\monitoring\BaPenitipanBbmController;
+use App\Http\Controllers\Web\monitoring\BaPengembalianBbmController;
+
+use App\Http\Controllers\Web\anggaran\AnggaranController;
+use App\Http\Controllers\Web\anggaran\TanggalSppdController;
+use App\Http\Controllers\Web\anggaran\EntryAnggaranInternalController;
+use App\Http\Controllers\Web\anggaran\ApprovalAnggaranInternalController;
+use App\Http\Controllers\Web\anggaran\PembatalanAnggaranInternalController;
+use App\Http\Controllers\Web\anggaran\AnggaranEntryRealisasiController;
+
+use App\Http\Controllers\Web\pinjaman\BaPeminjamanBbmController;
+use App\Http\Controllers\Web\pinjaman\BaPenerimaanPinjamanBbmController;
+use App\Http\Controllers\Web\pinjaman\BaPengembalianPinjamanBbmController;
+use App\Http\Controllers\Web\pinjaman\BaPenerimaanPengembalianPinjamanBbmController;
+
+use App\Http\Controllers\Web\hibah\BaPemberiHibahBbmKapalPengawasController;
+use App\Http\Controllers\Web\hibah\BaPenerimaHibahBbmKapalPengawasController;
+use App\Http\Controllers\Web\hibah\BaPemberiHibahBbmDenganInstansiLainController;
+use App\Http\Controllers\Web\hibah\BaPenerimaHibahBbmDenganInstansiLainController;
+use App\Http\Controllers\Web\hibah\BaPenerimaanHibahBbmController;
+
+use App\Http\Controllers\Web\laporan\BbmReportController;
+use App\Http\Controllers\Web\laporan\LaporanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,10 +66,10 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Protected routes
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard/stats', [App\Http\Controllers\DashboardController::class, 'getStats'])->name('dashboard.stats');
-    Route::get('/dashboard/chart', [App\Http\Controllers\DashboardController::class, 'getChartData'])->name('dashboard.chart');
-    Route::get('/dashboard/table', [App\Http\Controllers\DashboardController::class, 'getTableData'])->name('dashboard.table');
+    Route::get('/dashboard', [App\Http\Controllers\Web\master\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/stats', [App\Http\Controllers\Web\master\DashboardController::class, 'getStats'])->name('dashboard.stats');
+    Route::get('/dashboard/chart', [App\Http\Controllers\Web\master\DashboardController::class, 'getChartData'])->name('dashboard.chart');
+    Route::get('/dashboard/table', [App\Http\Controllers\Web\master\DashboardController::class, 'getTableData'])->name('dashboard.table');
 
     Route::get('/home', function () {
         return redirect('/dashboard');
@@ -158,7 +167,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/ba-sebelum-pengisian/{baSebelumPengisian}', [BaSebelumPengisianController::class, 'show'])->name('ba-sebelum-pengisian.show');
     Route::put('/ba-sebelum-pengisian/{baSebelumPengisian}', [BaSebelumPengisianController::class, 'update'])->name('ba-sebelum-pengisian.update');
     Route::delete('/ba-sebelum-pengisian/{baSebelumPengisian}', [BaSebelumPengisianController::class, 'destroy'])->name('ba-sebelum-pengisian.destroy');
-    Route::get('/ba-sebelum-pengisian/{baSebelumPengisian}/pdf', [BaSebelumPengisianController::class, 'generatePdf'])->name('ba-sebelum-pengisian.pdf');
+    Route::get('/ba-sebelum-pengisian/{id}/pdf', [BaSebelumPengisianController::class, 'generatePdf'])->name('ba-sebelum-pengisian.pdf');
     Route::post('/ba-sebelum-pengisian/{baSebelumPengisian}/upload', [BaSebelumPengisianController::class, 'uploadDocument'])->name('ba-sebelum-pengisian.upload');
     Route::get('/ba-sebelum-pengisian/{baSebelumPengisian}/view-document', [BaSebelumPengisianController::class, 'viewDocument'])->name('ba-sebelum-pengisian.view-document');
     Route::delete('/ba-sebelum-pengisian/{baSebelumPengisian}/delete-document', [BaSebelumPengisianController::class, 'deleteDocument'])->name('ba-sebelum-pengisian.delete-document');
@@ -180,6 +189,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/ba-penggunaan-bbm/data', [BaPenggunaanBbmController::class, 'getData'])->name('ba-penggunaan-bbm.data');
     Route::get('/ba-penggunaan-bbm/kapal-data', [BaPenggunaanBbmController::class, 'getKapalData'])->name('ba-penggunaan-bbm.kapal-data');
     Route::get('/ba-penggunaan-bbm/ba-data', [BaPenggunaanBbmController::class, 'getBaData'])->name('ba-penggunaan-bbm.ba-data');
+    Route::post('/ba-penggunaan-bbm/get-data-ba', [BaPenggunaanBbmController::class, 'getDataBa'])->name('ba-penggunaan-bbm.get-data-ba');
     Route::post('/ba-penggunaan-bbm', [BaPenggunaanBbmController::class, 'store'])->name('ba-penggunaan-bbm.store');
     Route::get('/ba-penggunaan-bbm/{baPenggunaanBbm}', [BaPenggunaanBbmController::class, 'show'])->name('ba-penggunaan-bbm.show');
     Route::put('/ba-penggunaan-bbm/{baPenggunaanBbm}', [BaPenggunaanBbmController::class, 'update'])->name('ba-penggunaan-bbm.update');
@@ -220,6 +230,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/ba-penerimaan-bbm/data', [BaPenerimaanBbmController::class, 'getData'])->name('ba-penerimaan-bbm.data');
     Route::get('/ba-penerimaan-bbm/kapal-data', [BaPenerimaanBbmController::class, 'getKapalData'])->name('ba-penerimaan-bbm.kapal-data');
     Route::get('/ba-penerimaan-bbm/ba-data', [BaPenerimaanBbmController::class, 'getBaData'])->name('ba-penerimaan-bbm.ba-data');
+    Route::post('/ba-penerimaan-bbm/fix-volume', [BaPenerimaanBbmController::class, 'fixVolumePengisian'])->name('ba-penerimaan-bbm.fix-volume');
     Route::post('/ba-penerimaan-bbm', [BaPenerimaanBbmController::class, 'store'])->name('ba-penerimaan-bbm.store');
     Route::get('/ba-penerimaan-bbm/{id}', [BaPenerimaanBbmController::class, 'show'])->name('ba-penerimaan-bbm.show');
     Route::put('/ba-penerimaan-bbm/{id}', [BaPenerimaanBbmController::class, 'update'])->name('ba-penerimaan-bbm.update');
@@ -269,6 +280,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/ba-peminjaman-bbm/{baPeminjamanBbm}/delete-document', [BaPeminjamanBbmController::class, 'deleteDocument'])->name('ba-peminjaman-bbm.delete-document');
 
     Route::get('/ba-penerimaan-pinjaman-bbm', [BaPenerimaanPinjamanBbmController::class, 'index'])->name('ba-penerimaan-pinjaman-bbm.index');
+    Route::get('/ba-penerimaan-pinjaman-bbm/api', [BaPenerimaanPinjamanBbmController::class, 'apiIndex'])->name('ba-penerimaan-pinjaman-bbm.api');
     Route::get('/ba-penerimaan-pinjaman-bbm/data', [BaPenerimaanPinjamanBbmController::class, 'getData'])->name('ba-penerimaan-pinjaman-bbm.data');
     Route::get('/ba-penerimaan-pinjaman-bbm/kapal-data', [BaPenerimaanPinjamanBbmController::class, 'getKapalData'])->name('ba-penerimaan-pinjaman-bbm.kapal-data');
     Route::get('/ba-penerimaan-pinjaman-bbm/ba-data', [BaPenerimaanPinjamanBbmController::class, 'getBaData'])->name('ba-penerimaan-pinjaman-bbm.ba-data');
@@ -312,6 +324,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/ba-pemberi-hibah-bbm-kapal-pengawas/data', [BaPemberiHibahBbmKapalPengawasController::class, 'getData'])->name('ba-pemberi-hibah-bbm-kapal-pengawas.data');
     Route::get('/ba-pemberi-hibah-bbm-kapal-pengawas/kapal-data', [BaPemberiHibahBbmKapalPengawasController::class, 'getKapalData'])->name('ba-pemberi-hibah-bbm-kapal-pengawas.kapal-data');
     Route::get('/ba-pemberi-hibah-bbm-kapal-pengawas/kapal-penerima-data', [BaPemberiHibahBbmKapalPengawasController::class, 'getKapalPenerimaData'])->name('ba-pemberi-hibah-bbm-kapal-pengawas.kapal-penerima-data');
+    Route::get('/ba-pemberi-hibah-bbm-kapal-pengawas/volume-sounding', [BaPemberiHibahBbmKapalPengawasController::class, 'getVolumeSounding'])->name('ba-pemberi-hibah-bbm-kapal-pengawas.volume-sounding');
     Route::get('/ba-pemberi-hibah-bbm-kapal-pengawas/persetujuan-data', [BaPemberiHibahBbmKapalPengawasController::class, 'getPersetujuanData'])->name('ba-pemberi-hibah-bbm-kapal-pengawas.persetujuan-data');
     Route::post('/ba-pemberi-hibah-bbm-kapal-pengawas', [BaPemberiHibahBbmKapalPengawasController::class, 'store'])->name('ba-pemberi-hibah-bbm-kapal-pengawas.store');
     Route::get('/ba-pemberi-hibah-bbm-kapal-pengawas/{baPemberiHibah}', [BaPemberiHibahBbmKapalPengawasController::class, 'show'])->name('ba-pemberi-hibah-bbm-kapal-pengawas.show');
@@ -326,6 +339,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/ba-penerima-hibah-bbm-kapal-pengawas', [BaPenerimaHibahBbmKapalPengawasController::class, 'index'])->name('ba-penerima-hibah-bbm-kapal-pengawas.index');
     Route::get('/ba-penerima-hibah-bbm-kapal-pengawas/data', [BaPenerimaHibahBbmKapalPengawasController::class, 'getData'])->name('ba-penerima-hibah-bbm-kapal-pengawas.data');
     Route::get('/ba-penerima-hibah-bbm-kapal-pengawas/kapal-data', [BaPenerimaHibahBbmKapalPengawasController::class, 'getKapalData'])->name('ba-penerima-hibah-bbm-kapal-pengawas.kapal-data');
+    Route::get('/ba-penerima-hibah-bbm-kapal-pengawas/ba-data', [BaPenerimaHibahBbmKapalPengawasController::class, 'getBaData'])->name('ba-penerima-hibah-bbm-kapal-pengawas.ba-data');
     Route::get('/ba-penerima-hibah-bbm-kapal-pengawas/kapal-pemberi-data', [BaPenerimaHibahBbmKapalPengawasController::class, 'getKapalPemberiData'])->name('ba-penerima-hibah-bbm-kapal-pengawas.kapal-pemberi-data');
     Route::get('/ba-penerima-hibah-bbm-kapal-pengawas/persetujuan-data', [BaPenerimaHibahBbmKapalPengawasController::class, 'getPersetujuanData'])->name('ba-penerima-hibah-bbm-kapal-pengawas.persetujuan-data');
     Route::post('/ba-penerima-hibah-bbm-kapal-pengawas', [BaPenerimaHibahBbmKapalPengawasController::class, 'store'])->name('ba-penerima-hibah-bbm-kapal-pengawas.store');
@@ -344,6 +358,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/ba-pemberi-hibah-bbm-dengan-instansi-lain/data', [BaPemberiHibahBbmDenganInstansiLainController::class, 'getData'])->name('ba-pemberi-hibah-bbm-dengan-instansi-lain.data');
     Route::get('/ba-pemberi-hibah-bbm-dengan-instansi-lain/kapal-data', [BaPemberiHibahBbmDenganInstansiLainController::class, 'getKapalData'])->name('ba-pemberi-hibah-bbm-dengan-instansi-lain.kapal-data');
     Route::get('/ba-pemberi-hibah-bbm-dengan-instansi-lain/persetujuan-data', [BaPemberiHibahBbmDenganInstansiLainController::class, 'getPersetujuanData'])->name('ba-pemberi-hibah-bbm-dengan-instansi-lain.persetujuan-data');
+    Route::get('/ba-pemberi-hibah-bbm-dengan-instansi-lain/ba-data', [BaPemberiHibahBbmDenganInstansiLainController::class, 'getBaData'])->name('ba-pemberi-hibah-bbm-dengan-instansi-lain.ba-data');
     Route::post('/ba-pemberi-hibah-bbm-dengan-instansi-lain', [BaPemberiHibahBbmDenganInstansiLainController::class, 'store'])->name('ba-pemberi-hibah-bbm-dengan-instansi-lain.store');
     Route::get('/ba-pemberi-hibah-bbm-dengan-instansi-lain/{baPemberiHibah}', [BaPemberiHibahBbmDenganInstansiLainController::class, 'show'])->name('ba-pemberi-hibah-bbm-dengan-instansi-lain.show');
     Route::put('/ba-pemberi-hibah-bbm-dengan-instansi-lain/{baPemberiHibah}', [BaPemberiHibahBbmDenganInstansiLainController::class, 'update'])->name('ba-pemberi-hibah-bbm-dengan-instansi-lain.update');
@@ -357,6 +372,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/ba-penerima-hibah-bbm-dengan-instansi-lain', [BaPenerimaHibahBbmDenganInstansiLainController::class, 'index'])->name('ba-penerima-hibah-bbm-dengan-instansi-lain.index');
     Route::get('/ba-penerima-hibah-bbm-dengan-instansi-lain/data', [BaPenerimaHibahBbmDenganInstansiLainController::class, 'getData'])->name('ba-penerima-hibah-bbm-dengan-instansi-lain.data');
     Route::get('/ba-penerima-hibah-bbm-dengan-instansi-lain/kapal-data', [BaPenerimaHibahBbmDenganInstansiLainController::class, 'getKapalData'])->name('ba-penerima-hibah-bbm-dengan-instansi-lain.kapal-data');
+    Route::get('/ba-penerima-hibah-bbm-dengan-instansi-lain/ba-sebelum-pengisian-data', [BaPenerimaHibahBbmDenganInstansiLainController::class, 'getBaSebelumPengisianData'])->name('ba-penerima-hibah-bbm-dengan-instansi-lain.ba-sebelum-pengisian-data');
     Route::get('/ba-penerima-hibah-bbm-dengan-instansi-lain/persetujuan-data', [BaPenerimaHibahBbmDenganInstansiLainController::class, 'getPersetujuanData'])->name('ba-penerima-hibah-bbm-dengan-instansi-lain.persetujuan-data');
     Route::post('/ba-penerima-hibah-bbm-dengan-instansi-lain', [BaPenerimaHibahBbmDenganInstansiLainController::class, 'store'])->name('ba-penerima-hibah-bbm-dengan-instansi-lain.store');
     Route::get('/ba-penerima-hibah-bbm-dengan-instansi-lain/{baPenerimaHibah}', [BaPenerimaHibahBbmDenganInstansiLainController::class, 'show'])->name('ba-penerima-hibah-bbm-dengan-instansi-lain.show');
@@ -460,7 +476,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // ==================== ANGGARAN ROUTES ====================
-    Route::prefix('anggaran')->name('anggaran.')->group(function () {
+    Route::prefix('anggaran')->name('anggaran.')->middleware('role')->group(function () {
         // Entri Anggaran
         Route::get('/entri-anggaran', [AnggaranController::class, 'entriAnggaran'])->name('entri-anggaran');
         Route::get('/entri-anggaran/data', [AnggaranController::class, 'getEntriAnggaranData'])->name('entri-anggaran.data');
@@ -477,6 +493,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/perubahan-anggaran/edit/{periode}/{perubahanKe}', [AnggaranController::class, 'editPerubahanAnggaran'])->name('perubahan-anggaran.edit');
         Route::post('/perubahan-anggaran/create', [AnggaranController::class, 'createPerubahanAnggaran'])->name('perubahan-anggaran.create');
         Route::post('/perubahan-anggaran/update', [AnggaranController::class, 'updatePerubahanAnggaran'])->name('perubahan-anggaran.update');
+        Route::post('/perubahan-anggaran/upload/{periode}/{perubahanKe}', [AnggaranController::class, 'uploadPerubahanAnggaran'])->name('perubahan-anggaran.upload');
         Route::delete('/perubahan-anggaran/delete/{periode}/{perubahanKe}', [AnggaranController::class, 'deletePerubahanAnggaran'])->name('perubahan-anggaran.delete');
 
         // Approval Anggaran
@@ -488,57 +505,71 @@ Route::middleware('auth')->group(function () {
         // Entry Realisasi
         Route::get('/entry-realisasi', [AnggaranController::class, 'entryRealisasi'])->name('entry-realisasi');
         Route::get('/entry-realisasi/data', [AnggaranController::class, 'getEntryRealisasiData'])->name('entry-realisasi.data');
-        Route::get('/entry-realisasi/view/{periode}', [AnggaranController::class, 'viewEntryRealisasi'])->name('entry-realisasi.view');
-        Route::get('/entry-realisasi/edit/{periode}', [AnggaranController::class, 'editEntryRealisasi'])->name('entry-realisasi.edit');
+        Route::get('/entry-realisasi/form/{id?}', [AnggaranController::class, 'getFormEntryRealisasi'])->name('entry-realisasi.form');
+        Route::get('/entry-realisasi/view/{id}', [AnggaranController::class, 'getViewApprovalRealisasi'])->name('entry-realisasi.view');
+        Route::get('/entry-realisasi/edit/{id}', [AnggaranController::class, 'getFormEntryRealisasi'])->name('entry-realisasi.edit');
         Route::post('/entry-realisasi/create', [AnggaranController::class, 'createEntryRealisasi'])->name('entry-realisasi.create');
         Route::post('/entry-realisasi/update', [AnggaranController::class, 'updateEntryRealisasi'])->name('entry-realisasi.update');
-        Route::delete('/entry-realisasi/delete/{periode}', [AnggaranController::class, 'deleteEntryRealisasi'])->name('entry-realisasi.delete');
+        Route::delete('/entry-realisasi/delete/{id}', [AnggaranController::class, 'deleteEntryRealisasi'])->name('entry-realisasi.delete');
+
+        // Additional routes for tagihan BBM functionality
+        Route::get('/upt-info', [AnggaranController::class, 'getUptInfo'])->name('upt-info');
+        Route::get('/get-so-data/{multino}', [AnggaranController::class, 'getSoData'])->name('get-so-data');
+        Route::get('/generate-nomor-tagihan', [AnggaranController::class, 'generateNomorTagihan'])->name('generate-nomor-tagihan');
 
         // Approval Realisasi
         Route::get('/approval-realisasi', [AnggaranController::class, 'approvalRealisasi'])->name('approval-realisasi');
         Route::get('/approval-realisasi/data', [AnggaranController::class, 'getApprovalRealisasiData'])->name('approval-realisasi.data');
-        Route::get('/approval-realisasi/view/{periode}', [AnggaranController::class, 'viewApprovalRealisasi'])->name('approval-realisasi.view');
+        Route::get('/approval-realisasi/view/{id}', [AnggaranController::class, 'getViewApprovalRealisasi'])->name('approval-realisasi.view');
+
+        // Tanggal SPPD
+        Route::get('/tanggal-sppd', [TanggalSppdController::class, 'index'])->name('tanggal-sppd');
+        Route::get('/tanggal-sppd/data', [TanggalSppdController::class, 'getData'])->name('tanggal-sppd.data');
+        Route::get('/tanggal-sppd/view/{id}', [TanggalSppdController::class, 'viewTagihan'])->name('tanggal-sppd.view');
+        Route::get('/tanggal-sppd/form-input/{id}', [TanggalSppdController::class, 'getFormInputTanggal'])->name('tanggal-sppd.form-input');
+        Route::get('/tanggal-sppd/form-upload/{id}', [TanggalSppdController::class, 'getUploadForm'])->name('tanggal-sppd.form-upload');
+        Route::post('/tanggal-sppd/update-tanggal', [TanggalSppdController::class, 'updateTanggalSppd'])->name('tanggal-sppd.update-tanggal');
+        Route::post('/tanggal-sppd/upload-file', [TanggalSppdController::class, 'uploadFile'])->name('tanggal-sppd.upload-file');
+        Route::get('/tanggal-sppd/download/{filename}', [TanggalSppdController::class, 'downloadFile'])->name('tanggal-sppd.download-file');
+        Route::post('/tanggal-sppd/cancel', [TanggalSppdController::class, 'cancelTagihan'])->name('tanggal-sppd.cancel');
         Route::post('/approval-realisasi/approve', [AnggaranController::class, 'approveRealisasi'])->name('approval-realisasi.approve');
 
         // Pembatalan Realisasi
         Route::get('/pembatalan-realisasi', [AnggaranController::class, 'pembatalanRealisasi'])->name('pembatalan-realisasi');
         Route::get('/pembatalan-realisasi/data', [AnggaranController::class, 'getPembatalanRealisasiData'])->name('pembatalan-realisasi.data');
-        Route::get('/pembatalan-realisasi/view/{periode}', [AnggaranController::class, 'viewPembatalanRealisasi'])->name('pembatalan-realisasi.view');
+        Route::get('/pembatalan-realisasi/view/{id}', [AnggaranController::class, 'getViewPembatalanRealisasi'])->name('pembatalan-realisasi.view');
         Route::post('/pembatalan-realisasi/cancel', [AnggaranController::class, 'cancelRealisasi'])->name('pembatalan-realisasi.cancel');
 
-        // Tanggal SPPD
-        Route::get('/tanggal-sppd', [AnggaranController::class, 'tanggalSppd'])->name('tanggal-sppd');
-        Route::get('/tanggal-sppd/data', [AnggaranController::class, 'getTanggalSppdData'])->name('tanggal-sppd.data');
-        Route::post('/tanggal-sppd/create', [AnggaranController::class, 'createTanggalSppd'])->name('tanggal-sppd.create');
-        Route::get('/tanggal-sppd/edit/{periode}', [AnggaranController::class, 'editTanggalSppd'])->name('tanggal-sppd.edit');
-        Route::post('/tanggal-sppd/update', [AnggaranController::class, 'updateTanggalSppd'])->name('tanggal-sppd.update');
-        Route::delete('/tanggal-sppd/delete/{periode}', [AnggaranController::class, 'deleteTanggalSppd'])->name('tanggal-sppd.delete');
 
         // Entry Anggaran Internal
-        Route::get('/entry-anggaran-internal', [AnggaranController::class, 'entryAnggaranInternal'])->name('entry-anggaran-internal');
-        Route::get('/entry-anggaran-internal/data', [AnggaranController::class, 'getEntryAnggaranInternalData'])->name('entry-anggaran-internal.data');
-        Route::get('/entry-anggaran-internal/view/{periode}', [AnggaranController::class, 'viewEntryAnggaranInternal'])->name('entry-anggaran-internal.view');
-        Route::get('/entry-anggaran-internal/edit/{periode}', [AnggaranController::class, 'editEntryAnggaranInternal'])->name('entry-anggaran-internal.edit');
-        Route::post('/entry-anggaran-internal/create', [AnggaranController::class, 'createEntryAnggaranInternal'])->name('entry-anggaran-internal.create');
-        Route::post('/entry-anggaran-internal/update', [AnggaranController::class, 'updateEntryAnggaranInternal'])->name('entry-anggaran-internal.update');
-        Route::delete('/entry-anggaran-internal/delete/{periode}', [AnggaranController::class, 'deleteEntryAnggaranInternal'])->name('entry-anggaran-internal.delete');
+        Route::get('/entry-anggaran-internal', [EntryAnggaranInternalController::class, 'index'])->name('entry-anggaran-internal');
+        Route::get('/entry-anggaran-internal/data', [EntryAnggaranInternalController::class, 'getData'])->name('entry-anggaran-internal.data');
+        Route::get('/entry-anggaran-internal/form', [EntryAnggaranInternalController::class, 'getFormData'])->name('entry-anggaran-internal.form');
+        Route::get('/entry-anggaran-internal/view/{id}', [EntryAnggaranInternalController::class, 'getViewData'])->name('entry-anggaran-internal.view');
+        Route::get('/entry-anggaran-internal/edit/{id}', [EntryAnggaranInternalController::class, 'getEditForm'])->name('entry-anggaran-internal.edit');
+        Route::post('/entry-anggaran-internal/create', [EntryAnggaranInternalController::class, 'create'])->name('entry-anggaran-internal.create');
+        Route::post('/entry-anggaran-internal/update', [EntryAnggaranInternalController::class, 'update'])->name('entry-anggaran-internal.update');
+        Route::delete('/entry-anggaran-internal/delete/{id}', [EntryAnggaranInternalController::class, 'delete'])->name('entry-anggaran-internal.delete');
 
         // Approval Anggaran Internal
-        Route::get('/approval-anggaran-internal', [AnggaranController::class, 'approvalAnggaranInternal'])->name('approval-anggaran-internal');
-        Route::get('/approval-anggaran-internal/data', [AnggaranController::class, 'getApprovalAnggaranInternalData'])->name('approval-anggaran-internal.data');
-        Route::get('/approval-anggaran-internal/view/{periode}', [AnggaranController::class, 'viewApprovalAnggaranInternal'])->name('approval-anggaran-internal.view');
-        Route::post('/approval-anggaran-internal/approve', [AnggaranController::class, 'approveAnggaranInternal'])->name('approval-anggaran-internal.approve');
+        Route::get('/approval-anggaran-internal', [ApprovalAnggaranInternalController::class, 'index'])->name('approval-anggaran-internal');
+        Route::get('/approval-anggaran-internal/data', [ApprovalAnggaranInternalController::class, 'getData'])->name('approval-anggaran-internal.data');
+        Route::get('/approval-anggaran-internal/view/{id}', [ApprovalAnggaranInternalController::class, 'getViewData'])->name('approval-anggaran-internal.view');
+        Route::post('/approval-anggaran-internal/approve', [ApprovalAnggaranInternalController::class, 'approve'])->name('approval-anggaran-internal.approve');
 
         // Pembatalan Anggaran Internal
-        Route::get('/pembatalan-anggaran-internal', [AnggaranController::class, 'pembatalanAnggaranInternal'])->name('pembatalan-anggaran-internal');
-        Route::get('/pembatalan-anggaran-internal/data', [AnggaranController::class, 'getPembatalanAnggaranInternalData'])->name('pembatalan-anggaran-internal.data');
-        Route::get('/pembatalan-anggaran-internal/view/{periode}', [AnggaranController::class, 'viewPembatalanAnggaranInternal'])->name('pembatalan-anggaran-internal.view');
-        Route::post('/pembatalan-anggaran-internal/cancel', [AnggaranController::class, 'cancelAnggaranInternal'])->name('pembatalan-anggaran-internal.cancel');
+        Route::get('/pembatalan-anggaran-internal', [PembatalanAnggaranInternalController::class, 'index'])->name('pembatalan-anggaran-internal');
+        Route::get('/pembatalan-anggaran-internal/data', [PembatalanAnggaranInternalController::class, 'getData'])->name('pembatalan-anggaran-internal.data');
+        Route::get('/pembatalan-anggaran-internal/view/{id}', [PembatalanAnggaranInternalController::class, 'getViewData'])->name('pembatalan-anggaran-internal.view');
+        Route::post('/pembatalan-anggaran-internal/cancel', [PembatalanAnggaranInternalController::class, 'cancel'])->name('pembatalan-anggaran-internal.cancel');
 
         // Helper routes for anggaran
         Route::get('/upt-options', [AnggaranController::class, 'getUptOptions'])->name('upt-options');
         Route::get('/anggaran-data', [AnggaranController::class, 'getAnggaranData'])->name('anggaran-data');
+        Route::get('/data-anggaran', [AnggaranController::class, 'getDataAnggaran'])->name('data-anggaran');
+        Route::get('/data-anggaran2/{id}/{tahun}', [AnggaranController::class, 'getDataAnggaran2'])->name('data-anggaran2');
         Route::get('/nominal-awal', [AnggaranController::class, 'getNominalAwal'])->name('nominal-awal');
+        Route::post('/sync-approved-realisasi', [AnggaranController::class, 'syncAllApprovedRealisasi'])->name('sync-approved-realisasi');
     });
 
     // ==================== LAPORAN ANGGARAN ROUTES ====================
@@ -551,31 +582,37 @@ Route::middleware('auth')->group(function () {
         // Riwayat Anggaran & Realisasi ALL
         Route::get('/riwayat-all', [LaporanController::class, 'riwayatAll'])->name('riwayat-all');
         Route::get('/riwayat-all/data', [LaporanController::class, 'getRiwayatAllData'])->name('riwayat-all.data');
+        Route::match(['GET', 'POST'], '/riwayat-all/export', [LaporanController::class, 'export'])->name('riwayat-all.export');
 
         // Laporan Realisasi per Periode
         Route::get('/realisasi-periode', [LaporanController::class, 'realisasiPeriode'])->name('realisasi-periode');
         Route::get('/realisasi-periode/data', [LaporanController::class, 'getRealisasiPeriodeData'])->name('realisasi-periode.data');
+        Route::get('/realisasi-periode/export', [LaporanController::class, 'exportRealisasiPeriode'])->name('realisasi-periode.export');
         Route::get('/realisasi-periode/upts', [LaporanController::class, 'getUptOptions'])->name('realisasi-periode.upts');
 
         // Laporan Transaksi Realisasi UPT
         Route::get('/transaksi-realisasi-upt', [LaporanController::class, 'transaksiRealisasiUpt'])->name('transaksi-realisasi-upt');
         Route::get('/transaksi-realisasi-upt/data', [LaporanController::class, 'getTransaksiRealisasiUptData'])->name('transaksi-realisasi-upt.data');
+        Route::get('/transaksi-realisasi-upt/export', [LaporanController::class, 'exportTransaksiRealisasiUpt'])->name('transaksi-realisasi-upt.export');
         Route::get('/transaksi-realisasi-upt/upts', [LaporanController::class, 'getUptOptions'])->name('transaksi-realisasi-upt.upts');
         Route::get('/transaksi-realisasi-upt/no-tagihan', [LaporanController::class, 'getNoTagihanOptions'])->name('transaksi-realisasi-upt.no-tagihan');
 
         // Laporan Transaksi Perubahan Anggaran Internal UPT
         Route::get('/perubahan-anggaran-internal', [LaporanController::class, 'perubahanAnggaranInternal'])->name('perubahan-anggaran-internal');
         Route::get('/perubahan-anggaran-internal/data', [LaporanController::class, 'getPerubahanAnggaranInternalData'])->name('perubahan-anggaran-internal.data');
+        Route::get('/perubahan-anggaran-internal/export', [LaporanController::class, 'exportPerubahanAnggaranInternal'])->name('perubahan-anggaran-internal.export');
         Route::get('/perubahan-anggaran-internal/upts', [LaporanController::class, 'getUptOptions'])->name('perubahan-anggaran-internal.upts');
 
         // Laporan Berita Acara Pembayaran Tagihan
         Route::get('/berita-acara-pembayaran', [LaporanController::class, 'beritaAcaraPembayaran'])->name('berita-acara-pembayaran');
         Route::get('/berita-acara-pembayaran/data', [LaporanController::class, 'getBeritaAcaraPembayaranData'])->name('berita-acara-pembayaran.data');
+        Route::get('/berita-acara-pembayaran/export', [LaporanController::class, 'exportBeritaAcaraPembayaran'])->name('berita-acara-pembayaran.export');
         Route::get('/berita-acara-pembayaran/upts', [LaporanController::class, 'getUptOptions'])->name('berita-acara-pembayaran.upts');
 
-        // Laporan Verifikasi Tagihan
+        // Laporan Verifikasi Tagihan routes
         Route::get('/verifikasi-tagihan', [LaporanController::class, 'verifikasiTagihan'])->name('verifikasi-tagihan');
         Route::get('/verifikasi-tagihan/data', [LaporanController::class, 'getVerifikasiTagihanData'])->name('verifikasi-tagihan.data');
+        Route::get('/verifikasi-tagihan/export', [LaporanController::class, 'exportVerifikasiTagihan'])->name('verifikasi-tagihan.export');
         Route::get('/verifikasi-tagihan/upts', [LaporanController::class, 'getUptOptions'])->name('verifikasi-tagihan.upts');
         Route::get('/verifikasi-tagihan/no-tagihan', [LaporanController::class, 'getNoTagihanOptions'])->name('verifikasi-tagihan.no-tagihan');
 

@@ -295,7 +295,7 @@
                             <div class="text-sm text-gray-900 dark:text-white">${item.keterangan || '-'}</div>
                         </td>
                         <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
-                            <div class="text-sm text-gray-900 dark:text-white">${item.user_input || '-'}</div>
+                            <div class="text-sm text-gray-900 dark:text-white">${item.user_input ? (item.user_input.nama_lengkap || item.user_input.username) : '-'}</div>
                         </td>
                         <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
                             <div class="text-sm text-gray-900 dark:text-white">${tanggalInput}</div>

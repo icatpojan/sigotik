@@ -147,7 +147,39 @@ class BbmController extends Controller
      */
     public function index(Request $request)
     {
+        $user = $request->user();
         $query = BbmKapaltrans::with(['kapal', 'userInput', 'userApp']);
+
+        // Role-based filtering
+        if ($user->conf_group_id != 1) { // Jika bukan admin
+            // Ambil kapal yang terkait dengan user melalui sys_user_kapal
+            $userKapalIds = DB::table('sys_user_kapal')
+                ->where('conf_user_id', $user->conf_user_id)
+                ->pluck('m_kapal_id')
+                ->toArray();
+
+            if (!empty($userKapalIds)) {
+                // Filter BBM berdasarkan kapal yang dimiliki user
+                $query->whereHas('kapal', function ($kapalQuery) use ($userKapalIds) {
+                    $kapalQuery->whereIn('m_kapal_id', $userKapalIds);
+                });
+            } else {
+                // Jika user tidak memiliki kapal, return empty
+                return response()->json([
+                    'success' => true,
+                    'data' => [],
+                    'pagination' => [
+                        'current_page' => 1,
+                        'last_page' => 1,
+                        'per_page' => 20,
+                        'total' => 0,
+                        'from' => null,
+                        'to' => null,
+                        'has_more_pages' => false,
+                    ]
+                ]);
+            }
+        }
 
         // Search functionality
         if ($request->has('search') && $request->search) {

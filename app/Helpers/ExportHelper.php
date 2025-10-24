@@ -104,7 +104,7 @@ class ExportHelper
             $filename = $title . '_' . date('Y-m-d_H-i-s') . '.pdf';
         }
 
-        $pdf = Pdf::loadView('exports.laporan-pdf', [
+        $pdf = Pdf::loadView('laporan.export.pdf-template', [
             'data' => $data,
             'headers' => $headers,
             'title' => $title,
@@ -123,25 +123,39 @@ class ExportHelper
 
 
         foreach ($data as $index => $item) {
-            $row = [
-                'No' => $index + 1,
-                'Tanggal Transaksi' => $item->tanggal_surat ? \Carbon\Carbon::parse($item->tanggal_surat)->format('d F Y') : '-',
-                'UPT' => $item->kapal && $item->kapal->upt ? $item->kapal->upt->nama : '-',
-                'Kapal' => $item->kapal ? $item->kapal->nama_kapal : '-',
-                'Nomor Surat' => $item->nomor_surat ?? '-',
-                'Status BA' => self::getStatusBaText($item->status_ba ?? 0),
-            ];
+            // Base row structure
+            $row = [];
 
             // Add specific columns based on type
             switch ($type) {
                 case 'total-penerimaan-penggunaan':
-                    $row['Total Penerimaan'] = ($item->total_penerimaan ?? 0) . ' Liter';
-                    $row['Total Penggunaan'] = ($item->total_penggunaan ?? 0) . ' Liter';
+                    $row = [
+                        'No' => $index + 1,
+                        'Nama Kapal' => $item->nama_kapal ?? '-',
+                        'Total Penerimaan' => number_format($item->total_penerimaan ?? 0, 0, ',', '.') . ' Liter',
+                        'Total Penggunaan' => number_format($item->total_penggunaan ?? 0, 0, ',', '.') . ' Liter',
+                    ];
                     break;
 
+                default:
+                    $row = [
+                        'No' => $index + 1,
+                        'Tanggal Transaksi' => $item->tanggal_surat ? \Carbon\Carbon::parse($item->tanggal_surat)->format('d F Y') : '-',
+                        'UPT' => $item->kapal && $item->kapal->upt ? $item->kapal->upt->nama : '-',
+                        'Kapal' => $item->kapal ? $item->kapal->nama_kapal : '-',
+                        'Nomor Surat' => $item->nomor_surat ?? '-',
+                        'Status BA' => self::getStatusBaText($item->status_ba ?? 0),
+                    ];
+
                 case 'detail-penggunaan-penerimaan':
-                    $row['Volume Pengisian'] = ($item->volume_pengisian ?? 0) . ' Liter';
-                    $row['Volume Pemakaian'] = ($item->volume_pemakaian ?? 0) . ' Liter';
+                    $row = [
+                        'No' => $index + 1,
+                        'Tanggal BA' => $item->tanggal_surat ? \Carbon\Carbon::parse($item->tanggal_surat)->format('d F Y') : '-',
+                        'Nomor BA' => $item->nomor_surat ?? '-',
+                        'Nama Kapal' => $item->nama_kapal ?? '-',
+                        'Total Penerimaan' => number_format($item->penerimaan ?? 0, 0, ',', '.') . ' Liter',
+                        'Total Penggunaan' => number_format($item->penggunaan ?? 0, 0, ',', '.') . ' Liter',
+                    ];
                     break;
 
                 case 'akhir-bulan':

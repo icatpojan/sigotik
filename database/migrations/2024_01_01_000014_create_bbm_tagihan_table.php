@@ -29,6 +29,9 @@ class CreateBbmTagihanTable extends Migration
             $table->datetime('tanggal_app')->nullable();
             $table->string('user_batal', 10)->default('');
             $table->datetime('tanggal_batal')->nullable();
+            $table->string('tagihanke', 30)->default('');
+            $table->string('no_spt', 50)->nullable();
+            $table->string('file_sppd', 255)->nullable();
         });
     }
 

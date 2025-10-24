@@ -61,7 +61,7 @@
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
-                        Export Excel
+                        Excel
                     </button>
                 </div>
 
@@ -70,7 +70,7 @@
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                         </svg>
-                        Export PDF
+                        PDF
                     </button>
                 </div>
 
@@ -83,13 +83,11 @@
                 <thead style="background-color: #568fd2;">
                     <tr>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">No</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Tanggal Transaksi</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">UPT</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Kapal</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Jenis BBM</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Jumlah</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Status</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Keterangan</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Tanggal BA</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Nomor BA</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Nama Kapal</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Total Penerimaan</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Total Penggunaan</th>
                     </tr>
                 </thead>
                 <tbody id="dataTable" class="bg-white dark:bg-gray-800">
@@ -225,6 +223,11 @@
         return `${day} ${month} ${year} ${hours}:${minutes}`;
     }
 
+    function formatNumber(number) {
+        if (!number) return '0';
+        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
     function loadData() {
         const startDate = $('#start_date').val();
         const endDate = $('#end_date').val();
@@ -255,36 +258,44 @@
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                             <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">${index + 1}</td>
                             <td class="px-6 py-4 border border-gray-300 dark:border-gray-600">
-                                <div class="text-sm text-gray-900 dark:text-white">${item.tgl_trans}</div>
+                                <div class="text-sm text-gray-900 dark:text-white">${formatDate(item.tanggal_surat)}</div>
                             </td>
                             <td class="px-6 py-4 border border-gray-300 dark:border-gray-600">
-                                <div class="text-sm text-gray-900 dark:text-white">${item.upt ? item.upt.nama_upt : '-'}</div>
+                                <div class="text-sm text-gray-900 dark:text-white">${item.nomor_surat || '-'}</div>
                             </td>
                             <td class="px-6 py-4 border border-gray-300 dark:border-gray-600">
-                                <div class="text-sm text-gray-900 dark:text-white">${item.kapal ? item.kapal.nama_kapal : '-'}</div>
-                            </td>
-                            <td class="px-6 py-4 border border-gray-300 dark:border-gray-600">
-                                <div class="text-sm text-gray-900 dark:text-white">${item.jenis_bbm || '-'}</div>
+                                <div class="text-sm text-gray-900 dark:text-white">${item.nama_kapal || '-'}</div>
                             </td>
                             <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
-                                <div class="text-sm text-gray-900 dark:text-white">${item.jumlah || 0} Liter</div>
+                                <div class="text-sm text-gray-900 dark:text-white">${formatNumber(item.penerimaan || 0)} Liter</div>
                             </td>
                             <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${item.status_trans == 1 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'}">
-                                    ${item.status_trans == 1 ? 'Penerimaan' : 'Penggunaan'}
-                                </span>
-                            </td>
-                            <td class="px-6 py-4 border border-gray-300 dark:border-gray-600">
-                                <div class="text-sm text-gray-900 dark:text-white">${item.keterangan || '-'}</div>
+                                <div class="text-sm text-gray-900 dark:text-white">${formatNumber(item.penggunaan || 0)} Liter</div>
                             </td>
                         </tr>
                     `;
                         tbody.append(row);
                     });
+
+                    // Tambahkan baris grand total
+                    const grandTotalRow = `
+                    <tr class="bg-gray-100 dark:bg-gray-700 font-semibold">
+                        <td colspan="4" class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
+                            <div class="text-sm text-gray-900 dark:text-white">GRAND TOTAL</div>
+                        </td>
+                        <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
+                            <div class="text-sm text-gray-900 dark:text-white">${formatNumber(response.total_penerimaan || 0)} Liter</div>
+                        </td>
+                        <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
+                            <div class="text-sm text-gray-900 dark:text-white">${formatNumber(response.total_penggunaan || 0)} Liter</div>
+                        </td>
+                    </tr>
+                `;
+                    tbody.append(grandTotalRow);
                 } else {
                     tbody.html(`
                     <tr>
-                        <td colspan="8" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600">
+                        <td colspan="6" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600">
                             <div class="flex flex-col items-center py-8">
                                 <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>

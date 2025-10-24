@@ -9,12 +9,20 @@
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">BA Penerimaan Hibah BBM</h1>
             <p class="text-gray-600 dark:text-gray-400">Kelola Berita Acara Penerimaan Hibah BBM</p>
         </div>
-        <button id="createBaBtn" class="inline-flex items-center px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            Tambah BA
-        </button>
+        <div class="flex gap-2">
+            <button id="helpBtn" class="inline-flex items-center px-4 py-2 text-green-600 bg-green-50 hover:bg-green-100 border border-green-200 hover:border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50 dark:border-green-700 dark:hover:border-green-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Bantuan
+            </button>
+            <button id="createBaBtn" class="inline-flex items-center px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Tambah BA
+            </button>
+        </div>
     </div>
 
     <div class="bg-white dark:bg-gray-800 rounded-none border border-gray-200 dark:border-gray-700 overflow-hidden p-6">
@@ -166,7 +174,10 @@
 
         function setDefaultDates() {
             const today = new Date().toISOString().split('T')[0];
+            const currentTime = new Date().toTimeString().slice(0, 5); // Format HH:MM
+
             $('#tanggal_surat').val(today);
+            if ($('#jam_surat').length) $('#jam_surat').val(currentTime);
         }
 
         function resetForm() {
@@ -232,10 +243,18 @@
                         $('#code_kapal').val(d.code_kapal);
                         $('#alamat_upt').val(d.alamat_upt);
                         $('#zona_waktu_surat').val(d.zona_waktu_upt);
-                        $('#nama_nahkoda').val(d.nama_nakoda);
-                        $('#nip_nahkoda').val(d.nip_nakoda);
-                        $('#nama_kkm').val(d.nama_kkm);
-                        $('#nip_kkm').val(d.nip_kkm);
+
+                        // Hanya isi field personal jika tidak dalam edit mode
+                        // Agar data dari BA tidak tertimpa
+                        if (!currentEditMode) {
+                            $('#nama_nahkoda').val(d.nama_nakoda);
+                            $('#nip_nahkoda').val(d.nip_nakoda);
+                            $('#nama_kkm').val(d.nama_kkm);
+                            $('#nip_kkm').val(d.nip_kkm);
+                            $('#nama_staf_pangkalan').val(d.nama_petugas);
+                            $('#nip_staf').val(d.nip_petugas);
+                            $('#jabatan_staf_pangkalan').val(d.jabatan_petugas);
+                        }
                     } else {
                         clearKapalData();
                     }
@@ -397,7 +416,7 @@
         }
 
         function clearKapalData() {
-            $('#code_kapal, #alamat_upt, #nama_staf_pangkalan, #nip_staf, #jabatan_staf_pangkalan, #nama_nahkoda, #nip_nahkoda, #nama_kkm, #nip_kkm').val('');
+            $('#code_kapal, #alamat_upt, #nama_staf_pangkalan, #nip_staf, #jabatan_staf_pangkalan, #nama_nahkoda, #nip_nahkoda, #nama_kkm, #nip_kkm, #link_ba, #volume_sebelum').val('');
             $('#an_staf, #an_nakhoda, #an_kkm').prop('checked', false);
         }
 
@@ -503,6 +522,11 @@
         }
 
         function setupEventHandlers() {
+            // Help button
+            $('#helpBtn').click(function() {
+                $('#helpModal').removeClass('hidden').addClass('flex items-center justify-center');
+            });
+
             $(document).on('click', '#createBaBtn, #createFirstBaBtn', () => {
                 resetForm();
                 $('#baModal').removeClass('hidden');
@@ -513,7 +537,19 @@
             $('#closeModal, #cancelBtn').on('click', () => $('#baModal').addClass('hidden'));
             $('#closeViewModal, #closeViewModalBtn').on('click', () => $('#viewBaModal').addClass('hidden'));
             $('#closeUploadModal, #cancelUploadBtn').on('click', () => $('#uploadModal').addClass('hidden').removeClass('flex'));
-            $('#closeViewDocumentModal').on('click', () => $('#viewDocumentModal').addClass('hidden').removeClass('flex'));
+            $('#closeViewDocumentModal').on('click', () => $('#viewDocumentModal').addClass('hidden').css('display', 'none'));
+
+            // Close help modal
+            $('#closeHelpModal').on('click', function() {
+                $('#helpModal').addClass('hidden').removeClass('flex items-center justify-center');
+            });
+
+            // Delete document button
+            $('#deleteDocumentBtn').on('click', function() {
+                if (currentBaId) {
+                    deleteDocument(currentBaId);
+                }
+            });
 
             $('#kapal_id').on('change', function() {
                 const kapalId = $(this).val();
@@ -643,13 +679,23 @@
                 , type: 'GET'
                 , success: function(response) {
                     if (response.success) {
-                        fillEditForm(response.data);
-                        $('#modalTitle').text('Form Edit BA');
-                        $('#submitBtn').html('Update');
-                        $('#baModal').removeClass('hidden');
+                        const ba = response.data;
+
+                        // 1. Load data kapal dulu (tanpa mengisi field personal)
+                        if (ba.kapal && ba.kapal.m_kapal_id) {
+                            loadKapalData(ba.kapal.m_kapal_id);
+                        }
+
+                        // 2. Setelah kapal data loaded, baru isi data dari BA
                         setTimeout(() => {
-                            setupDatePickers();
-                        }, 100);
+                            fillEditForm(ba);
+                            $('#modalTitle').text('Form Edit BA');
+                            $('#submitBtn').html('Update');
+                            $('#baModal').removeClass('hidden');
+                            setTimeout(() => {
+                                setupDatePickers();
+                            }, 100);
+                        }, 200);
                     }
                 }
             });
@@ -661,19 +707,19 @@
             console.log('alamat_instansi_temp:', ba.alamat_instansi_temp);
 
             $('#baId').val(ba.trans_id);
-            $('#kapal_id').val(ba.kapal ? ba.kapal.m_kapal_id : '').trigger('change');
+            $('#kapal_id').val(ba.kapal ? ba.kapal.m_kapal_id : '');
             $('#nomor_surat').val(ba.nomor_surat);
             $('#tanggal_surat').val(formatDateForInput(ba.tanggal_surat));
             $('#jam_surat').val(formatTimeForInput(ba.jam_surat));
             $('#zona_waktu_surat').val(ba.zona_waktu_surat);
             $('#lokasi_surat').val(ba.lokasi_surat);
             $('#link_ba').val(ba.link_modul_ba);
+            $('#volume_sebelum').val(ba.volume_sebelum);
             $('#code_upt').val(ba.instansi_temp || '');
             $('#instansi_temp').val(ba.instansi_temp);
             $('#alamat_instansi_temp').val(ba.alamat_instansi_temp);
             $('#penyedia').val(ba.penyedia);
             $('#keterangan_jenis_bbm').val(ba.keterangan_jenis_bbm);
-            $('#volume_sebelum').val(ba.volume_sebelum);
             $('#no_so').val(ba.no_so);
             $('#nama_penyedia').val(ba.nama_penyedia);
             $('#nama_staf_pangkalan').val(ba.nama_staf_pagkalan);
@@ -769,17 +815,44 @@
         }
 
         window.viewDocument = function(baId) {
+            currentBaId = baId;
             $.ajax({
                 url: `/ba-penerimaan-hibah-bbm/${baId}/view-document`
                 , type: 'GET'
                 , success: function(response) {
                     if (response.success) {
                         $('#documentViewer').html(`<div class="text-center"><h4 class="text-lg mb-4">${response.filename}</h4><iframe src="${response.file_url}" width="100%" height="600px" class="border rounded"></iframe><div class="mt-4"><a href="${response.file_url}" target="_blank" class="px-4 py-2 bg-blue-600 text-white rounded inline-flex items-center">Buka Tab Baru</a></div></div>`);
-                        $('#viewDocumentModal').removeClass('hidden').addClass('flex');
+                        $('#viewDocumentModal').removeClass('hidden').css('display', 'flex');
                     }
                 }
             });
         };
+
+        function deleteDocument(baId) {
+            if (!confirm('Apakah Anda yakin ingin menghapus dokumen ini?')) {
+                return;
+            }
+
+            $.ajax({
+                url: `/ba-penerimaan-hibah-bbm/${baId}/delete-document`
+                , type: 'DELETE'
+                , data: {
+                    _token: '{{ csrf_token() }}'
+                }
+                , success: function(response) {
+                    if (response.success) {
+                        showSuccess('Dokumen berhasil dihapus');
+                        $('#viewDocumentModal').addClass('hidden').css('display', 'none');
+                        loadData();
+                    } else {
+                        showError(response.message);
+                    }
+                }
+                , error: function(xhr) {
+                    showError('Gagal menghapus dokumen');
+                }
+            });
+        }
 
         window.changePage = function(page) {
             currentPage = page;
@@ -878,6 +951,24 @@
                             </div>
                         </div>
 
+                        <div class="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4">
+                            <h4 class="text-lg font-medium text-orange-900 dark:text-orange-100 mb-4 flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                Link BA Sebelum Pengisian
+                            </h4>
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="link_ba" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Link BA <span class="text-red-500">*</span></label>
+                                    <input type="text" id="link_ba" name="link_ba" readonly required class="w-full px-4 py-3 border rounded-lg bg-gray-100 dark:bg-gray-600 cursor-not-allowed">
+                                </div>
+                                <div>
+                                    <label for="volume_sebelum" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">BBM Sebelum Pengisian (Liter) <span class="text-red-500">*</span></label>
+                                    <input type="number" id="volume_sebelum" name="volume_sebelum" step="0.01" min="0" required readonly class="w-full px-4 py-3 border rounded-lg bg-gray-100 dark:bg-gray-600 cursor-not-allowed">
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
                             <h4 class="text-lg font-medium text-green-900 dark:text-green-100 mb-4 flex items-center">
@@ -915,7 +1006,7 @@
                                 </svg>
                                 Info BBM & Penyedia
                             </h4>
-                            <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-4">
                                 <div>
                                     <label for="penyedia" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Penyedia</label>
                                     <input type="text" id="penyedia" name="penyedia" placeholder="Nama penyedia" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 dark:bg-gray-700 dark:text-white transition-colors">
@@ -923,10 +1014,6 @@
                                 <div>
                                     <label for="keterangan_jenis_bbm" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Jenis BBM <span class="text-red-500">*</span></label>
                                     <input type="text" id="keterangan_jenis_bbm" name="keterangan_jenis_bbm" value="BIO SOLAR" required placeholder="Jenis BBM" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 dark:bg-gray-700 dark:text-white transition-colors">
-                                </div>
-                                <div>
-                                    <label for="volume_sebelum" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">BBM Sebelum Pengisian <span class="text-red-500">*</span></label>
-                                    <input type="number" id="volume_sebelum" name="volume_sebelum" step="0.01" min="0" required readonly placeholder="Volume sebelum" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 cursor-not-allowed dark:text-white transition-colors">
                                 </div>
                                 <div>
                                     <label for="no_so" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">No. SO</label>
@@ -1013,12 +1100,12 @@
                                     <input type="text" id="nama_staf_pangkalan" name="nama_staf_pangkalan" placeholder="Nama lengkap staf pangkalan" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition-colors">
                                 </div>
                                 <div>
-                                    <label for="nip_staf" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NIP Staf</label>
-                                    <input type="text" id="nip_staf" name="nip_staf" placeholder="Nomor Induk Pegawai" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition-colors">
-                                </div>
-                                <div>
                                     <label for="jabatan_staf_pangkalan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Jabatan Staf</label>
                                     <input type="text" id="jabatan_staf_pangkalan" name="jabatan_staf_pangkalan" placeholder="Jabatan staf pangkalan" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition-colors">
+                                </div>
+                                <div>
+                                    <label for="nip_staf" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NIP Staf</label>
+                                    <input type="text" id="nip_staf" name="nip_staf" placeholder="Nomor Induk Pegawai" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition-colors">
                                 </div>
                             </div>
                         </div>
@@ -1118,18 +1205,120 @@
     </div>
 </div>
 
-<div id="viewDocumentModal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-[99999] hidden">
+<div id="viewDocumentModal" class="fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-[99999] hidden" style="display: none;">
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
-        <div class="flex items-center justify-between p-6 border-b">
-            <h3 class="text-lg font-semibold">Dokumen</h3>
-            <button id="closeViewDocumentModal" class="text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
+        <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Dokumen Pendukung</h3>
+            <div class="flex items-center space-x-2">
+                <button id="deleteDocumentBtn" class="p-2 text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 hover:border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 dark:border-red-700 dark:hover:border-red-600 rounded-lg transition-all duration-200" title="Hapus Dokumen">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                </button>
+                <button id="closeViewDocumentModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
         </div>
         <div class="p-6 overflow-auto max-h-[calc(90vh-120px)]">
             <div id="documentViewer"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Help Modal -->
+<div id="helpModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full hidden z-[99999]">
+    <div class="relative mx-auto p-5 border w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 shadow-lg rounded-lg bg-white dark:bg-gray-800 mt-10 mb-10 max-h-[90vh] overflow-y-auto help-modal-scroll">
+        <div class="mt-3">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between pb-4">
+                <h3 class="text-xl font-medium text-gray-900 dark:text-white">Panduan BA Penerimaan Hibah BBM</h3>
+                <button id="closeHelpModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="space-y-6">
+                <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                    <h4 class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-3">Tentang BA Penerimaan Hibah BBM</h4>
+                    <p class="text-blue-800 dark:text-blue-200 text-sm leading-relaxed">
+                        Berita Acara Penerimaan Hibah BBM digunakan untuk mencatat penerimaan hibah BBM dari berbagai sumber.
+                        Dokumen ini berisi informasi tentang sumber hibah, volume BBM yang diterima, dan kondisi penerimaan.
+                    </p>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white">Langkah-langkah Pengisian:</h4>
+
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">1</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Isi Informasi Umum</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Lengkapi nomor surat, tanggal, jam, zona waktu, dan lokasi pembuatan BA.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">2</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Data Sumber Hibah</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Isi informasi sumber hibah BBM, termasuk nama instansi atau kapal pemberi hibah.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">3</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Data Volume Hibah</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Isi volume BBM yang diterima, jenis BBM, dan kondisi penerimaan hibah.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">4</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Informasi Petugas</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Lengkapi data staf pangkalan, nahkoda, dan KKM. Centang checkbox jika sebagai an.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">5</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Upload Dokumen</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Upload dokumen pendukung jika diperlukan (opsional).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
+                    <h4 class="text-lg font-semibold text-yellow-900 dark:text-yellow-100 mb-2">Catatan Penting:</h4>
+                    <ul class="text-yellow-800 dark:text-yellow-200 text-sm space-y-1">
+                        <li>• Pastikan data sumber hibah akurat</li>
+                        <li>• Semua field bertanda (*) wajib diisi</li>
+                        <li>• Volume hibah harus sesuai dengan kapasitas yang tersedia</li>
+                        <li>• Dokumen ini harus ditandatangani oleh pihak yang berwenang</li>
+                        <li>• Pastikan koordinasi dengan sumber hibah telah dilakukan</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 </div>

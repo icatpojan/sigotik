@@ -3,38 +3,341 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use App\Models\ConfUser;
 
 class ConfUserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     *
-     * @return void
      */
-    public function run()
+    public function run(): void
     {
-        // Cek apakah user admin sudah ada
-        $adminExists = ConfUser::where('username', 'admin')->exists();
-
-        if (!$adminExists) {
-            ConfUser::create([
+        $users = [
+            [
                 'conf_user_id' => 1,
                 'username' => 'admin',
-                'password' => Hash::make('admin123'),
+                'password' => Hash::make('admin123'), // Hash the password
                 'm_upt_code' => '000',
                 'conf_group_id' => 1,
-                'email' => 'admin@sigotik.com',
+                'email' => 'administrator@gmail.com',
                 'is_active' => '1',
                 'nama_lengkap' => 'Administrator',
-                'nip' => '000000000000000000',
-                'golongan' => 'IV/a',
-                'date_insert' => now(),
-                'user_insert' => 'system',
-                'date_update' => now(),
-                'user_update' => 'system'
-            ]);
+                'nip' => null,
+                'golongan' => null,
+                'date_insert' => null,
+                'user_insert' => null,
+                'date_update' => '2024-09-04 10:06:53',
+                'user_update' => 'admin'
+            ],
+            [
+                'conf_user_id' => 6,
+                'username' => 'hiu05',
+                'password' => Hash::make('hiu05'),
+                'm_upt_code' => '002',
+                'conf_group_id' => 3,
+                'email' => 'rollingwattimena07@gmail.com',
+                'is_active' => '1',
+                'nama_lengkap' => 'hiu05',
+                'nip' => '',
+                'golongan' => '',
+                'date_insert' => '2020-06-11 16:19:36',
+                'user_insert' => 'admin',
+                'date_update' => '2021-01-25 18:19:32',
+                'user_update' => 'hiu05'
+            ],
+            [
+                'conf_user_id' => 7,
+                'username' => 'bitung',
+                'password' => Hash::make('bitung'),
+                'm_upt_code' => '002',
+                'conf_group_id' => 2,
+                'email' => 'celebe282@gmail.com',
+                'is_active' => '1',
+                'nama_lengkap' => 'UPT PSDKP Bitung',
+                'nip' => '',
+                'golongan' => '',
+                'date_insert' => '2020-06-11 16:20:59',
+                'user_insert' => 'admin',
+                'date_update' => '2025-02-24 07:34:12',
+                'user_update' => 'admin'
+            ],
+            [
+                'conf_user_id' => 8,
+                'username' => 'jakarta',
+                'password' => Hash::make('jakarta'),
+                'm_upt_code' => '003',
+                'conf_group_id' => 2,
+                'email' => 'mrizal2304@gmail.com',
+                'is_active' => '1',
+                'nama_lengkap' => 'UPT Jakarta',
+                'nip' => '',
+                'golongan' => '',
+                'date_insert' => '2020-06-11 16:23:54',
+                'user_insert' => 'admin',
+                'date_update' => '2021-05-18 08:51:57',
+                'user_update' => 'jakarta'
+            ],
+            [
+                'conf_user_id' => 9,
+                'username' => 'hiu10',
+                'password' => Hash::make('hiu10'),
+                'm_upt_code' => '003',
+                'conf_group_id' => 3,
+                'email' => '',
+                'is_active' => '1',
+                'nama_lengkap' => 'KP. Hiu 10',
+                'nip' => '',
+                'golongan' => '',
+                'date_insert' => '2020-06-11 16:25:21',
+                'user_insert' => 'admin',
+                'date_update' => '2020-11-27 11:22:58',
+                'user_update' => 'hiu10'
+            ],
+            [
+                'conf_user_id' => 10,
+                'username' => 'eris',
+                'password' => Hash::make('eris'),
+                'm_upt_code' => '000',
+                'conf_group_id' => 5,
+                'email' => 'testuser@pentasystem.id',
+                'is_active' => '1',
+                'nama_lengkap' => '',
+                'nip' => '',
+                'golongan' => '',
+                'date_insert' => '2020-06-11 16:47:45',
+                'user_insert' => 'admin',
+                'date_update' => null,
+                'user_update' => null
+            ],
+            [
+                'conf_user_id' => 12,
+                'username' => 'erna',
+                'password' => Hash::make('erna'),
+                'm_upt_code' => '000',
+                'conf_group_id' => 5,
+                'email' => '',
+                'is_active' => '1',
+                'nama_lengkap' => 'Ernawati',
+                'nip' => '',
+                'golongan' => '',
+                'date_insert' => '2020-06-11 16:58:38',
+                'user_insert' => 'admin',
+                'date_update' => null,
+                'user_update' => null
+            ],
+            [
+                'conf_user_id' => 14,
+                'username' => 'dwitomo',
+                'password' => Hash::make('dwitomo'),
+                'm_upt_code' => '015',
+                'conf_group_id' => 1,
+                'email' => 'andydwitomo@gmail.com',
+                'is_active' => '1',
+                'nama_lengkap' => 'andy dwitomo',
+                'nip' => '198905202018011001',
+                'golongan' => '3A',
+                'date_insert' => '2020-06-12 10:32:30',
+                'user_insert' => 'admin',
+                'date_update' => '2020-06-12 10:36:18',
+                'user_update' => 'admin'
+            ],
+            [
+                'conf_user_id' => 16,
+                'username' => 'orca01',
+                'password' => Hash::make('orca01'),
+                'm_upt_code' => '015',
+                'conf_group_id' => 3,
+                'email' => 'orca01@kkp.go.id',
+                'is_active' => '1',
+                'nama_lengkap' => 'orca 01',
+                'nip' => '',
+                'golongan' => '',
+                'date_insert' => '2020-06-15 20:40:37',
+                'user_insert' => 'admin',
+                'date_update' => '2020-11-27 09:51:20',
+                'user_update' => 'orca01'
+            ],
+            [
+                'conf_user_id' => 17,
+                'username' => 'orca02',
+                'password' => Hash::make('orca02'),
+                'm_upt_code' => '015',
+                'conf_group_id' => 3,
+                'email' => 'orca02@kkp.go.id',
+                'is_active' => '1',
+                'nama_lengkap' => 'Orca 02',
+                'nip' => '',
+                'golongan' => '',
+                'date_insert' => '2020-06-15 20:41:30',
+                'user_insert' => 'admin',
+                'date_update' => '2020-06-15 20:42:48',
+                'user_update' => 'admin'
+            ],
+            [
+                'conf_user_id' => 18,
+                'username' => 'orca03',
+                'password' => Hash::make('orca03'),
+                'm_upt_code' => '015',
+                'conf_group_id' => 3,
+                'email' => 'orca03@kkp.go.id',
+                'is_active' => '1',
+                'nama_lengkap' => 'Orca 03',
+                'nip' => '',
+                'golongan' => '',
+                'date_insert' => '2020-06-15 20:43:26',
+                'user_insert' => 'admin',
+                'date_update' => '2020-11-28 18:55:01',
+                'user_update' => 'orca03'
+            ],
+            [
+                'conf_user_id' => 19,
+                'username' => 'orca04',
+                'password' => Hash::make('orca04'),
+                'm_upt_code' => '015',
+                'conf_group_id' => 3,
+                'email' => 'kapalpengawas.orca04@gmail.com',
+                'is_active' => '1',
+                'nama_lengkap' => 'Orca 04',
+                'nip' => '',
+                'golongan' => '',
+                'date_insert' => '2020-06-15 20:44:09',
+                'user_insert' => 'admin',
+                'date_update' => '2020-11-28 17:19:01',
+                'user_update' => 'orca04'
+            ],
+            [
+                'conf_user_id' => 20,
+                'username' => 'macantutul01',
+                'password' => Hash::make('macantutul01'),
+                'm_upt_code' => '002',
+                'conf_group_id' => 3,
+                'email' => 'macantutul01@kkp.go.id',
+                'is_active' => '1',
+                'nama_lengkap' => 'KP Macan Tutul 01',
+                'nip' => '',
+                'golongan' => '',
+                'date_insert' => '2020-06-15 20:45:54',
+                'user_insert' => 'admin',
+                'date_update' => '2025-02-24 07:14:52',
+                'user_update' => 'admin'
+            ],
+            [
+                'conf_user_id' => 21,
+                'username' => 'macantutul02',
+                'password' => Hash::make('macantutul02'),
+                'm_upt_code' => '009',
+                'conf_group_id' => 3,
+                'email' => 'macantutul02@kkp.go.id',
+                'is_active' => '1',
+                'nama_lengkap' => 'KP Macan tutul 02',
+                'nip' => '',
+                'golongan' => '',
+                'date_insert' => '2020-06-15 20:49:57',
+                'user_insert' => 'admin',
+                'date_update' => '2025-02-24 07:15:05',
+                'user_update' => 'admin'
+            ],
+            [
+                'conf_user_id' => 22,
+                'username' => 'paus01',
+                'password' => Hash::make('paus01'),
+                'm_upt_code' => '015',
+                'conf_group_id' => 3,
+                'email' => 'paus@kkp.go.id',
+                'is_active' => '1',
+                'nama_lengkap' => 'Paus',
+                'nip' => '',
+                'golongan' => '',
+                'date_insert' => '2020-06-15 20:50:44',
+                'user_insert' => 'admin',
+                'date_update' => '2020-09-07 14:27:14',
+                'user_update' => 'admin'
+            ],
+            [
+                'conf_user_id' => 23,
+                'username' => 'akarbahar01',
+                'password' => Hash::make('akarbahar01'),
+                'm_upt_code' => '015',
+                'conf_group_id' => 3,
+                'email' => 'akarbahar@kkp.go.id',
+                'is_active' => '1',
+                'nama_lengkap' => 'Akar Bahar',
+                'nip' => '',
+                'golongan' => '',
+                'date_insert' => '2020-06-15 20:51:26',
+                'user_insert' => 'admin',
+                'date_update' => '2020-12-01 09:43:42',
+                'user_update' => 'akarbahar01'
+            ],
+            [
+                'conf_user_id' => 24,
+                'username' => 'dirpoa01',
+                'password' => Hash::make('dirpoa01'),
+                'm_upt_code' => '015',
+                'conf_group_id' => 2,
+                'email' => 'dirpoa@kkp.go.id',
+                'is_active' => '1',
+                'nama_lengkap' => 'Direktorat POA',
+                'nip' => '',
+                'golongan' => '',
+                'date_insert' => '2020-06-15 20:53:37',
+                'user_insert' => 'admin',
+                'date_update' => '2024-09-04 10:08:45',
+                'user_update' => 'dirpoa01'
+            ],
+            [
+                'conf_user_id' => 26,
+                'username' => 'macan01',
+                'password' => Hash::make('macan01'),
+                'm_upt_code' => '006',
+                'conf_group_id' => 3,
+                'email' => '',
+                'is_active' => '1',
+                'nama_lengkap' => 'KP Hiu Macan 01',
+                'nip' => '-',
+                'golongan' => '',
+                'date_insert' => '2020-06-17 10:17:58',
+                'user_insert' => 'admin',
+                'date_update' => '2020-12-18 13:23:13',
+                'user_update' => 'macan01'
+            ],
+            [
+                'conf_user_id' => 27,
+                'username' => 'pontianak',
+                'password' => Hash::make('pontianak'),
+                'm_upt_code' => '006',
+                'conf_group_id' => 2,
+                'email' => '',
+                'is_active' => '1',
+                'nama_lengkap' => 'UPT Pontianak',
+                'nip' => '',
+                'golongan' => '',
+                'date_insert' => '2020-06-17 16:22:57',
+                'user_insert' => 'admin',
+                'date_update' => '2020-11-25 05:37:33',
+                'user_update' => 'admin'
+            ],
+            [
+                'conf_user_id' => 28,
+                'username' => 'hiu01',
+                'password' => Hash::make('hiu01'),
+                'm_upt_code' => '004',
+                'conf_group_id' => 3,
+                'email' => '',
+                'is_active' => '1',
+                'nama_lengkap' => 'KP. Hiu 01',
+                'nip' => '',
+                'golongan' => '',
+                'date_insert' => '2020-06-19 13:31:47',
+                'user_insert' => 'admin',
+                'date_update' => '2020-11-25 05:47:19',
+                'user_update' => 'admin'
+            ]
+        ];
+
+        foreach ($users as $user) {
+            DB::table('conf_user')->insert($user);
         }
     }
 }

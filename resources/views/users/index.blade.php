@@ -495,8 +495,8 @@
                     $('#username').val(user.username);
                     $('#nama_lengkap').val(user.nama_lengkap);
                     $('#email').val(user.email);
-                    $('#role').val(user.conf_group_id);
-                    $('#upt').val(user.m_upt_code);
+                    $('#modalRole').val(user.conf_group_id);
+                    $('#modalUpt').val(user.m_upt_code);
                     $('#nip').val(user.nip);
                     $('#golongan').val(user.golongan);
                     $('#password').attr('required', false);
@@ -628,8 +628,8 @@
                         </div>
 
                         <div>
-                            <label for="role" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Role</label>
-                            <select id="role" name="group_id" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                            <label for="modalRole" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Role</label>
+                            <select id="modalRole" name="group_id" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
                                 <option value="">- PILIH -</option>
                                 @foreach($groups as $group)
                                 <option value="{{ $group->conf_group_id }}">{{ $group->group }}</option>
@@ -656,8 +656,8 @@
                         </div>
 
                         <div>
-                            <label for="upt" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">UPT</label>
-                            <select id="upt" name="upt_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                            <label for="modalUpt" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">UPT</label>
+                            <select id="modalUpt" name="upt_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
                                 <option value="">- PILIH -</option>
                                 @foreach($upts as $upt)
                                 <option value="{{ $upt->code }}">{{ $upt->nama }}</option>

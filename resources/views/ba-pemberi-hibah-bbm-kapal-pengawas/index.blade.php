@@ -10,12 +10,20 @@
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">BA Pemberi Hibah BBM Kapal Pengawas</h1>
             <p class="text-gray-600 dark:text-gray-400">Kelola Berita Acara Pemberi Hibah BBM Kapal Pengawas</p>
         </div>
-        <button id="createBaBtn" class="inline-flex items-center px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 dark:border-blue-700 dark:hover:border-blue-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            Tambah BA
-        </button>
+        <div class="flex gap-2">
+            <button id="helpBtn" class="inline-flex items-center px-4 py-2 text-green-600 bg-green-50 hover:bg-green-100 border border-green-200 hover:border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50 dark:border-green-700 dark:hover:border-green-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Bantuan
+            </button>
+            <button id="createBaBtn" class="inline-flex items-center px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 dark:border-blue-700 dark:hover:border-blue-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Tambah BA
+            </button>
+        </div>
     </div>
 
     <!-- Filter and BA Table in One Card -->
@@ -233,7 +241,10 @@
         // --- Form and Modal Handlers ---
         function setDefaultDates() {
             const today = new Date().toISOString().split('T')[0];
+            const currentTime = new Date().toTimeString().slice(0, 5); // Format HH:MM
+
             if ($('#tanggal_surat').length) $('#tanggal_surat').val(today);
+            if ($('#jam_surat').length) $('#jam_surat').val(currentTime);
         }
 
         function setupDatePickers() {
@@ -347,7 +358,11 @@
                         $('#code_kapal').val(data.code_kapal);
                         $('#alamat_upt').val(data.alamat_upt);
                         $('#zona_waktu_surat').val(data.zona_waktu_upt);
+                        $('#jabatan_staf_pangkalan').val(data.jabatan_petugas);
+                        $('#nama_staf_pangkalan').val(data.nama_petugas);
+                        $('#nip_staf').val(data.nip_petugas);
                         $('#nama_nahkoda').val(data.nama_nakoda);
+                        $('#pangkat_nahkoda').val(data.pangkat_nakoda);
                         $('#nip_nahkoda').val(data.nip_nakoda);
                         $('#nama_kkm').val(data.nama_kkm);
                         $('#nip_kkm').val(data.nip_kkm);
@@ -373,6 +388,7 @@
                         const data = response.data;
                         $('#code_kapal_penerima').val(data.code_kapal);
                         $('#nama_nahkoda_penerima').val(data.nama_nakoda);
+                        $('#pangkat_nahkoda_penerima').val(data.pangkat_nakoda);
                         $('#nip_nahkoda_penerima').val(data.nip_nakoda);
                         $('#nama_kkm_penerima').val(data.nama_kkm);
                         $('#nip_kkm_penerima').val(data.nip_kkm);
@@ -409,9 +425,9 @@
         function clearKapalData() {
             $('#code_kapal').val('');
             $('#alamat_upt').val('');
+            $('#jabatan_staf_pangkalan').val('');
             $('#nama_staf_pangkalan').val('');
             $('#nip_staf').val('');
-            $('#jabatan_staf_pangkalan').val('');
             $('#nama_nahkoda').val('');
             $('#pangkat_nahkoda').val('');
             $('#nip_nahkoda').val('');
@@ -426,6 +442,53 @@
             $('#nip_nahkoda_penerima').val('');
             $('#nama_kkm_penerima').val('');
             $('#nip_kkm_penerima').val('');
+        }
+
+        function getVolumeSounding(tanggalSurat, kapalId) {
+            $.ajax({
+                url: '/ba-pemberi-hibah-bbm-kapal-pengawas/volume-sounding'
+                , type: 'GET'
+                , data: {
+                    tanggal_surat: tanggalSurat
+                    , kapal_id: kapalId
+                }
+                , success: function(response) {
+                    if (response.jml == 1) {
+                        // Set link BA dan volume sebelum
+                        $('#link_ba').val(response.nomor_surat);
+                        $('#volume_sebelum').val(response.volume_sisa);
+                        $('#submitBtn').prop('disabled', false);
+                        // Hitung ulang volume sisa setelah set volume sebelum
+                        calculateVolumeSisa();
+                    } else {
+                        // Tidak ada data BBM/sounding
+                        alert(response.pesan || 'Hari ini anda belum melakukan penggunaan BBM');
+                        $('#link_ba').val('');
+                        $('#volume_sebelum').val('');
+                        $('#volume_sisa').val('');
+                        $('#submitBtn').prop('disabled', true);
+                    }
+                }
+                , error: function(xhr) {
+                    console.error('AJAX Error getVolumeSounding:', xhr);
+                    showError('Gagal mengambil data volume sounding');
+                }
+            });
+        }
+
+        function calculateVolumeSisa() {
+            const volumeSebelum = parseFloat($('#volume_sebelum').val()) || 0;
+            const volumePemakaian = parseFloat($('#volume_pemakaian').val()) || 0;
+
+            if (volumePemakaian > volumeSebelum) {
+                alert('Jumlah BBM Di Hibahkan tidak boleh melebihi BBM Sebelum Pengisian');
+                $('#volume_pemakaian').val('');
+                $('#volume_sisa').val('');
+                return;
+            }
+
+            const volumeSisa = volumeSebelum - volumePemakaian;
+            $('#volume_sisa').val(volumeSisa.toFixed(2));
         }
 
         // --- Render Functions ---
@@ -572,6 +635,11 @@
 
         // --- Event Handlers ---
         function setupEventHandlers() {
+            // Help button
+            $('#helpBtn').click(function() {
+                $('#helpModal').removeClass('hidden').addClass('flex items-center justify-center');
+            });
+
             // Create BA button
             $('#createBaBtn, #createFirstBaBtn').on('click', function() {
                 resetForm();
@@ -581,6 +649,11 @@
             // Close modal buttons
             $('#closeModal, #cancelBtn').on('click', function() {
                 $('#baModal').addClass('hidden');
+            });
+
+            // Close help modal
+            $('#closeHelpModal').on('click', function() {
+                $('#helpModal').addClass('hidden').removeClass('flex items-center justify-center');
             });
 
             // Close view modal buttons
@@ -610,6 +683,11 @@
                 const kapalId = $(this).val();
                 if (kapalId) {
                     loadKapalData(kapalId);
+                    // Juga cek volume sounding jika tanggal sudah ada
+                    const tanggalSurat = $('#tanggal_surat').val();
+                    if (tanggalSurat) {
+                        getVolumeSounding(tanggalSurat, kapalId);
+                    }
                 } else {
                     clearKapalData();
                 }
@@ -631,6 +709,21 @@
                 if (persetujuanId) {
                     loadPersetujuanData(persetujuanId);
                 }
+            });
+
+            // Tanggal surat change - get volume sounding
+            $('#tanggal_surat').on('change', function() {
+                const tanggalSurat = $(this).val();
+                const kapalId = $('#kapal_id').val();
+
+                if (tanggalSurat && kapalId) {
+                    getVolumeSounding(tanggalSurat, kapalId);
+                }
+            });
+
+            // Volume pemakaian change - calculate volume sisa
+            $('#volume_pemakaian').on('input', function() {
+                calculateVolumeSisa();
             });
 
             // Form submit
@@ -1025,6 +1118,7 @@
                 <form id="baForm" class="mt-6 space-y-6">
                     @csrf
                     <input type="hidden" id="baId" name="ba_id">
+                    <input type="hidden" id="link_ba" name="link_ba">
 
                     <!-- Informasi Kapal Pemberi -->
                     <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
@@ -1074,8 +1168,8 @@
                                 <textarea id="lokasi_surat" name="lokasi_surat" rows="3" required placeholder="Masukkan lokasi pembuatan BA..." class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:text-white transition-colors resize-none"></textarea>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <div class="lg:col-span-2">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div>
                                 <label for="nomor_surat" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                     Nomor BA <span class="text-red-500">*</span>
                                 </label>
@@ -1154,8 +1248,10 @@
                                 </select>
                             </div>
                             <div>
-                                <label for="nomor_persetujuan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nomor Persetujuan</label>
-                                <input type="text" id="nomor_persetujuan" name="nomor_persetujuan" readonly class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 dark:text-white cursor-not-allowed">
+                                <label for="nomor_persetujuan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    Nomor Persetujuan <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="nomor_persetujuan" name="nomor_persetujuan" required placeholder="Masukkan nomor persetujuan..." class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white transition-colors">
                             </div>
                             <div>
                                 <label for="tanggal_persetujuan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Tanggal Persetujuan</label>
@@ -1433,6 +1529,111 @@
         <div class="p-6 overflow-auto max-h-[calc(90vh-120px)]">
             <div id="documentViewer" class="w-full h-full">
                 <!-- Document content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Help Modal -->
+<div id="helpModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full hidden z-[99999]">
+    <div class="relative mx-auto p-5 border w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 shadow-lg rounded-lg bg-white dark:bg-gray-800 mt-10 mb-10 max-h-[90vh] overflow-y-auto help-modal-scroll">
+        <div class="mt-3">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between pb-4">
+                <h3 class="text-xl font-medium text-gray-900 dark:text-white">Panduan BA Pemberi Hibah BBM Kapal Pengawas</h3>
+                <button id="closeHelpModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="space-y-6">
+                <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                    <h4 class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-3">Tentang BA Pemberi Hibah BBM Kapal Pengawas</h4>
+                    <p class="text-blue-800 dark:text-blue-200 text-sm leading-relaxed">
+                        Berita Acara Pemberi Hibah BBM Kapal Pengawas digunakan untuk mencatat pemberian hibah BBM antar kapal pengawas.
+                        Dokumen ini berisi informasi tentang kapal pemberi, kapal penerima, volume BBM yang dihibahkan, dan kondisi pemberian.
+                    </p>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white">Langkah-langkah Pengisian:</h4>
+
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">1</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Pilih Kapal Pemberi</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Pilih kapal yang akan memberikan hibah BBM. Data kapal akan otomatis terisi.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">2</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Isi Informasi Umum</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Lengkapi nomor surat, tanggal, jam, zona waktu, dan lokasi pembuatan BA.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">3</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Data Kapal Penerima</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Isi informasi kapal penerima hibah BBM, termasuk nama kapal dan kode kapal.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">4</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Data Volume Hibah</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Isi volume BBM yang dihibahkan, jenis BBM, dan kondisi pemberian hibah.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">5</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Informasi Petugas</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Lengkapi data staf pangkalan, nahkoda kapal pemberi, dan KKM. Centang checkbox jika sebagai an.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">6</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Upload Dokumen</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Upload dokumen pendukung jika diperlukan (opsional).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
+                    <h4 class="text-lg font-semibold text-yellow-900 dark:text-yellow-100 mb-2">Catatan Penting:</h4>
+                    <ul class="text-yellow-800 dark:text-yellow-200 text-sm space-y-1">
+                        <li>• Pastikan data kapal pemberi dan penerima akurat</li>
+                        <li>• Semua field bertanda (*) wajib diisi</li>
+                        <li>• Data kapal akan otomatis terisi saat memilih kapal</li>
+                        <li>• Volume hibah harus sesuai dengan kapasitas tangki</li>
+                        <li>• Dokumen ini harus ditandatangani oleh pihak yang berwenang</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

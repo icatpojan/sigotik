@@ -10,12 +10,20 @@
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">BA Penerimaan Pinjaman BBM</h1>
             <p class="text-gray-600 dark:text-gray-400">Kelola Berita Acara Penerimaan Pinjaman BBM</p>
         </div>
-        <button id="createBaBtn" class="inline-flex items-center px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 dark:border-blue-700 dark:hover:border-blue-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            Tambah BA
-        </button>
+        <div class="flex gap-2">
+            <button id="helpBtn" class="inline-flex items-center px-4 py-2 text-green-600 bg-green-50 hover:bg-green-100 border border-green-200 hover:border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50 dark:border-green-700 dark:hover:border-green-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Bantuan
+            </button>
+            <button id="createBaBtn" class="inline-flex items-center px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 dark:border-blue-700 dark:hover:border-blue-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Tambah BA
+            </button>
+        </div>
     </div>
 
     <!-- Filter and BA Table in One Card -->
@@ -84,7 +92,7 @@
 
         <!-- BA Table Section -->
         <div class="overflow-x-auto">
-            <table class="min-w-full border-collapse border border-gray-300 dark:border-gray-600" style="border-radius:20%">
+            <table id="baTable" class="min-w-full border-collapse border border-gray-300 dark:border-gray-600" style="border-radius:20%">
                 <thead style="background-color: #568fd2;">
                     <tr>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Nomor Surat & Tanggal</th>
@@ -117,18 +125,19 @@
 @endsection
 
 @section('scripts')
-<!-- DataTables CSS and JS -->
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/dataTables.tailwindcss.min.css">
-<script type="text/javascript" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/1.13.7/js/dataTables.tailwindcss.min.js"></script>
 <!-- Toastr -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 <script>
     $(document).ready(function() {
+        // Check if jQuery is loaded
+        if (typeof $ === 'undefined') {
+            console.error('jQuery is not loaded');
+            return;
+        }
+
+
         // --- State Variables ---
-        let currentPage = 1;
-        let perPage = 10;
         let currentBaId = null;
         let currentEditMode = false;
 
@@ -309,12 +318,69 @@
             if (typeof toastr !== 'undefined') toastr.error(message);
         }
 
+        // Configure Toastr
+        toastr.options = {
+            "closeButton": true
+            , "debug": false
+            , "newestOnTop": true
+            , "progressBar": true
+            , "positionClass": "toast-top-right"
+            , "preventDuplicates": false
+            , "onclick": null
+            , "showDuration": "300"
+            , "hideDuration": "1000"
+            , "timeOut": "5000"
+            , "extendedTimeOut": "1000"
+            , "showEasing": "swing"
+            , "hideEasing": "linear"
+            , "showMethod": "fadeIn"
+            , "hideMethod": "fadeOut"
+        };
+
+        // Notification function
+        function showNotification(type, message) {
+            // Use Toastr for notifications
+            if (typeof toastr !== 'undefined') {
+                switch (type) {
+                    case 'success':
+                        toastr.success(message);
+                        break;
+                    case 'error':
+                        toastr.error(message);
+                        break;
+                    case 'warning':
+                        toastr.warning(message);
+                        break;
+                    case 'info':
+                        toastr.info(message);
+                        break;
+                    default:
+                        toastr.info(message);
+                }
+            } else {
+                // Fallback to alert if toastr is not available
+                alert(message);
+            }
+        }
+
         // --- Form and Modal Handlers ---
 
         function setDefaultDates() {
             const today = new Date().toISOString().split('T')[0];
+            const now = new Date();
+            const currentTime = now.toTimeString().slice(0, 5); // HH:MM format
+
+            console.log('setDefaultDates called, today:', today, 'currentTime:', currentTime);
+
             // Pastikan elemen tanggal ada sebelum mengatur nilainya
-            if ($('#tanggal_surat').length) $('#tanggal_surat').val(today);
+            if ($('#tanggal_surat').length) {
+                $('#tanggal_surat').val(today);
+                console.log('tanggal_surat set to:', $('#tanggal_surat').val());
+            }
+            if ($('#jam_surat').length) {
+                $('#jam_surat').val(currentTime);
+                console.log('jam_surat set to:', $('#jam_surat').val());
+            }
             if ($('#tanggal_sebelum').length) $('#tanggal_sebelum').val(today);
             if ($('#tanggal_pengisian').length) $('#tanggal_pengisian').val(today);
         }
@@ -417,10 +483,10 @@
         // --- Data Handlers ---
 
         function loadData() {
+            showLoading();
+
             const params = {
-                page: currentPage
-                , per_page: perPage
-                , search: $('#search').val()
+                search: $('#search').val()
                 , kapal: $('#kapal').val()
                 , date_from: $('#date_from').val()
                 , date_to: $('#date_to').val()
@@ -430,23 +496,18 @@
                 url: '{{ route("ba-penerimaan-pinjaman-bbm.data") }}'
                 , type: 'GET'
                 , data: params
-                , beforeSend: function() {
-                    showLoading();
-                }
                 , success: function(response) {
+                    hideLoading();
                     if (response.success) {
                         renderTable(response.data);
-                        renderPagination(response.pagination);
                     } else {
                         showError('Gagal memuat data: ' + response.message);
                     }
                 }
                 , error: function(xhr) {
-                    showError('Terjadi kesalahan saat memuat data');
-                    console.error('AJAX Error loadData:', xhr);
-                }
-                , complete: function() {
                     hideLoading();
+                    console.error('AJAX Error loadData:', xhr);
+                    showError('Terjadi kesalahan saat memuat data');
                 }
             });
         }
@@ -477,6 +538,37 @@
                 }
                 , error: function(xhr) {
                     console.error('AJAX Error loadKapalData:', xhr);
+                }
+            });
+        }
+
+        // Fungsi untuk load data kapal hanya untuk field yang kosong (untuk edit mode)
+        function loadKapalDataForEmptyFields(kapalId) {
+            $.ajax({
+                url: '{{ route("ba-penerimaan-pinjaman-bbm.kapal-data") }}'
+                , type: 'GET'
+                , data: {
+                    kapal_id: kapalId
+                }
+                , success: function(response) {
+                    if (response.success) {
+                        const data = response.data;
+
+                        // Hanya isi field yang kosong atau belum ada
+                        if (!$('#code_kapal').val()) $('#code_kapal').val(data.code_kapal);
+                        if (!$('#alamat_upt').val()) $('#alamat_upt').val(data.alamat_upt);
+                        if (!$('#zona_waktu_surat').val()) $('#zona_waktu_surat').val(data.zona_waktu_upt);
+                        if (!$('#jabatan_staf_pangkalan').val()) $('#jabatan_staf_pangkalan').val(data.jabatan_petugas);
+                        if (!$('#nama_staf_pagkalan').val()) $('#nama_staf_pagkalan').val(data.nama_petugas);
+                        if (!$('#nip_staf').val()) $('#nip_staf').val(data.nip_petugas);
+                        if (!$('#nama_nahkoda').val()) $('#nama_nahkoda').val(data.nama_nakoda);
+                        if (!$('#nip_nahkoda').val()) $('#nip_nahkoda').val(data.nip_nakoda);
+                        if (!$('#nama_kkm').val()) $('#nama_kkm').val(data.nama_kkm);
+                        if (!$('#nip_kkm').val()) $('#nip_kkm').val(data.nip_kkm);
+                    }
+                }
+                , error: function(xhr) {
+                    console.error('AJAX Error loadKapalDataForEmptyFields:', xhr);
                 }
             });
         }
@@ -560,8 +652,11 @@
                     trans_id: transId
                 }
                 , success: function(response) {
-                    if (response.success && response.data.length > 0) {
-                        const data = response.data[0];
+                    console.log('BA Peminjaman Details Response:', response);
+                    if (response.success && response.data) {
+                        const data = response.data;
+                        console.log('Filling data:', data);
+
                         $('#link_modul_temp').val(data.nomor_surat);
                         $('#volume_sebelum').val(data.volume_sisa);
                         $('#keterangan_jenis_bbm').val(data.keterangan_jenis_bbm);
@@ -575,6 +670,8 @@
                         $('#an_nakhoda_temp').prop('checked', data.an_nakhoda_temp == 1);
                         $('#an_kkm_temp').prop('checked', data.an_kkm_temp == 1);
                         calculateVolumeUsage();
+                    } else {
+                        console.log('No data found or response failed');
                     }
                 }
                 , error: function(xhr) {
@@ -815,21 +912,16 @@
 
         function fillEditForm(data) {
             // Reset form dan set mode edit
-
             $('#baForm')[0].reset();
             $('#modalTitle').text('Edit BA Penerimaan Pinjaman BBM');
             $('#submitBtn').html('<i class="fas fa-save me-2"></i>Update BA');
             currentBaId = data.trans_id;
             currentEditMode = true;
 
-            // Set kapal_id terlebih dahulu sebelum loadKapalData
+            // Set kapal_id terlebih dahulu
             $('#kapal_id').val(data.kapal ? data.kapal.m_kapal_id : '');
 
-            // Load kapal data untuk memastikan alamat UPT terisi
-            if (data.kapal && data.kapal.m_kapal_id) {
-                loadKapalData(data.kapal.m_kapal_id);
-            }
-
+            // Load data dari database BA terlebih dahulu (prioritas utama)
             $('#code_kapal').val(data.kapal_code || (data.kapal ? data.kapal.code_kapal : ''));
             $('#alamat_upt').val(data.alamat_upt || (data.kapal && data.kapal.upt ? data.kapal.upt.alamat1 : ''));
             $('#lokasi_surat').val(data.lokasi_surat || '');
@@ -846,7 +938,6 @@
             $('#volume_pemakaian').val(data.volume_pemakaian || '');
             $('#volume_sisa').val(data.volume_sisa || '');
             $('#keterangan_jenis_bbm').val(data.keterangan_jenis_bbm || '');
-            $('#peruntukan').val(data.peruntukan || '');
             $('#jabatan_staf_pangkalan').val(data.jabatan_staf_pangkalan || '');
             $('#nama_staf_pagkalan').val(data.nama_staf_pagkalan || '');
             $('#nip_staf').val(data.nip_staf || '');
@@ -873,6 +964,12 @@
             $('#an_nakhoda').prop('checked', data.an_nakhoda == 1).trigger('change');
             $('#an_kkm').prop('checked', data.an_kkm == 1).trigger('change');
 
+            // Load data dari kapal hanya untuk field yang kosong atau belum ada
+            // Ini dilakukan setelah data dari database BA sudah di-load
+            if (data.kapal && data.kapal.m_kapal_id) {
+                loadKapalDataForEmptyFields(data.kapal.m_kapal_id);
+            }
+
             // Clear validation errors
             $('.is-invalid').removeClass('is-invalid');
             $('.invalid-feedback').remove();
@@ -881,6 +978,22 @@
         // --- Core Event Handlers ---
 
         function setupEventHandlers() {
+            // Help modal handlers
+            $('#helpBtn').on('click', function() {
+                $('#helpModal').removeClass('hidden');
+            });
+
+            $('#closeHelpModal').on('click', function() {
+                $('#helpModal').addClass('hidden');
+            });
+
+            // Close help modal when clicking outside
+            $('#helpModal').on('click', function(e) {
+                if (e.target === this) {
+                    $('#helpModal').addClass('hidden');
+                }
+            });
+
             // Filter handlers
             $('#search, #kapal, #date_from, #date_to').on('change keyup', debounce(function() {
                 currentPage = 1;
@@ -919,6 +1032,7 @@
             // BA Peminjaman berubah, load detail data
             $('#trans_id_peminjam').on('change', function() {
                 const transId = $(this).val();
+                console.log('BA Peminjaman changed, transId:', transId);
                 if (transId) {
                     loadBaPeminjamanDetails(transId);
                 } else {
@@ -936,7 +1050,7 @@
                 calculateVolumeUsage();
             });
 
-            // Form submission
+            // Form submission - HANYA SATU EVENT HANDLER
             $('#baForm').on('submit', handleFormSubmit);
 
             // Checkbox handlers untuk mengisi hidden input
@@ -949,8 +1063,24 @@
 
             // Create BA button
             $('#createBaBtn').on('click', function() {
+                console.log('Create BA button clicked');
                 resetForm();
                 $('#baModal').removeClass('hidden');
+
+                // Set default tanggal, jam dan zona waktu setelah modal terbuka
+                setTimeout(function() {
+                    const today = new Date().toISOString().split('T')[0];
+                    const now = new Date();
+                    const currentTime = now.toTimeString().slice(0, 5); // HH:MM format
+
+                    console.log('Setting dates after modal open:', today, currentTime);
+                    $('#tanggal_surat').val(today);
+                    $('#jam_surat').val(currentTime);
+                    $('#zona_waktu_surat').val('WIB');
+
+                    console.log('tanggal_surat after set:', $('#tanggal_surat').val());
+                    console.log('jam_surat after set:', $('#jam_surat').val());
+                }, 100);
             });
 
             // Modal close handlers
@@ -1498,7 +1628,7 @@
         };
 
         // Initialize DataTable
-        function initDataTable() {
+        function initDataTable_DELETED() {
             // Check if DataTable is available
             if (typeof $.fn.DataTable === 'undefined') {
                 console.error('DataTable library is not loaded');
@@ -1598,34 +1728,6 @@
             });
         }
 
-        // Load kapal data
-        function loadKapalData(kapalId) {
-            $.ajax({
-                url: '{{ route("ba-penerimaan-pinjaman-bbm.kapal-data") }}'
-                , type: 'GET'
-                , data: {
-                    kapal_id: kapalId
-                }
-                , success: function(response) {
-                    if (response.success) {
-                        const data = response.data;
-                        $('#code_kapal').val(data.code_kapal);
-                        $('#alamat_upt').val(data.alamat_upt);
-                        $('#zona_waktu_surat').val(data.zona_waktu_upt);
-                        $('#jabatan_staf_pangkalan').val(data.jabatan_petugas);
-                        $('#nama_staf_pagkalan').val(data.nama_petugas);
-                        $('#nip_staf').val(data.nip_petugas);
-                        $('#nama_nahkoda').val(data.nama_nakoda);
-                        $('#nip_nahkoda').val(data.nip_nakoda);
-                        $('#nama_kkm').val(data.nama_kkm);
-                        $('#nip_kkm').val(data.nip_kkm);
-                    }
-                }
-                , error: function(xhr) {
-                    console.error('Error loading kapal data:', xhr);
-                }
-            });
-        }
 
         // Load BA Peminjaman details
         function loadBaPeminjamanDetails(transId) {
@@ -1641,8 +1743,10 @@
                     trans_id: transId
                 }
                 , success: function(response) {
-                    if (response.success && response.data.length > 0) {
-                        const data = response.data[0];
+                    console.log('BA Peminjaman Details Response (2):', response);
+                    if (response.success && response.data) {
+                        const data = response.data;
+                        console.log('Filling data (2):', data);
                         $('#link_modul_temp').val(data.nomor_surat);
                         $('#volume_sebelum').val(data.volume_sisa);
                         $('#keterangan_jenis_bbm').val(data.keterangan_jenis_bbm);
@@ -1655,6 +1759,8 @@
                         $('#nip_kkm_temp').val(data.nip_kkm_temp);
                         $('#an_nakhoda_temp').prop('checked', data.an_nakhoda_temp == 1);
                         $('#an_kkm_temp').prop('checked', data.an_kkm_temp == 1);
+                    } else {
+                        console.log('No data found or response failed (2)');
                     }
                 }
                 , error: function(xhr) {
@@ -1688,86 +1794,14 @@
         }
 
         // Event listeners
-        $('#kapal_id').on('change', function() {
-            const kapalId = $(this).val();
-            if (kapalId) {
-                loadKapalData(kapalId);
-                loadBaPeminjamanData(kapalId);
-            } else {
-                $('#code_kapal').val('');
-                $('#alamat_upt').val('');
-                $('#trans_id_peminjam').html('<option value="">-- Pilih BA Peminjaman --</option>');
-                clearBaPeminjamanData();
-            }
-        });
 
-        $('#trans_id_peminjam').on('change', function() {
-            const transId = $(this).val();
-            loadBaPeminjamanDetails(transId);
-        });
 
         $('#volume_pengisian').on('input', function() {
             calculateVolumeSisa();
         });
 
-        // Form submission
-        $('#baForm').on('submit', function(e) {
-            e.preventDefault();
+        // Form submission handler sudah ada di atas (handleFormSubmit)
 
-            const formData = new FormData(this);
-            const url = currentEditMode ?
-                `{{ url('ba-penerimaan-pinjaman-bbm') }}/${currentBaId}` :
-                '{{ route("ba-penerimaan-pinjaman-bbm.store") }}';
-            const method = currentEditMode ? 'PUT' : 'POST';
-
-            $.ajax({
-                url: url
-                , type: method
-                , data: formData
-                , processData: false
-                , contentType: false
-                , success: function(response) {
-                    if (response.success) {
-                        $('#baModal').modal('hide');
-                        dataTable.ajax.reload();
-                        Swal.fire({
-                            icon: 'success'
-                            , title: 'Berhasil!'
-                            , text: response.message
-                            , timer: 2000
-                            , showConfirmButton: false
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error'
-                            , title: 'Gagal!'
-                            , text: response.message
-                        });
-                    }
-                }
-                , error: function(xhr) {
-                    let errorMessage = 'Terjadi kesalahan saat menyimpan data';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        errorMessage = xhr.responseJSON.message;
-                    }
-                    Swal.fire({
-                        icon: 'error'
-                        , title: 'Gagal!'
-                        , text: errorMessage
-                    });
-                }
-            });
-        });
-
-        // Create BA button
-        $('#createBaBtn').on('click', function() {
-            currentEditMode = false;
-            currentBaId = null;
-            $('#baForm')[0].reset();
-            $('#modalTitle').text('Tambah BA Penerimaan Pinjaman BBM');
-            $('#submitBtn').html('<i class="fas fa-save me-2"></i>Simpan BA');
-            $('#baModal').modal('show');
-        });
 
         // Edit BA
         $(document).on('click', '.edit-btn', function() {
@@ -1781,7 +1815,7 @@
                 , success: function(response) {
                     if (response.success) {
                         fillEditForm(response.data);
-                        $('#baModal').modal('show');
+                        $('#baModal').removeClass('hidden');
                     }
                 }
                 , error: function(xhr) {
@@ -1794,19 +1828,6 @@
             });
         });
 
-        // Initialize DataTable setelah semua setup selesai
-        // Wait for DataTable library to load
-        function tryInitDataTable() {
-            if (typeof $.fn.DataTable !== 'undefined') {
-                initDataTable();
-            } else {
-                // Wait a bit and try again
-                setTimeout(tryInitDataTable, 500);
-            }
-        }
-
-        // Start trying to initialize DataTable
-        tryInitDataTable();
     });
 
 </script>
@@ -1935,9 +1956,9 @@
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <div>
                                 <label for="trans_id_peminjam" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    BA Peminjaman BBM <span class="text-red-500">*</span>
+                                    BA Peminjaman BBM
                                 </label>
-                                <select id="trans_id_peminjam" name="trans_id_peminjam" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white transition-colors">
+                                <select id="trans_id_peminjam" name="trans_id_peminjam" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white transition-colors">
                                     <option value="">-- Pilih BA Peminjaman --</option>
                                 </select>
                                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Pilih BA Peminjaman BBM yang akan diterima</p>
@@ -1993,10 +2014,6 @@
                                 </label>
                                 <input type="text" id="keterangan_jenis_bbm" name="keterangan_jenis_bbm" value="BIO SOLAR" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 dark:bg-gray-700 dark:text-white transition-colors">
                             </div>
-                            <div>
-                                <label for="peruntukan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Peruntukan</label>
-                                <input type="text" id="peruntukan" name="peruntukan" placeholder="Contoh: Patroli rutin, Operasi khusus, dll" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 dark:bg-gray-700 dark:text-white transition-colors">
-                            </div>
                         </div>
                     </div>
 
@@ -2011,7 +2028,7 @@
                             <div class="flex items-center">
                                 <input type="checkbox" id="an_staf" name="an_staf" value="1" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                                 <label for="an_staf" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    An. (Anak)
+                                    Tandai "An." di depan nama
                                 </label>
                             </div>
                         </div>
@@ -2042,7 +2059,7 @@
                             <div class="flex items-center">
                                 <input type="checkbox" id="an_nakhoda" name="an_nakhoda" value="1" class="h-4 w-4 text-cyan-600 focus:ring-cyan-500 border-gray-300 rounded">
                                 <label for="an_nakhoda" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    An. (Anak)
+                                    Tandai "An." di depan nama
                                 </label>
                             </div>
                         </div>
@@ -2070,7 +2087,7 @@
                             <div class="flex items-center">
                                 <input type="checkbox" id="an_kkm" name="an_kkm" value="1" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded">
                                 <label for="an_kkm" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    An. (Anak)
+                                    Tandai "An." di depan nama
                                 </label>
                             </div>
                         </div>
@@ -2114,7 +2131,7 @@
                                 <div class="flex items-center">
                                     <input type="checkbox" id="an_nakhoda_temp" name="an_nakhoda_temp" value="1" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                                     <label for="an_nakhoda_temp" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        An. (Anak)
+                                        Tandai "An." di depan nama
                                     </label>
                                 </div>
                             </div>
@@ -2141,7 +2158,7 @@
                                 <div class="flex items-center">
                                     <input type="checkbox" id="an_kkm_temp" name="an_kkm_temp" value="1" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                                     <label for="an_kkm_temp" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        An. (Anak)
+                                        Tandai "An." di depan nama
                                     </label>
                                 </div>
                             </div>
@@ -2205,84 +2222,216 @@
 <!-- Modal Upload Dokumen -->
 <div id="uploadModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full hidden z-[99999]">
     <div class="flex items-center justify-center min-h-full py-8">
-    
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4">
-        <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-            <h3 id="uploadModalTitle" class="text-lg font-semibold text-gray-900 dark:text-white">Upload Dokumen Pendukung</h3>
-            <button id="closeUploadModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-        </div>
 
-        <form id="uploadForm" enctype="multipart/form-data">
-            @csrf
-            <div class="p-6">
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Pilih Dokumen <span class="text-red-500">*</span>
-                    </label>
-                    <div class="relative">
-                        <input type="file" id="documentFile" name="document" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 dark:file:bg-green-900/30 dark:file:text-green-400 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer">
-                    </div>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        Format yang didukung: PDF, DOC, DOCX, JPG, JPEG, PNG (Maksimal 10MB)
-                    </p>
-                </div>
-
-                <div id="uploadProgress" class="hidden mb-4">
-                    <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                        <div id="progressBar" class="bg-green-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
-                    </div>
-                    <p id="progressText" class="text-sm text-gray-600 dark:text-gray-400 mt-1">Uploading...</p>
-                </div>
-            </div>
-
-            <div class="flex justify-end space-x-3 p-6 border-t border-gray-200 dark:border-gray-700">
-                <button type="button" id="cancelUploadBtn" class="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 rounded-lg transition-colors font-medium">
-                    Batal
-                </button>
-                <button type="submit" id="uploadBtn" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium flex items-center">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+                <h3 id="uploadModalTitle" class="text-lg font-semibold text-gray-900 dark:text-white">Upload Dokumen Pendukung</h3>
+                <button id="closeUploadModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
-                    <span id="uploadBtnText">Upload</span>
                 </button>
             </div>
-        </form>
+
+            <form id="uploadForm" enctype="multipart/form-data">
+                @csrf
+                <div class="p-6">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Pilih Dokumen <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <input type="file" id="documentFile" name="document" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 dark:file:bg-green-900/30 dark:file:text-green-400 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer">
+                        </div>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            Format yang didukung: PDF, DOC, DOCX, JPG, JPEG, PNG (Maksimal 10MB)
+                        </p>
+                    </div>
+
+                    <div id="uploadProgress" class="hidden mb-4">
+                        <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div id="progressBar" class="bg-green-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                        <p id="progressText" class="text-sm text-gray-600 dark:text-gray-400 mt-1">Uploading...</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-3 p-6 border-t border-gray-200 dark:border-gray-700">
+                    <button type="button" id="cancelUploadBtn" class="px-4 py-2 text-gray-700 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 rounded-lg transition-colors font-medium">
+                        Batal
+                    </button>
+                    <button type="submit" id="uploadBtn" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        <span id="uploadBtnText">Upload</span>
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 </div>
 
 <!-- Modal View Dokumen -->
 <div id="viewDocumentModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full hidden z-[99999]">
 
     <div class="flex items-center justify-center min-h-full py-8">
-   
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
-        <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Dokumen Pendukung</h3>
-            <div class="flex items-center space-x-2">
-                <button id="deleteDocumentBtn" class="p-2 text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 hover:border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 dark:border-red-700 dark:hover:border-red-600 rounded-lg transition-all duration-200" title="Hapus Dokumen">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                    </svg>
-                </button>
-                <button id="closeViewDocumentModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Dokumen Pendukung</h3>
+                <div class="flex items-center space-x-2">
+                    <button id="deleteDocumentBtn" class="p-2 text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 hover:border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 dark:border-red-700 dark:hover:border-red-600 rounded-lg transition-all duration-200" title="Hapus Dokumen">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                    </button>
+                    <button id="closeViewDocumentModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6 overflow-auto max-h-[calc(90vh-120px)]">
+                <div id="documentViewer" class="w-full h-full">
+                    <!-- Document content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Help Modal -->
+<div id="helpModal" class="fixed inset-0 bg-black bg-opacity-50 z-[99999] hidden">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Bantuan - BA Penerimaan Pinjaman BBM</h3>
+                <button id="closeHelpModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
             </div>
-        </div>
+            <div class="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+                <div class="space-y-6">
+                    <!-- Overview -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Apa itu BA Penerimaan Pinjaman BBM?</h4>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">
+                            BA (Berita Acara) Penerimaan Pinjaman BBM adalah dokumen resmi yang mencatat proses penerimaan BBM yang dipinjam dari kapal lain.
+                            Dokumen ini melengkapi BA Peminjaman dan mencatat detail penerimaan BBM.
+                        </p>
+                    </div>
 
-        <div class="p-6 overflow-auto max-h-[calc(90vh-120px)]">
-            <div id="documentViewer" class="w-full h-full">
-                <!-- Document content will be loaded here -->
+                    <!-- Form Sections -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Bagian-bagian Form</h4>
+                        <div class="space-y-4">
+                            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                                <h5 class="font-semibold text-blue-900 dark:text-blue-100 mb-2">📋 Informasi BA</h5>
+                                <ul class="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+                                    <li>• <strong>Nomor Surat:</strong> Nomor unik untuk identifikasi BA</li>
+                                    <li>• <strong>Tanggal & Jam:</strong> Waktu pembuatan dokumen</li>
+                                    <li>• <strong>Lokasi:</strong> Tempat pembuatan BA</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                                <h5 class="font-semibold text-green-900 dark:text-green-100 mb-2">🚢 Informasi Kapal</h5>
+                                <ul class="text-sm text-green-800 dark:text-green-200 space-y-1">
+                                    <li>• <strong>Pilih Kapal:</strong> Kapal yang menerima BBM pinjaman</li>
+                                    <li>• <strong>Data Otomatis:</strong> Nama nahkoda, KKM, dan info kapal terisi otomatis</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
+                                <h5 class="font-semibold text-purple-900 dark:text-purple-100 mb-2">🔗 Informasi BA Peminjaman</h5>
+                                <ul class="text-sm text-purple-800 dark:text-purple-200 space-y-1">
+                                    <li>• <strong>Pilih BA Peminjaman:</strong> BA yang terkait dengan peminjaman ini</li>
+                                    <li>• <strong>Data Otomatis:</strong> Detail BBM dan kapal pemberi pinjaman terisi otomatis</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg">
+                                <h5 class="font-semibold text-orange-900 dark:text-orange-100 mb-2">⛽ Informasi BBM</h5>
+                                <ul class="text-sm text-orange-800 dark:text-orange-200 space-y-1">
+                                    <li>• <strong>Jenis BBM:</strong> Tipe bahan bakar yang diterima</li>
+                                    <li>• <strong>Volume:</strong> Jumlah BBM yang diterima</li>
+                                    <li>• <strong>Kondisi:</strong> Status BBM saat diterima</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Steps -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Langkah-langkah Penggunaan</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-start space-x-3">
+                                <span class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm font-semibold">1</span>
+                                <div>
+                                    <p class="font-medium text-gray-900 dark:text-white">Klik "Tambah BA"</p>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Buka form untuk membuat BA baru</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <span class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm font-semibold">2</span>
+                                <div>
+                                    <p class="font-medium text-gray-900 dark:text-white">Isi Informasi BA</p>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Masukkan nomor surat, tanggal, dan lokasi</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <span class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm font-semibold">3</span>
+                                <div>
+                                    <p class="font-medium text-gray-900 dark:text-white">Pilih Kapal</p>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Pilih kapal yang menerima BBM</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <span class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm font-semibold">4</span>
+                                <div>
+                                    <p class="font-medium text-gray-900 dark:text-white">Pilih BA Peminjaman</p>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Pilih BA peminjaman yang terkait</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <span class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm font-semibold">5</span>
+                                <div>
+                                    <p class="font-medium text-gray-900 dark:text-white">Verifikasi Data BBM</p>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Periksa dan sesuaikan detail BBM jika perlu</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <span class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-sm font-semibold">6</span>
+                                <div>
+                                    <p class="font-medium text-gray-900 dark:text-white">Simpan BA</p>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">Klik "Simpan BA" untuk menyimpan dokumen</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tips -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">💡 Tips & Catatan</h4>
+                        <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">
+                            <ul class="text-sm text-yellow-800 dark:text-yellow-200 space-y-2">
+                                <li>• Pastikan BA Peminjaman sudah ada sebelum membuat BA Penerimaan</li>
+                                <li>• Data BBM akan terisi otomatis dari BA Peminjaman yang dipilih</li>
+                                <li>• Periksa volume BBM sesuai dengan yang dipinjam</li>
+                                <li>• BA Penerimaan akan mengubah status BA Peminjaman menjadi "Diterima"</li>
+                                <li>• Pastikan data kapal dan BBM akurat sebelum menyimpan</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
-</div>
+
 @endsection

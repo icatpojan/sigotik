@@ -19,37 +19,15 @@
             <form id="filterForm" class="flex flex-col sm:flex-row gap-4 items-end">
                 <!-- Search Input -->
                 <div class="w-full sm:w-40">
-                    <label for="search" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Cari Periode/Keterangan</label>
+                    <label for="search" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Cari UPT/Nomor Surat</label>
                     <div class="relative">
-                        <input type="text" id="search" name="search" placeholder="Cari periode, keterangan..." class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                        <input type="text" id="search" name="search" placeholder="Cari UPT, nomor surat..." class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
                         </div>
                     </div>
-                </div>
-
-                <!-- Status Filter -->
-                <div class="w-full sm:w-40">
-                    <label for="status" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Filter Status</label>
-                    <select id="status" name="status" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
-                        <option value="">Semua Status</option>
-                        <option value="0">Belum Disetujui</option>
-                        <option value="1">Disetujui</option>
-                    </select>
-                </div>
-
-                <!-- Date From -->
-                <div class="w-full sm:w-40">
-                    <label for="dateFrom" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Dari Tanggal</label>
-                    <input type="date" id="dateFrom" name="dateFrom" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
-                </div>
-
-                <!-- Date To -->
-                <div class="w-full sm:w-40">
-                    <label for="dateTo" class="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Sampai Tanggal</label>
-                    <input type="date" id="dateTo" name="dateTo" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
                 </div>
 
                 <!-- Filter Button -->
@@ -80,11 +58,12 @@
                 <thead style="background-color: #568fd2;">
                     <tr>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">No</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Periode</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Total Realisasi</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Tanggal Trans</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">UPT</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Nominal</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Nomor Surat</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Keterangan</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">User Input</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Tanggal Input</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Status</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Aksi</th>
                     </tr>
@@ -113,7 +92,7 @@
                 <div class="flex items-center justify-between pb-6 border-b border-gray-200 dark:border-gray-700">
                     <div>
                         <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Detail Realisasi</h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Lihat detail realisasi per UPT</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Lihat detail realisasi anggaran</p>
                     </div>
                     <button onclick="closeViewModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -243,22 +222,16 @@
 
         // Get filter parameters
         const search = $('#search').val();
-        const status = $('#status').val();
-        const dateFrom = $('#dateFrom').val();
-        const dateTo = $('#dateTo').val();
 
         $.get('{{ route("anggaran.approval-realisasi.data") }}', {
             search: search
-            , status: status
-            , date_from: dateFrom
-            , date_to: dateTo
         }, function(response) {
             $('#loadingIndicator').addClass('hidden');
 
             if (!response.data || response.data.length === 0) {
                 $('#dataTableBody').html(`
                     <tr>
-                        <td colspan="8" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                        <td colspan="9" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                             Tidak ada data realisasi
                         </td>
                     </tr>
@@ -268,17 +241,17 @@
 
             let html = '';
             response.data.forEach(function(item, index) {
-                const statusBadge = item.statusanggaran == 1 ?
+                const statusBadge = item.statusperubahan == 1 ?
                     '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">Disetujui</span>' :
                     '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">Belum Disetujui</span>';
 
-                const tanggalInput = new Date(item.tanggal_input).toLocaleDateString('id-ID');
-                const totalRealisasi = 'Rp. ' + new Intl.NumberFormat('id-ID').format(item.total_anggaran || 0);
+                const tanggalTrans = new Date(item.tanggal_trans).toLocaleDateString('id-ID');
+                const nominal = 'Rp. ' + new Intl.NumberFormat('id-ID').format(item.nominal || 0);
 
                 let actions = '<div class="flex items-center justify-end space-x-1">';
-                actions += '<button onclick="viewAnggaran(\'' + item.periode + '\')" class="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 dark:border-blue-700 dark:hover:border-blue-600 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md" title="Lihat Detail"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></button>';
-                if (item.statusanggaran == 0) {
-                    actions += '<button onclick="approveAnggaran(\'' + item.periode + '\')" class="p-2 text-green-600 bg-green-50 hover:bg-green-100 border border-green-200 hover:border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50 dark:border-green-700 dark:hover:border-green-600 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md" title="Setujui"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></button>';
+                actions += '<button onclick="viewRealisasi(' + item.anggaran_upt_id + ')" class="p-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 dark:border-blue-700 dark:hover:border-blue-600 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md" title="Lihat Detail"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></button>';
+                if (item.statusperubahan == 0) {
+                    actions += '<button onclick="approveRealisasi(' + item.anggaran_upt_id + ')" class="p-2 text-green-600 bg-green-50 hover:bg-green-100 border border-green-200 hover:border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50 dark:border-green-700 dark:hover:border-green-600 rounded-lg transition-all duration-200 shadow-sm hover:shadow-md" title="Setujui"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg></button>';
                 }
                 actions += '</div>';
 
@@ -286,19 +259,22 @@
                     <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                         <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">${index + 1}</td>
                         <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
-                            <div class="text-sm font-medium text-gray-900 dark:text-white">${item.periode}</div>
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">${tanggalTrans}</div>
                         </td>
                         <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
-                            <div class="text-sm font-medium text-gray-900 dark:text-white">${totalRealisasi}</div>
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">${item.upt ? item.upt.nama : '-'}</div>
+                        </td>
+                        <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
+                            <div class="text-sm font-medium text-gray-900 dark:text-white">${nominal}</div>
+                        </td>
+                        <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
+                            <div class="text-sm text-gray-900 dark:text-white">${item.nomor_surat || '-'}</div>
                         </td>
                         <td class="px-6 py-4 border border-gray-300 dark:border-gray-600">
                             <div class="text-sm text-gray-900 dark:text-white">${item.keterangan || '-'}</div>
                         </td>
                         <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
-                            <div class="text-sm text-gray-900 dark:text-white">${item.user_input || '-'}</div>
-                        </td>
-                        <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
-                            <div class="text-sm text-gray-900 dark:text-white">${tanggalInput}</div>
+                            <div class="text-sm text-gray-900 dark:text-white">${item.user_input ? item.user_input.nama_lengkap || item.user_input.username : '-'}</div>
                         </td>
                         <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
                             ${statusBadge}
@@ -317,8 +293,8 @@
         });
     }
 
-    function viewAnggaran(periode) {
-        console.log('Viewing anggaran for periode:', periode);
+    function viewRealisasi(id) {
+        console.log('Viewing realisasi for id:', id);
 
         // Show modal immediately
         $('#viewModal').removeClass('hidden');
@@ -326,36 +302,32 @@
         // Show loading in modal
         $('#viewModalBody').html('<div class="flex items-center justify-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div><span class="ml-2 text-gray-600 dark:text-gray-400">Memuat data...</span></div>');
 
-        $.get('{{ route("anggaran.approval-realisasi.view", [":periode"]) }}'.replace(':periode', periode), function(data) {
+        $.get('{{ route("anggaran.approval-realisasi.view", [":id"]) }}'.replace(':id', id), function(data) {
             console.log('View data received:', data);
 
-            let html = '<div class="overflow-x-auto">';
-            html += '<table class="min-w-full border-collapse border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">';
-            html += '<thead style="background-color: #568fd2;">';
-            html += '<tr>';
-            html += '<th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">No</th>';
-            html += '<th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">UPT</th>';
-            html += '<th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Realisasi (Rp)</th>';
-            html += '</tr>';
-            html += '</thead>';
-            html += '<tbody class="bg-white dark:bg-gray-800">';
+            if (data.data) {
+                const item = data.data;
+                const tanggalTrans = new Date(item.tanggal_trans).toLocaleDateString('id-ID');
+                const nominal = 'Rp. ' + new Intl.NumberFormat('id-ID').format(item.nominal || 0);
+                const statusText = item.statusperubahan == 1 ? 'Disetujui' : 'Belum Disetujui';
+                const statusClass = item.statusperubahan == 1 ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
 
-            if (data.data && data.data.length > 0) {
-                data.data.forEach(function(item, index) {
-                    html += '<tr class="hover:bg-gray-50 dark:hover:bg-gray-700">';
-                    html += '<td class="px-4 py-3 text-center border border-gray-300 dark:border-gray-600">' + (index + 1) + '</td>';
-                    html += '<td class="px-4 py-3 border border-gray-300 dark:border-gray-600">' + (item.upt ? item.upt.nama : '-') + '</td>';
-                    html += '<td class="px-4 py-3 text-right border border-gray-300 dark:border-gray-600 font-medium">Rp. ' + new Intl.NumberFormat('id-ID').format(item.anggaran) + '</td>';
-                    html += '</tr>';
-                });
+                let html = '<div class="space-y-4">';
+                html += '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
+                html += '<div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tanggal Transaksi</label><p class="mt-1 text-sm text-gray-900 dark:text-white">' + tanggalTrans + '</p></div>';
+                html += '<div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300">UPT</label><p class="mt-1 text-sm text-gray-900 dark:text-white">' + (item.upt ? item.upt.nama : '-') + '</p></div>';
+                html += '<div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nominal</label><p class="mt-1 text-sm text-gray-900 dark:text-white font-medium">' + nominal + '</p></div>';
+                html += '<div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nomor Surat</label><p class="mt-1 text-sm text-gray-900 dark:text-white">' + (item.nomor_surat || '-') + '</p></div>';
+                html += '<div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label><p class="mt-1"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + statusClass + '">' + statusText + '</span></p></div>';
+                html += '<div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300">User Input</label><p class="mt-1 text-sm text-gray-900 dark:text-white">' + (item.user_input ? (item.user_input.nama_lengkap || item.user_input.username) : '-') + '</p></div>';
+                html += '</div>';
+                html += '<div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Keterangan</label><p class="mt-1 text-sm text-gray-900 dark:text-white">' + (item.keterangan || '-') + '</p></div>';
+                html += '</div>';
+
+                $('#viewModalBody').html(html);
             } else {
-                html += '<tr>';
-                html += '<td colspan="3" class="px-4 py-3 text-center border border-gray-300 dark:border-gray-600 text-gray-500">Tidak ada data</td>';
-                html += '</tr>';
+                $('#viewModalBody').html('<div class="text-center py-8 text-gray-500">Data tidak ditemukan</div>');
             }
-
-            html += '</tbody></table></div>';
-            $('#viewModalBody').html(html);
         }).fail(function(xhr, status, error) {
             console.error('Error loading view data:', error);
             $('#viewModalBody').html('<div class="text-center py-8 text-red-500">Gagal memuat data detail</div>');
@@ -363,13 +335,13 @@
         });
     }
 
-    function approveAnggaran(periode) {
-        if (confirm('Apakah Anda yakin ingin menyetujui realisasi periode ' + periode + '?')) {
+    function approveRealisasi(id) {
+        if (confirm('Apakah Anda yakin ingin menyetujui realisasi ini?')) {
             $.ajax({
                 url: '{{ route("anggaran.approval-realisasi.approve") }}'
                 , type: 'POST'
                 , data: {
-                    periode: periode
+                    id: id
                     , _token: $('meta[name="csrf-token"]').attr('content')
                 }
                 , success: function(response) {

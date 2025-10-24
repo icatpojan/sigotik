@@ -66,7 +66,7 @@
                     </button>
                 </div>
 
-                
+
             </form>
         </div>
 
@@ -106,7 +106,7 @@
 <script>
     $(document).ready(function() {
         loadUptOptions();
-        
+
         // Load kapal options (all kapals initially)
         loadKapalOptions('');
 
@@ -175,6 +175,19 @@
             });
         });
     }
+
+    function loadKapalOptions(uptId) {
+        $.get('/laporan-bbm/kapal-options', {
+            upt_id: uptId
+        }, function(data) {
+            const select = $('#kapal_id');
+            select.empty().append('<option value="">Semua Kapal</option>');
+            data.forEach(function(kapal) {
+                select.append(`<option value="${kapal.id}">${kapal.nama_kapal}</option>`);
+            });
+        });
+    }
+
     function formatDate(dateString) {
         if (!dateString) return '-';
         const date = new Date(dateString);
@@ -278,7 +291,7 @@
         });
     }
 
-        function exportData(format = 'excel') {
+    function exportData(format = 'excel') {
         const startDate = $('#start_date').val();
         const endDate = $('#end_date').val();
         const uptId = $('#upt_id').val();
@@ -290,10 +303,10 @@
         exportButton.disabled = true;
 
         const params = new URLSearchParams({
-            start_date: startDate,
-            end_date: endDate,
-            upt_id: uptId,
-            format: format
+            start_date: startDate
+            , end_date: endDate
+            , upt_id: uptId
+            , format: format
         });
 
         // Use fetch to handle the response
@@ -314,7 +327,7 @@
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `laporan_${format}_${new Date().toISOString().split('T')[0]}.${format === 'excel' ? 'xlsx' : 'pdf'}`;
+                a.download = `laporan_hibah_antar_kapal_pengawas_${format}_${new Date().toISOString().split('T')[0]}.${format === 'excel' ? 'xlsx' : 'pdf'}`;
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
@@ -329,9 +342,6 @@
                 exportButton.innerHTML = originalText;
                 exportButton.disabled = false;
             });
-    });
-
-        window.open(`{{ route("laporan-bbm.hibah-antar-kapal-pengawas.export") }}?${params}`, '_blank');
     }
 
 </script>

@@ -23,6 +23,9 @@ class BbmTransdetail extends Model
         'harga_total',
         'status_bayar',
         'no_tagihan',
+        'foto_do',
+        'foto_segel',
+        'foto_volume',
         'tanggalinput',
         'userid'
     ];

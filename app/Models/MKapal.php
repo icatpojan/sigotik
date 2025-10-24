@@ -73,4 +73,13 @@ class MKapal extends Model
     {
         return $this->belongsToMany(ConfUser::class, 'sys_user_kapal', 'm_kapal_id', 'conf_user_id');
     }
+
+    // Accessor untuk gambar_kapal agar mengembalikan URL lengkap
+    public function getGambarKapalAttribute($value)
+    {
+        if ($value) {
+            return url($value);
+        }
+        return null;
+    }
 }

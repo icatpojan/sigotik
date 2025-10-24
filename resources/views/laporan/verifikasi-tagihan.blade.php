@@ -92,7 +92,6 @@
                     <thead style="background-color: #568fd2;">
                         <tr>
                             <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">No</th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Periode</th>
                             <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">UPT</th>
                             <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">No Tagihan</th>
                             <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Tanggal Surat</th>
@@ -105,7 +104,7 @@
                     </thead>
                     <tbody id="dataTableBody" class="bg-white dark:bg-gray-800">
                         <tr>
-                            <td colspan="10" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                            <td colspan="9" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                                 <div class="flex flex-col items-center">
                                     <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -166,7 +165,7 @@
             $('#no_tagihan').val('');
             $('#dataTableBody').html(`
             <tr>
-                <td colspan="10" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                <td colspan="9" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                     <div class="flex flex-col items-center">
                         <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -341,7 +340,7 @@
             // Show loading
             $('#dataTableBody').html(`
             <tr>
-                <td colspan="10" class="px-4 py-8 text-center">
+                <td colspan="9" class="px-4 py-8 text-center">
                     <div class="flex items-center justify-center">
                         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                         <span class="ml-2 text-gray-600 dark:text-gray-400">Memuat data...</span>
@@ -365,7 +364,6 @@
                         html += `
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                             <td class="px-4 py-3 text-center border border-gray-300 dark:border-gray-600">${index + 1}</td>
-                            <td class="px-4 py-3 text-center border border-gray-300 dark:border-gray-600">${item.periode}</td>
                             <td class="px-4 py-3 border border-gray-300 dark:border-gray-600">${item.upt ? item.upt.nama : '-'}</td>
                             <td class="px-4 py-3 text-center border border-gray-300 dark:border-gray-600">${item.no_tagihan}</td>
                             <td class="px-4 py-3 text-center border border-gray-300 dark:border-gray-600">${new Date(item.tanggal_surat).toLocaleDateString('id-ID')}</td>
@@ -384,7 +382,7 @@
                 } else {
                     $('#dataTableBody').html(`
                     <tr>
-                        <td colspan="10" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                        <td colspan="9" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                             <div class="flex flex-col items-center">
                                 <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -398,7 +396,7 @@
             }).fail(function() {
                 $('#dataTableBody').html(`
                 <tr>
-                    <td colspan="10" class="px-4 py-8 text-center text-red-500">
+                    <td colspan="9" class="px-4 py-8 text-center text-red-500">
                         <div class="flex flex-col items-center">
                             <svg class="w-12 h-12 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>

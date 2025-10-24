@@ -21,6 +21,9 @@ class CreateBbmTransdetailTable extends Migration
             $table->decimal('harga_total', 20, 2)->default(0.00);
             $table->tinyInteger('status_bayar')->default(0);
             $table->string('no_tagihan', 50)->nullable();
+            $table->string('foto_do', 100)->nullable()->comment('Foto Delivery Order');
+            $table->string('foto_segel', 100)->nullable()->comment('Foto Segel');
+            $table->string('foto_volume', 100)->nullable()->comment('Foto Volume');
             $table->datetime('tanggalinput');
             $table->string('userid', 10)->default('');
         });

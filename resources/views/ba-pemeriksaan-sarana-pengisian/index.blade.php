@@ -2,6 +2,11 @@
 
 @section('title', 'BA Pemeriksaan Sarana Pengisian')
 
+<!-- Toastr CSS and JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
 @section('content')
 <div class="space-y-6">
     <!-- Header Section -->
@@ -10,12 +15,20 @@
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">BA Pemeriksaan Sarana Pengisian</h1>
             <p class="text-gray-600 dark:text-gray-400">Kelola Berita Acara Pemeriksaan Sarana Pengisian</p>
         </div>
-        <button id="createBaBtn" class="inline-flex items-center px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 dark:border-blue-700 dark:hover:border-blue-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            Tambah BA
-        </button>
+        <div class="flex gap-2">
+            <button id="helpBtn" class="inline-flex items-center px-4 py-2 text-green-600 bg-green-50 hover:bg-green-100 border border-green-200 hover:border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50 dark:border-green-700 dark:hover:border-green-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Bantuan
+            </button>
+            <button id="createBaBtn" class="inline-flex items-center px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 dark:border-blue-700 dark:hover:border-blue-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Tambah BA
+            </button>
+        </div>
     </div>
 
     <!-- Filter and BA Table in One Card -->
@@ -90,7 +103,6 @@
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Nomor Surat & Tanggal</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Kapal & Lokasi</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Volume Penggunaan</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Status</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Aksi</th>
                     </tr>
                 </thead>
@@ -370,7 +382,7 @@
                     <div class="flex items-center">
                         <input type="checkbox" id="an_staf" name="an_staf" value="1" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                         <label for="an_staf" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            An. (Anak)
+                            Tandai "An." di depan nama
                         </label>
                     </div>
                 </div>
@@ -402,7 +414,7 @@
                     <div class="flex items-center">
                         <input type="checkbox" id="an_nakhoda" name="an_nakhoda" value="1" class="h-4 w-4 text-cyan-600 focus:ring-cyan-500 border-gray-300 rounded">
                         <label for="an_nakhoda" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            An. (Anak)
+                            Tandai "An." di depan nama
                         </label>
                     </div>
                 </div>
@@ -431,7 +443,7 @@
                     <div class="flex items-center">
                         <input type="checkbox" id="an_kkm" name="an_kkm" value="1" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded">
                         <label for="an_kkm" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                            An. (Anak)
+                            Tandai "An." di depan nama
                         </label>
                     </div>
                 </div>
@@ -474,7 +486,18 @@
         let currentPage = 1;
         let perPage = 10;
         let currentBaId = null;
+
+        // Help button
+        $('#helpBtn').click(function() {
+            $('#helpModal').removeClass('hidden').addClass('flex items-center justify-center');
+        });
+
+        // Help modal controls
+        $('#closeHelpModal').click(function() {
+            $('#helpModal').addClass('hidden').removeClass('flex items-center justify-center');
+        });
         let currentEditMode = false;
+        let userModifiedData = false;
 
         // --- Initialization ---
         loadData();
@@ -622,28 +645,6 @@
          * @param {number|string} status Kode status.
          * @returns {string} Nama warna.
          */
-        function getStatusColor(status) {
-            const colors = {
-                0: 'warning', // Input
-                1: 'success', // Approval
-                2: 'danger' // Batal
-            };
-            return colors[status] || 'secondary';
-        }
-
-        /**
-         * Mendapatkan teks status berdasarkan kode.
-         * @param {number|string} status Kode status.
-         * @returns {string} Teks status.
-         */
-        function getStatusText(status) {
-            const texts = {
-                0: 'Input'
-                , 1: 'Approval'
-                , 2: 'Batal'
-            };
-            return texts[status] || 'Unknown';
-        }
 
         /**
          * Mendapatkan teks jenis transportasi berdasarkan kode.
@@ -691,11 +692,18 @@
         // --- Form and Modal Handlers ---
 
         function setDefaultDates() {
-            const today = new Date().toISOString().split('T')[0];
+            const now = new Date();
+            const today = now.toISOString().split('T')[0];
+            const time = now.toTimeString().slice(0, 5);
+
             // Pastikan elemen tanggal ada sebelum mengatur nilainya
             if ($('#tanggal_surat').length) $('#tanggal_surat').val(today);
             if ($('#tanggal_sebelum').length) $('#tanggal_sebelum').val(today);
             if ($('#tanggal_pengisian').length) $('#tanggal_pengisian').val(today);
+
+            // Set jam otomatis
+            if ($('#jam_surat').length) $('#jam_surat').val(time);
+            if ($('#zona_waktu_surat').length) $('#zona_waktu_surat').val('WIB');
         }
 
         function setupDatePickers() {
@@ -747,6 +755,7 @@
             $('#submitBtn').html('<i class="fas fa-save me-2"></i>Simpan BA');
             currentBaId = null;
             currentEditMode = false;
+            userModifiedData = false;
             clearKapalData();
             setDefaultDates();
 
@@ -850,13 +859,21 @@
                         $('#code_kapal').val(data.code_kapal);
                         $('#alamat_upt').val(data.alamat_upt);
                         $('#zona_waktu_surat').val(data.zona_waktu_upt);
-                        $('#jabatan_staf_pangkalan').val(data.jabatan_petugas);
-                        $('#nama_staf_pagkalan').val(data.nama_petugas);
-                        $('#nip_staf').val(data.nip_petugas);
-                        $('#nama_nahkoda').val(data.nama_nakoda);
-                        $('#nip_nahkoda').val(data.nip_nakoda);
-                        $('#nama_kkm').val(data.nama_kkm);
-                        $('#nip_kkm').val(data.nip_kkm);
+
+                        // Hanya isi data personel jika bukan mode edit atau jika field masih kosong
+                        if (!currentEditMode || !$('#nip_staf').val()) {
+                            $('#jabatan_staf_pangkalan').val(data.jabatan_petugas);
+                            $('#nama_staf_pagkalan').val(data.nama_petugas);
+                            $('#nip_staf').val(data.nip_petugas);
+                        }
+                        if (!currentEditMode || !$('#nip_nahkoda').val()) {
+                            $('#nama_nahkoda').val(data.nama_nakoda);
+                            $('#nip_nahkoda').val(data.nip_nakoda);
+                        }
+                        if (!currentEditMode || !$('#nip_kkm').val()) {
+                            $('#nama_kkm').val(data.nama_kkm);
+                            $('#nip_kkm').val(data.nip_kkm);
+                        }
                     } else {
                         clearKapalData();
                     }
@@ -978,11 +995,6 @@
                             <div class="font-medium">Penyedia: ${ba.penyedia || '-'}</div>
                             <div class="text-gray-500 dark:text-gray-400">Jenis: ${getJenisTransportText(ba.jenis_tranport)}</div>
                         </div>
-                    </td>
-                    <td class="px-6 py-4 border border-gray-300 dark:border-gray-600">
-                        <span class="px-2 py-1 text-xs font-medium rounded-full bg-${getStatusColor(ba.status_trans)}-100 text-${getStatusColor(ba.status_trans)}-800 dark:bg-${getStatusColor(ba.status_trans)}-900 dark:text-${getStatusColor(ba.status_trans)}-200">
-                            ${getStatusText(ba.status_trans)}
-                        </span>
                     </td>
                     <td class="px-6 py-4 text-right text-sm font-medium border border-gray-300 dark:border-gray-600">
            <div class="flex items-center space-x-2 justify-end">
@@ -1174,15 +1186,10 @@
             $('#submitBtn').html('<i class="fas fa-save me-2"></i>Update BA');
             currentBaId = data.trans_id;
             currentEditMode = true;
+            userModifiedData = false;
 
-            // Set kapal_id terlebih dahulu sebelum loadKapalData
+            // Set kapal_id dan data kapal langsung dari database
             $('#kapal_id').val(data.kapal ? data.kapal.m_kapal_id : '');
-
-            // Load kapal data untuk memastikan alamat UPT terisi
-            if (data.kapal && data.kapal.m_kapal_id) {
-                loadKapalData(data.kapal.m_kapal_id);
-            }
-
             $('#code_kapal').val(data.kapal_code || (data.kapal ? data.kapal.code_kapal : ''));
             $('#alamat_upt').val(data.alamat_upt || (data.kapal && data.kapal.upt ? data.kapal.upt.alamat1 : ''));
             $('#lokasi_surat').val(data.lokasi_surat || '');
@@ -1338,7 +1345,10 @@
             $('#kapal_id').on('change', function() {
                 const kapalId = $(this).val();
                 if (kapalId) {
-                    loadKapalData(kapalId);
+                    // Hanya load data kapal jika bukan mode edit atau jika user belum mengubah data
+                    if (!currentEditMode || !userModifiedData) {
+                        loadKapalData(kapalId);
+                    }
                     // Hanya load data BA jika bukan mode edit, karena di edit form data BA sudah terisi
                     if (!currentEditMode) {
                         loadBaData(kapalId);
@@ -1388,10 +1398,27 @@
                 handleTransportChange($(this).val());
             });
 
+            // Track user modifications to prevent auto-overwrite
+            $('#nip_staf, #nip_nahkoda, #nip_kkm, #nama_staf_pagkalan, #nama_nahkoda, #nama_kkm, #jabatan_staf_pangkalan').on('input change', function() {
+                userModifiedData = true;
+            });
+
             // Create BA button
             $('#createBaBtn').on('click', function() {
                 resetForm();
                 $('#baModal').removeClass('hidden');
+
+                // Set default time after modal is shown
+                setTimeout(function() {
+                    const now = new Date();
+                    const time = now.toTimeString().slice(0, 5);
+                    if ($('#jam_surat').length) {
+                        $('#jam_surat').val(time);
+                    }
+                    if ($('#zona_waktu_surat').length) {
+                        $('#zona_waktu_surat').val('WIB');
+                    }
+                }, 100);
             });
 
             // Modal close handlers
@@ -1715,6 +1742,7 @@
                         fillEditForm(response.data);
                         currentBaId = id;
                         currentEditMode = true;
+                        userModifiedData = false;
                         $('#modalTitle').text('Edit BA Pemeriksaan Sarana Pengisian');
                         $('#submitBtn').html('<i class="fas fa-save me-2"></i>Update BA');
                         $('#baModal').removeClass('hidden');
@@ -1758,80 +1786,49 @@
             });
         };
 
+        // Configure Toastr
+        toastr.options = {
+            "closeButton": true
+            , "debug": false
+            , "newestOnTop": true
+            , "progressBar": true
+            , "positionClass": "toast-top-right"
+            , "preventDuplicates": false
+            , "onclick": null
+            , "showDuration": "300"
+            , "hideDuration": "1000"
+            , "timeOut": "5000"
+            , "extendedTimeOut": "1000"
+            , "showEasing": "swing"
+            , "hideEasing": "linear"
+            , "showMethod": "fadeIn"
+            , "hideMethod": "fadeOut"
+        };
+
         // Notification function
         function showNotification(type, message) {
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 z-[100000] p-4 rounded-lg shadow-lg max-w-sm transition-all duration-300 transform translate-x-full`;
-
-            // Set notification styles based on type
-            switch (type) {
-                case 'success':
-                    notification.className += ' bg-green-500 text-white';
-                    notification.innerHTML = `
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
-                            <span>${message}</span>
-                        </div>
-                    `;
-                    break;
-                case 'error':
-                    notification.className += ' bg-red-500 text-white';
-                    notification.innerHTML = `
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                            <span>${message}</span>
-                        </div>
-                    `;
-                    break;
-                case 'info':
-                    notification.className += ' bg-blue-500 text-white';
-                    notification.innerHTML = `
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                            <span>${message}</span>
-                        </div>
-                    `;
-                    break;
-                default:
-                    notification.className += ' bg-gray-500 text-white';
-                    notification.innerHTML = `<span>${message}</span>`;
+            // Use Toastr for notifications
+            if (typeof toastr !== 'undefined') {
+                switch (type) {
+                    case 'success':
+                        toastr.success(message);
+                        break;
+                    case 'error':
+                        toastr.error(message);
+                        break;
+                    case 'warning':
+                        toastr.warning(message);
+                        break;
+                    case 'info':
+                        toastr.info(message);
+                        break;
+                    default:
+                        toastr.info(message);
+                }
+            } else {
+                // Fallback to alert if toastr is not available
+                alert(message);
             }
-
-            // Add close button
-            const closeBtn = document.createElement('button');
-            closeBtn.innerHTML = `
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            `;
-            closeBtn.className = 'ml-2 text-white hover:text-gray-200 transition-colors';
-            closeBtn.onclick = () => {
-                notification.style.transform = 'translateX(100%)';
-                setTimeout(() => notification.remove(), 300);
-            };
-
-            notification.querySelector('div').appendChild(closeBtn);
-
-            // Add to DOM
-            document.body.appendChild(notification);
-
-            // Animate in
-            setTimeout(() => {
-                notification.style.transform = 'translateX(0)';
-            }, 100);
-
-            // Auto remove after 5 seconds
-            setTimeout(() => {
-                notification.style.transform = 'translateX(100%)';
-                setTimeout(() => notification.remove(), 300);
-            }, 5000);
         }
 
         window.generatePdf = function(baId) {
@@ -2170,7 +2167,7 @@
                             <div class="flex items-center">
                                 <input type="checkbox" id="an_staf" name="an_staf" value="1" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
                                 <label for="an_staf" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    An. (Anak)
+                                    Tandai "An." di depan nama
                                 </label>
                             </div>
                         </div>
@@ -2201,7 +2198,7 @@
                             <div class="flex items-center">
                                 <input type="checkbox" id="an_nakhoda" name="an_nakhoda" value="1" class="h-4 w-4 text-cyan-600 focus:ring-cyan-500 border-gray-300 rounded">
                                 <label for="an_nakhoda" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    An. (Anak)
+                                    Tandai "An." di depan nama
                                 </label>
                             </div>
                         </div>
@@ -2229,7 +2226,7 @@
                             <div class="flex items-center">
                                 <input type="checkbox" id="an_kkm" name="an_kkm" value="1" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded">
                                 <label for="an_kkm" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    An. (Anak)
+                                    Tandai "An." di depan nama
                                 </label>
                             </div>
                         </div>
@@ -2361,6 +2358,133 @@
         <div class="p-6 overflow-auto max-h-[calc(90vh-120px)]">
             <div id="documentViewer" class="w-full h-full">
                 <!-- Document content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Help Modal -->
+<div id="helpModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full hidden z-[99999]">
+    <div class="relative mx-auto p-5 border w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 shadow-lg rounded-lg bg-white dark:bg-gray-800 mt-10 mb-10 max-h-[90vh] overflow-y-auto help-modal-scroll">
+        <div class="mt-3">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between pb-4">
+                <h3 class="text-xl font-medium text-gray-900 dark:text-white">Panduan BA Pemeriksaan Sarana Pengisian</h3>
+                <button id="closeHelpModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="space-y-6">
+                <!-- Overview -->
+                <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg">
+                    <h4 class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-2">📋 Overview</h4>
+                    <p class="text-blue-800 dark:text-blue-200">
+                        BA Pemeriksaan Sarana Pengisian adalah dokumen yang dibuat untuk memeriksa kondisi sarana pengisian BBM.
+                        Dokumen ini mencatat hasil pemeriksaan peralatan, kondisi sarana, dan kelayakan pengisian.
+                    </p>
+                </div>
+
+                <!-- Features -->
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">🔧 Fitur Utama</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">🔍 Pencarian & Filter</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Cari BA berdasarkan nomor surat, kapal, atau tanggal. Gunakan filter untuk menemukan data dengan cepat.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">➕ Tambah BA</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Klik tombol "Tambah BA" untuk membuat BA Pemeriksaan Sarana Pengisian baru.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">✏️ Edit BA</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Klik tombol edit untuk mengubah data BA yang sudah ada.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">👁️ Lihat Detail</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Klik tombol detail untuk melihat informasi lengkap BA.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">📄 Generate PDF</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Klik tombol PDF untuk mengunduh dokumen BA dalam format PDF.
+                            </p>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">📎 Upload Dokumen</h5>
+                            <p class="text-sm text-gray-600 dark:text-gray-300">
+                                Upload dokumen pendukung untuk BA (foto, scan, dll).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Fields -->
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">📝 Field Form BA Pemeriksaan Sarana Pengisian</h4>
+                    <div class="space-y-3">
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">📋 Informasi Surat</h5>
+                            <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                <li>• <strong>Nomor Surat:</strong> Nomor BA yang unik</li>
+                                <li>• <strong>Tanggal Surat:</strong> Tanggal pembuatan BA</li>
+                                <li>• <strong>Jam Surat:</strong> Waktu pembuatan BA</li>
+                                <li>• <strong>Lokasi Surat:</strong> Tempat pembuatan BA</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">🚢 Informasi Kapal</h5>
+                            <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                <li>• <strong>Kapal:</strong> Pilih kapal yang akan diperiksa</li>
+                                <li>• <strong>UPT:</strong> Unit Pelaksana Teknis yang bertanggung jawab</li>
+                                <li>• <strong>Alamat UPT:</strong> Alamat lengkap UPT</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">🔧 Informasi Sarana</h5>
+                            <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                <li>• <strong>Kondisi Pompa:</strong> Kondisi pompa pengisian</li>
+                                <li>• <strong>Kondisi Selang:</strong> Kondisi selang pengisian</li>
+                                <li>• <strong>Kondisi Nozzle:</strong> Kondisi nozzle pengisian</li>
+                                <li>• <strong>Kondisi Meter:</strong> Kondisi meter pengukur</li>
+                                <li>• <strong>Kelayakan:</strong> Status kelayakan sarana</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                            <h5 class="font-medium text-gray-900 dark:text-white mb-2">👤 Informasi Personel</h5>
+                            <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                                <li>• <strong>Staf Pangkalan:</strong> Nama dan NIP staf yang bertugas</li>
+                                <li>• <strong>Nahkoda:</strong> Nama dan NIP nahkoda kapal</li>
+                                <li>• <strong>KKM:</strong> Nama dan NIP Kepala Kamar Mesin</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tips -->
+                <div class="bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-lg">
+                    <h4 class="text-lg font-semibold text-yellow-900 dark:text-yellow-100 mb-2">💡 Tips Penggunaan</h4>
+                    <ul class="text-yellow-800 dark:text-yellow-200 space-y-2">
+                        <li>• Pastikan data kapal sudah terdaftar sebelum membuat BA</li>
+                        <li>• Isi semua field yang wajib (bertanda *) untuk kelengkapan dokumen</li>
+                        <li>• Periksa kondisi sarana dengan teliti dan detail</li>
+                        <li>• Catat semua temuan pemeriksaan dengan jelas</li>
+                        <li>• Upload dokumen pendukung untuk validasi</li>
+                        <li>• Generate PDF untuk arsip dan distribusi</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>

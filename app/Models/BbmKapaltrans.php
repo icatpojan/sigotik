@@ -98,6 +98,7 @@ class BbmKapaltrans extends Model
         'status_trans',
         'penyedia', // Field untuk penyedia BBM
         'no_so', // Field untuk nomor Sales Order
+        'foto_so', // Field untuk foto Sales Order
         'penyedia_penitip', // Field untuk penyedia penitip
         'nama_penitip', // Field untuk nama penitip
         'jabatan_penitip', // Field untuk jabatan penitip
@@ -112,7 +113,9 @@ class BbmKapaltrans extends Model
         'file_upload', // Field untuk file upload dokumen
         'instansi_temp', // Field untuk nama instansi pemberi
         'alamat_instansi_temp', // Field untuk alamat instansi pemberi
-        'nama_penyedia' // Field untuk nama penyedia
+        'nama_penyedia', // Field untuk nama penyedia
+        'foto', // Field untuk foto
+        'ttd' // Field untuk tanda tangan
     ];
 
     protected $dates = [
@@ -169,6 +172,12 @@ class BbmKapaltrans extends Model
     public function persetujuan()
     {
         return $this->belongsTo(MPersetujuan::class, 'm_persetujuan_id', 'id');
+    }
+
+    // Relasi dengan foto uploads
+    public function fotoUploads()
+    {
+        return $this->hasMany(FotoUpload::class, 'trans_id', 'trans_id');
     }
 
     // Scope untuk filter berdasarkan status BA

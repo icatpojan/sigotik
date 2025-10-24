@@ -105,6 +105,7 @@ class AuthController extends Controller
                 'success' => true,
                 'message' => 'Login berhasil',
                 'data' => [
+                    'token' => $token,
                     'user' => [
                         'id' => $user->conf_user_id,
                         'username' => $user->username,
@@ -117,7 +118,6 @@ class AuthController extends Controller
                         'group' => $user->group,
                         'kapals' => $user->kapals
                     ],
-                    'token' => $token,
                     'token_type' => 'Bearer'
                 ]
             ]);

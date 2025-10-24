@@ -8,9 +8,11 @@ class BbmAnggaranUpt extends Model
 {
     protected $table = 'bbm_anggaran_upt';
     protected $primaryKey = 'anggaran_upt_id';
-    public $timestamps = false;
+    public $incrementing = false; // Set to false karena auto increment tidak berfungsi
+    public $timestamps = false; // Disable timestamps karena tabel tidak memiliki created_at dan updated_at
 
     protected $fillable = [
+        'anggaran_upt_id',
         'tanggal_trans',
         'm_upt_code',
         'nominal',
@@ -23,68 +25,70 @@ class BbmAnggaranUpt extends Model
         'tanggal_app'
     ];
 
-    protected $dates = [
-        'tanggal_trans',
-        'tanggal_input',
-        'tanggal_app'
-    ];
+    // Override boot method untuk generate ID otomatis
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->anggaran_upt_id)) {
+                $model->anggaran_upt_id = static::getNextId();
+            }
+        });
+    }
+
+    // Method untuk mendapatkan ID berikutnya
+    public static function getNextId()
+    {
+        $maxId = static::max('anggaran_upt_id');
+        return $maxId ? $maxId + 1 : 1;
+    }
 
     protected $casts = [
+        'tanggal_trans' => 'date',
+        'tanggal_input' => 'datetime',
+        'tanggal_app' => 'datetime',
         'nominal' => 'decimal:2',
         'statusperubahan' => 'integer'
     ];
 
-    // Relasi dengan UPT
     public function upt()
     {
         return $this->belongsTo(MUpt::class, 'm_upt_code', 'code');
     }
 
-    // Relasi dengan user yang input
     public function userInput()
     {
         return $this->belongsTo(ConfUser::class, 'user_input', 'username');
     }
 
-    // Relasi dengan user yang approve
     public function userApp()
     {
         return $this->belongsTo(ConfUser::class, 'user_app', 'username');
     }
 
-    // Scope untuk filter berdasarkan status perubahan
-    public function scopeByStatus($query, $status)
-    {
-        return $query->where('statusperubahan', $status);
-    }
 
-    // Scope untuk filter berdasarkan UPT
-    public function scopeByUpt($query, $uptCode)
-    {
-        return $query->where('m_upt_code', $uptCode);
-    }
-
-    // Scope untuk filter berdasarkan tanggal
-    public function scopeByDateRange($query, $startDate, $endDate)
-    {
-        return $query->whereBetween('tanggal_trans', [$startDate, $endDate]);
-    }
-
-    // Method untuk mendapatkan status perubahan dalam teks
+    // Accessor untuk status dalam teks
     public function getStatusPerubahanTextAttribute()
     {
         $statusMap = [
             0 => 'Belum Disetujui',
-            1 => 'Sudah Disetujui',
+            1 => 'Disetujui',
             2 => 'Dibatalkan'
         ];
 
         return $statusMap[$this->statusperubahan] ?? 'Unknown';
     }
 
-    // Method untuk format nominal dengan currency
-    public function getNominalFormattedAttribute()
+    // Accessor untuk status badge class
+    public function getStatusBadgeClassAttribute()
     {
-        return 'Rp. ' . number_format($this->nominal, 0, ',', '.');
+        $classMap = [
+            0 => 'bg-yellow-100 text-yellow-800',
+            1 => 'bg-green-100 text-green-800',
+            2 => 'bg-red-100 text-red-800'
+        ];
+
+        return $classMap[$this->statusperubahan] ?? 'bg-gray-100 text-gray-800';
     }
 }

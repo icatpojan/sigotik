@@ -82,7 +82,7 @@
                     </button>
                 </div>
 
-                
+
             </form>
         </div>
 
@@ -123,7 +123,7 @@
     $(document).ready(function() {
         // Load UPT options
         loadUptOptions();
-        
+
         // Load kapal options (all kapals initially)
         loadKapalOptions('');
 
@@ -203,6 +203,19 @@
             select.append(`<option value="${year}">${year}</option>`);
         }
     }
+
+    function loadKapalOptions(uptId) {
+        $.get('/laporan-bbm/kapal-options', {
+            upt_id: uptId
+        }, function(data) {
+            const select = $('#kapal_id');
+            select.empty().append('<option value="">Semua Kapal</option>');
+            data.forEach(function(kapal) {
+                select.append(`<option value="${kapal.id}">${kapal.nama_kapal}</option>`);
+            });
+        });
+    }
+
     function formatDate(dateString) {
         if (!dateString) return '-';
         const date = new Date(dateString);
@@ -313,9 +326,14 @@
     }
 
     function exportData(format = 'excel') {
-        const startDate = $('#start_date').val();
-        const endDate = $('#end_date').val();
+        const bulan = $('#bulan').val();
+        const tahun = $('#tahun').val();
         const uptId = $('#upt_id').val();
+
+        if (!bulan || !tahun) {
+            alert('Pilih bulan dan tahun terlebih dahulu');
+            return;
+        }
 
         // Show loading indicator
         const exportButton = event.target;
@@ -324,10 +342,10 @@
         exportButton.disabled = true;
 
         const params = new URLSearchParams({
-            start_date: startDate,
-            end_date: endDate,
-            upt_id: uptId,
-            format: format
+            bulan: bulan
+            , tahun: tahun
+            , upt_id: uptId
+            , format: format
         });
 
         // Use fetch to handle the response
@@ -348,7 +366,7 @@
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `laporan_${format}_${new Date().toISOString().split('T')[0]}.${format === 'excel' ? 'xlsx' : 'pdf'}`;
+                a.download = `laporan_akhir_bulan_${format}_${new Date().toISOString().split('T')[0]}.${format === 'excel' ? 'xlsx' : 'pdf'}`;
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
@@ -363,15 +381,6 @@
                 exportButton.innerHTML = originalText;
                 exportButton.disabled = false;
             });
-    }
-
-        const params = new URLSearchParams({
-            bulan: bulan
-            , tahun: tahun
-            , upt_id: uptId
-        });
-
-        window.open(`{{ route("laporan-bbm.akhir-bulan.export") }}?${params}`, '_blank');
     }
 
 </script>

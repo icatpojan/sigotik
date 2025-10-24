@@ -37,17 +37,17 @@ class BbmKapaltransSeeder extends Seeder
                 'gambar_segel' => null,
                 'status_flowmeter' => 1,
                 'gambar_flowmeter' => null,
-                'nama_nahkoda' => 'Capt. John Doe',
+                'nama_nahkoda' => 'Kapten Laut (P) Bambang Sutrisno',
                 'nip_nahkoda' => '123456789012345678',
                 'jabatan_nahkoda' => 'Nakhoda',
                 'pangkat_nahkoda' => 'III/c',
                 'golongan_nahkoda' => 'III/c',
-                'nama_kkm' => 'Jane Doe',
+                'nama_kkm' => 'Siti Aminah',
                 'nip_kkm' => '987654321098765432',
                 'jabatan_kkm' => 'KKM',
                 'pangkat_kkm' => 'III/b',
                 'golongan_kkm' => 'III/b',
-                'nama_an' => 'Bob Smith',
+                'nama_an' => 'Budi Santoso',
                 'nip_an' => '111111111111111111',
                 'jabatan_an' => 'AN',
                 'pangkat_an' => 'III/a',
@@ -73,7 +73,7 @@ class BbmKapaltransSeeder extends Seeder
                 'an_nakhoda_temp' => 0,
                 'an_kkm_temp' => 0,
                 'user_input' => 'admin',
-                
+
                 'user_app' => 'admin',
                 'tanggal_app' => now()->subDays(4),
                 'status_trans' => 1
@@ -100,7 +100,7 @@ class BbmKapaltransSeeder extends Seeder
                 'gambar_segel' => null,
                 'status_flowmeter' => 1,
                 'gambar_flowmeter' => null,
-                'nama_nahkoda' => 'Capt. Ahmad Rahman',
+                'nama_nahkoda' => 'Kapten Laut (P) Ahmad Rahman',
                 'nip_nahkoda' => '234567890123456789',
                 'jabatan_nahkoda' => 'Nakhoda',
                 'pangkat_nahkoda' => 'IV/a',
@@ -110,7 +110,7 @@ class BbmKapaltransSeeder extends Seeder
                 'jabatan_kkm' => 'KKM',
                 'pangkat_kkm' => 'III/d',
                 'golongan_kkm' => 'III/d',
-                'nama_an' => 'Budi Santoso',
+                'nama_an' => 'Rudi Hartono',
                 'nip_an' => '456789012345678901',
                 'jabatan_an' => 'AN',
                 'pangkat_an' => 'III/b',
@@ -136,7 +136,7 @@ class BbmKapaltransSeeder extends Seeder
                 'an_nakhoda_temp' => 0,
                 'an_kkm_temp' => 0,
                 'user_input' => 'admin',
-                
+
                 'user_app' => 'admin',
                 'tanggal_app' => now()->subDays(2),
                 'status_trans' => 1
@@ -163,7 +163,7 @@ class BbmKapaltransSeeder extends Seeder
                 'gambar_segel' => 'segel_rusak.jpg',
                 'status_flowmeter' => 1,
                 'gambar_flowmeter' => null,
-                'nama_nahkoda' => 'Capt. Maria Santos',
+                'nama_nahkoda' => 'Kapten Laut (P) Maria Santos',
                 'nip_nahkoda' => '567890123456789012',
                 'jabatan_nahkoda' => 'Nakhoda',
                 'pangkat_nahkoda' => 'III/d',
@@ -199,7 +199,7 @@ class BbmKapaltransSeeder extends Seeder
                 'an_nakhoda_temp' => 0,
                 'an_kkm_temp' => 0,
                 'user_input' => 'admin',
-                
+
                 'user_app' => '',
                 'tanggal_app' => null,
                 'status_trans' => 0
@@ -226,7 +226,7 @@ class BbmKapaltransSeeder extends Seeder
                 'gambar_segel' => null,
                 'status_flowmeter' => 2,
                 'gambar_flowmeter' => 'flowmeter_rusak.jpg',
-                'nama_nahkoda' => 'Capt. Robert Johnson',
+                'nama_nahkoda' => 'Kapten Laut (P) Robert Johnson',
                 'nip_nahkoda' => '890123456789012345',
                 'jabatan_nahkoda' => 'Nakhoda',
                 'pangkat_nahkoda' => 'IV/b',
@@ -262,7 +262,7 @@ class BbmKapaltransSeeder extends Seeder
                 'an_nakhoda_temp' => 0,
                 'an_kkm_temp' => 0,
                 'user_input' => 'admin',
-                
+
                 'user_app' => 'admin',
                 'tanggal_app' => now()->subDays(6),
                 'status_trans' => 1
@@ -289,7 +289,7 @@ class BbmKapaltransSeeder extends Seeder
                 'gambar_segel' => null,
                 'status_flowmeter' => 1,
                 'gambar_flowmeter' => null,
-                'nama_nahkoda' => 'Capt. David Lee',
+                'nama_nahkoda' => 'Kapten Laut (P) David Lee',
                 'nip_nahkoda' => '123450987654321098',
                 'jabatan_nahkoda' => 'Nakhoda',
                 'pangkat_nahkoda' => 'III/c',
@@ -325,7 +325,7 @@ class BbmKapaltransSeeder extends Seeder
                 'an_nakhoda_temp' => 0,
                 'an_kkm_temp' => 0,
                 'user_input' => 'admin',
-                
+
                 'user_app' => 'admin',
                 'tanggal_app' => now()->subDays(9),
                 'status_trans' => 2
@@ -352,7 +352,7 @@ class BbmKapaltransSeeder extends Seeder
                 'gambar_segel' => null,
                 'status_flowmeter' => 1,
                 'gambar_flowmeter' => null,
-                'nama_nahkoda' => 'Capt. Wayan Surya',
+                'nama_nahkoda' => 'Kapten Laut (P) Wayan Surya',
                 'nip_nahkoda' => '456783210987654321',
                 'jabatan_nahkoda' => 'Nakhoda',
                 'pangkat_nahkoda' => 'IV/a',
@@ -388,7 +388,7 @@ class BbmKapaltransSeeder extends Seeder
                 'an_nakhoda_temp' => 0,
                 'an_kkm_temp' => 0,
                 'user_input' => 'admin',
-                
+
                 'user_app' => 'admin',
                 'tanggal_app' => now()->subDays(1),
                 'status_trans' => 1
@@ -415,7 +415,7 @@ class BbmKapaltransSeeder extends Seeder
                 'gambar_segel' => null,
                 'status_flowmeter' => 1,
                 'gambar_flowmeter' => null,
-                'nama_nahkoda' => 'Capt. Abdul Rahman',
+                'nama_nahkoda' => 'Kapten Laut (P) Abdul Rahman',
                 'nip_nahkoda' => '789016543210987654',
                 'jabatan_nahkoda' => 'Nakhoda',
                 'pangkat_nahkoda' => 'III/d',
@@ -451,7 +451,7 @@ class BbmKapaltransSeeder extends Seeder
                 'an_nakhoda_temp' => 0,
                 'an_kkm_temp' => 0,
                 'user_input' => 'admin',
-                
+
                 'user_app' => '',
                 'tanggal_app' => null,
                 'status_trans' => 0
@@ -478,7 +478,7 @@ class BbmKapaltransSeeder extends Seeder
                 'gambar_segel' => null,
                 'status_flowmeter' => 1,
                 'gambar_flowmeter' => null,
-                'nama_nahkoda' => 'Capt. Bambang Sutrisno',
+                'nama_nahkoda' => 'Kapten Laut (P) Bambang Sutrisno',
                 'nip_nahkoda' => '012349876543210987',
                 'jabatan_nahkoda' => 'Nakhoda',
                 'pangkat_nahkoda' => 'IV/c',
@@ -514,7 +514,7 @@ class BbmKapaltransSeeder extends Seeder
                 'an_nakhoda_temp' => 0,
                 'an_kkm_temp' => 0,
                 'user_input' => 'admin',
-                
+
                 'user_app' => 'admin',
                 'tanggal_app' => now()->subDays(5),
                 'status_trans' => 1

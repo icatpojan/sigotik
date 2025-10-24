@@ -66,7 +66,7 @@
                     </button>
                 </div>
 
-                
+
             </form>
         </div>
 
@@ -106,9 +106,6 @@
 <script>
     $(document).ready(function() {
         loadUptOptions();
-        
-        // Load kapal options (all kapals initially)
-        loadKapalOptions('');
 
         const today = new Date();
         const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -116,7 +113,6 @@
 
         $('#start_date').val(firstDay.toISOString().split('T')[0]);
         $('#end_date').val(lastDay.toISOString().split('T')[0]);
-
 
         // Force date input to work properly
         $('#start_date, #end_date').on('focus', function() {
@@ -175,6 +171,8 @@
             });
         });
     }
+
+
     function formatDate(dateString) {
         if (!dateString) return '-';
         const date = new Date(dateString);
@@ -278,7 +276,7 @@
         });
     }
 
-        function exportData(format = 'excel') {
+    function exportData(format = 'excel') {
         const startDate = $('#start_date').val();
         const endDate = $('#end_date').val();
         const uptId = $('#upt_id').val();
@@ -290,10 +288,10 @@
         exportButton.disabled = true;
 
         const params = new URLSearchParams({
-            start_date: startDate,
-            end_date: endDate,
-            upt_id: uptId,
-            format: format
+            start_date: startDate
+            , end_date: endDate
+            , upt_id: uptId
+            , format: format
         });
 
         // Use fetch to handle the response
@@ -314,7 +312,7 @@
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `laporan_${format}_${new Date().toISOString().split('T')[0]}.${format === 'excel' ? 'xlsx' : 'pdf'}`;
+                a.download = `laporan_pemberi_hibah_instansi_lain_${format}_${new Date().toISOString().split('T')[0]}.${format === 'excel' ? 'xlsx' : 'pdf'}`;
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
@@ -329,9 +327,6 @@
                 exportButton.innerHTML = originalText;
                 exportButton.disabled = false;
             });
-    });
-
-        window.open(`{{ route("laporan-bbm.pemberi-hibah-instansi-lain.export") }}?${params}`, '_blank');
     }
 
 </script>

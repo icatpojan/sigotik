@@ -62,11 +62,11 @@
                     </svg>
                     Preview
                 </button>
-                <button id="printBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                <button id="pdfBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                     </svg>
-                    Print
+                    Export PDF
                 </button>
                 <button id="excelBtn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -86,19 +86,17 @@
                     <thead style="background-color: #568fd2;">
                         <tr>
                             <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">No</th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Periode</th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">UPT</th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">No Tagihan</th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Tanggal Surat</th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Lokasi Surat</th>
                             <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">No Invoice</th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Volume (L)</th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Harga Total (Rp)</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Depot</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Kapal</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Volume (Liter)</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Harga (Rp)</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Total (Rp)</th>
                         </tr>
                     </thead>
                     <tbody id="dataTableBody" class="bg-white dark:bg-gray-800">
                         <tr>
-                            <td colspan="9" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                            <td colspan="7" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                                 <div class="flex flex-col items-center">
                                     <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -175,8 +173,8 @@
             loadData();
         });
 
-        // Print button
-        $('#printBtn').click(function() {
+        // PDF button
+        $('#pdfBtn').click(function() {
             const tglAwal = $('#tgl_awal').val();
             const tglAkhir = $('#tgl_akhir').val();
             const uptCode = $('#upt_code').val();
@@ -186,39 +184,14 @@
                 return;
             }
 
-            // Create form and submit via POST
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '{{ route("laporan-anggaran.export.pdf", "berita-acara-pembayaran") }}';
-            form.target = '_blank';
+            const params = new URLSearchParams({
+                tgl_awal: tglAwal
+                , tgl_akhir: tglAkhir
+                , upt_code: uptCode
+                , format: 'pdf'
+            });
 
-            const csrfToken = document.createElement('input');
-            csrfToken.type = 'hidden';
-            csrfToken.name = '_token';
-            csrfToken.value = '{{ csrf_token() }}';
-            form.appendChild(csrfToken);
-
-            const tglAwalInput = document.createElement('input');
-            tglAwalInput.type = 'hidden';
-            tglAwalInput.name = 'tgl_awal';
-            tglAwalInput.value = tglAwal;
-            form.appendChild(tglAwalInput);
-
-            const tglAkhirInput = document.createElement('input');
-            tglAkhirInput.type = 'hidden';
-            tglAkhirInput.name = 'tgl_akhir';
-            tglAkhirInput.value = tglAkhir;
-            form.appendChild(tglAkhirInput);
-
-            const uptCodeInput = document.createElement('input');
-            uptCodeInput.type = 'hidden';
-            uptCodeInput.name = 'upt_code';
-            uptCodeInput.value = uptCode;
-            form.appendChild(uptCodeInput);
-
-            document.body.appendChild(form);
-            form.submit();
-            document.body.removeChild(form);
+            window.open('{{ route("laporan-anggaran.berita-acara-pembayaran.export") }}?' + params, '_blank');
         });
 
         // Excel button
@@ -232,39 +205,14 @@
                 return;
             }
 
-            // Create form and submit via POST
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '{{ route("laporan-anggaran.export.excel", "berita-acara-pembayaran") }}';
-            form.target = '_blank';
+            const params = new URLSearchParams({
+                tgl_awal: tglAwal
+                , tgl_akhir: tglAkhir
+                , upt_code: uptCode
+                , format: 'excel'
+            });
 
-            const csrfToken = document.createElement('input');
-            csrfToken.type = 'hidden';
-            csrfToken.name = '_token';
-            csrfToken.value = '{{ csrf_token() }}';
-            form.appendChild(csrfToken);
-
-            const tglAwalInput = document.createElement('input');
-            tglAwalInput.type = 'hidden';
-            tglAwalInput.name = 'tgl_awal';
-            tglAwalInput.value = tglAwal;
-            form.appendChild(tglAwalInput);
-
-            const tglAkhirInput = document.createElement('input');
-            tglAkhirInput.type = 'hidden';
-            tglAkhirInput.name = 'tgl_akhir';
-            tglAkhirInput.value = tglAkhir;
-            form.appendChild(tglAkhirInput);
-
-            const uptCodeInput = document.createElement('input');
-            uptCodeInput.type = 'hidden';
-            uptCodeInput.name = 'upt_code';
-            uptCodeInput.value = uptCode;
-            form.appendChild(uptCodeInput);
-
-            document.body.appendChild(form);
-            form.submit();
-            document.body.removeChild(form);
+            window.open('{{ route("laporan-anggaran.berita-acara-pembayaran.export") }}?' + params, '_blank');
         });
 
 
@@ -293,7 +241,7 @@
             // Show loading
             $('#dataTableBody').html(`
             <tr>
-                <td colspan="9" class="px-4 py-8 text-center">
+                <td colspan="7" class="px-4 py-8 text-center">
                     <div class="flex items-center justify-center">
                         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                         <span class="ml-2 text-gray-600 dark:text-gray-400">Memuat data...</span>
@@ -313,14 +261,12 @@
                         html += `
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                             <td class="px-4 py-3 text-center border border-gray-300 dark:border-gray-600">${index + 1}</td>
-                            <td class="px-4 py-3 text-center border border-gray-300 dark:border-gray-600">${item.periode}</td>
-                            <td class="px-4 py-3 border border-gray-300 dark:border-gray-600">${item.upt ? item.upt.nama : '-'}</td>
-                            <td class="px-4 py-3 text-center border border-gray-300 dark:border-gray-600">${item.no_tagihan}</td>
-                            <td class="px-4 py-3 text-center border border-gray-300 dark:border-gray-600">${new Date(item.tanggal_surat).toLocaleDateString('id-ID')}</td>
-                            <td class="px-4 py-3 border border-gray-300 dark:border-gray-600">${item.lokasi_surat}</td>
                             <td class="px-4 py-3 text-center border border-gray-300 dark:border-gray-600">${item.no_invoice}</td>
-                            <td class="px-4 py-3 text-right border border-gray-300 dark:border-gray-600">${new Intl.NumberFormat('id-ID').format(item.volume_isi)}</td>
+                            <td class="px-4 py-3 border border-gray-300 dark:border-gray-600">${item.lokasi_surat}</td>
+                            <td class="px-4 py-3 border border-gray-300 dark:border-gray-600">${item.nama_kapal}</td>
+                            <td class="px-4 py-3 text-right border border-gray-300 dark:border-gray-600 font-medium">${new Intl.NumberFormat('id-ID').format(item.volume_isi)}</td>
                             <td class="px-4 py-3 text-right border border-gray-300 dark:border-gray-600 font-medium">Rp. ${new Intl.NumberFormat('id-ID').format(item.harga_total)}</td>
+                            <td class="px-4 py-3 text-right border border-gray-300 dark:border-gray-600 font-medium">Rp. ${new Intl.NumberFormat('id-ID').format(item.total_harga)}</td>
                         </tr>
                     `;
                     });
@@ -329,7 +275,7 @@
                 } else {
                     $('#dataTableBody').html(`
                     <tr>
-                        <td colspan="9" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                        <td colspan="7" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                             <div class="flex flex-col items-center">
                                 <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -343,7 +289,7 @@
             }).fail(function() {
                 $('#dataTableBody').html(`
                 <tr>
-                    <td colspan="9" class="px-4 py-8 text-center text-red-500">
+                    <td colspan="7" class="px-4 py-8 text-center text-red-500">
                         <div class="flex flex-col items-center">
                             <svg class="w-12 h-12 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>

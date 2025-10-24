@@ -9,12 +9,20 @@
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">BA Penerima Hibah BBM Dengan Instansi Lain</h1>
             <p class="text-gray-600 dark:text-gray-400">Kelola Berita Acara Penerima Hibah BBM Dengan Instansi Lain</p>
         </div>
-        <button id="createBaBtn" class="inline-flex items-center px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            Tambah BA
-        </button>
+        <div class="flex gap-2">
+            <button id="helpBtn" class="inline-flex items-center px-4 py-2 text-green-600 bg-green-50 hover:bg-green-100 border border-green-200 hover:border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50 dark:border-green-700 dark:hover:border-green-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Bantuan
+            </button>
+            <button id="createBaBtn" class="inline-flex items-center px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Tambah BA
+            </button>
+        </div>
     </div>
 
     <div class="bg-white dark:bg-gray-800 rounded-none border border-gray-200 dark:border-gray-700 overflow-hidden p-6">
@@ -167,12 +175,50 @@
         }
 
         function showError(msg) {
+            // Check if message is "Unauthenticated" and refresh page
+            if (msg === "Unauthenticated.") {
+                if (typeof toastr !== 'undefined') {
+                    toastr.warning('Sesi Anda telah berakhir. Halaman akan dimuat ulang.');
+                }
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+                return;
+            }
+
             if (typeof toastr !== 'undefined') toastr.error(msg);
+        }
+
+        // Function to handle AJAX error responses
+        function handleAjaxError(xhr, status, error) {
+            if (xhr.status === 401) {
+                showError("Unauthenticated.");
+                return;
+            }
+
+            let errorMessage = 'Terjadi kesalahan pada server';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            } else if (xhr.responseText) {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response.message) {
+                        errorMessage = response.message;
+                    }
+                } catch (e) {
+                    errorMessage = xhr.responseText;
+                }
+            }
+
+            showError(errorMessage);
         }
 
         function setDefaultDates() {
             const today = new Date().toISOString().split('T')[0];
+            const currentTime = new Date().toTimeString().slice(0, 5); // Format HH:MM
+
             if ($('#tanggal_surat').length) $('#tanggal_surat').val(today);
+            if ($('#jam_surat').length) $('#jam_surat').val(currentTime);
         }
 
         function setupDatePickers() {
@@ -247,15 +293,69 @@
                         $('#code_kapal').val(d.code_kapal);
                         $('#alamat_upt').val(d.alamat_upt);
                         $('#zona_waktu_surat').val(d.zona_waktu_upt);
-                        $('#nama_nahkoda').val(d.nama_nakoda);
-                        $('#nip_nahkoda').val(d.nip_nakoda);
-                        $('#nama_kkm').val(d.nama_kkm);
-                        $('#nip_kkm').val(d.nip_kkm);
+
+                        // Only fill these fields if not in edit mode
+                        if (!currentEditMode) {
+                            $('#nama_nahkoda').val(d.nama_nakoda);
+                            $('#nip_nahkoda').val(d.nip_nakoda);
+                            $('#pangkat_nahkoda').val(d.pangkat_nahkoda);
+                            $('#nama_kkm').val(d.nama_kkm);
+                            $('#nip_kkm').val(d.nip_kkm);
+                            $('#pangkat_kkm').val(d.pangkat_kkm);
+                            $('#nama_staf_pangkalan').val(d.nama_petugas);
+                            $('#nip_staf').val(d.nip_petugas);
+                            $('#jabatan_staf_pangkalan').val(d.jabatan_petugas);
+                        }
                     } else {
                         clearKapalData();
                     }
                 }
             });
+        }
+
+        function loadBaSebelumPengisianData() {
+            const tanggal = $('#tanggal_surat').val();
+            const kapalId = $('#kapal_id').val();
+
+            if (tanggal && kapalId) {
+                $.ajax({
+                    url: '{{ route("ba-penerima-hibah-bbm-dengan-instansi-lain.ba-sebelum-pengisian-data") }}'
+                    , type: 'GET'
+                    , data: {
+                        tanggal_surat: tanggal
+                        , kapal_id: kapalId
+                    }
+                    , success: function(response) {
+                        if (response.success) {
+                            const d = response.data;
+                            $('#link_ba').val(d.link_ba);
+                            $('#volume_sebelum').val(d.volume_sebelum);
+                            calculateVolumeSisa();
+                        } else {
+                            $('#link_ba').val('');
+                            $('#volume_sebelum').val('');
+                            $('#volume_sisa').val('');
+                        }
+                    }
+                    , error: function() {
+                        $('#link_ba').val('');
+                        $('#volume_sebelum').val('');
+                        $('#volume_sisa').val('');
+                    }
+                });
+            } else {
+                // Clear fields jika tidak ada tanggal atau kapal
+                $('#link_ba').val('');
+                $('#volume_sebelum').val('');
+                $('#volume_sisa').val('');
+            }
+        }
+
+        function calculateVolumeSisa() {
+            const volumeSebelum = parseFloat($('#volume_sebelum').val()) || 0;
+            const volumePengisian = parseFloat($('#volume_pengisian').val()) || 0;
+            const volumeSisa = volumeSebelum + volumePengisian;
+            $('#volume_sisa').val(volumeSisa.toFixed(2));
         }
 
         function loadPersetujuanData(persetujuanId) {
@@ -275,7 +375,7 @@
         }
 
         function clearKapalData() {
-            $('#code_kapal, #alamat_upt, #nama_kapal_pemberi, #sebab_temp, #nama_staf_pangkalan, #nip_staf, #jabatan_staf_pangkalan, #nama_nahkoda, #nip_nahkoda, #nama_kkm, #nip_kkm, #nama_nahkoda_temp, #pangkat_nahkoda_temp, #nip_nahkoda_temp, #nama_kkm_temp, #nip_kkm_temp').val('');
+            $('#code_kapal, #alamat_upt, #nama_kapal_pemberi, #sebab_temp, #nama_staf_pangkalan, #nip_staf, #jabatan_staf_pangkalan, #nama_nahkoda, #nip_nahkoda, #pangkat_nahkoda, #nama_kkm, #nip_kkm, #pangkat_kkm, #nama_nahkoda_temp, #pangkat_nahkoda_temp, #nip_nahkoda_temp, #nama_kkm_temp, #nip_kkm_temp, #link_ba, #volume_sebelum, #volume_sisa').val('');
         }
 
         function renderTable(data) {
@@ -385,6 +485,11 @@
         }
 
         function setupEventHandlers() {
+            // Help button
+            $('#helpBtn').click(function() {
+                $('#helpModal').removeClass('hidden').addClass('flex items-center justify-center');
+            });
+
             $(document).on('click', '#createBaBtn, #createFirstBaBtn', () => {
                 resetForm();
                 $('#baModal').removeClass('hidden');
@@ -394,14 +499,58 @@
             $('#closeUploadModal, #cancelUploadBtn').on('click', () => $('#uploadModal').addClass('hidden'));
             $('#closeViewDocumentModal').on('click', () => $('#viewDocumentModal').addClass('hidden'));
 
-            $('#kapal_id').on('change', function() {
-                const kapalId = $(this).val();
-                kapalId ? loadKapalData(kapalId) : clearKapalData();
+            // Close help modal
+            $('#closeHelpModal').on('click', function() {
+                $('#helpModal').addClass('hidden').removeClass('flex items-center justify-center');
             });
 
-            $('#persetujuan_id').on('change', function() {
-                const persetujuanId = $(this).val();
-                if (persetujuanId) loadPersetujuanData(persetujuanId);
+            $('#deleteDocumentBtn').on('click', function() {
+                if (confirm('Apakah Anda yakin ingin menghapus dokumen ini?')) {
+                    $.ajax({
+                        url: `/ba-penerima-hibah-bbm-dengan-instansi-lain/${currentBaId}/delete-document`
+                        , type: 'DELETE'
+                        , data: {
+                            _token: '{{ csrf_token() }}'
+                        }
+                        , success: function(response) {
+                            if (response.success) {
+                                showSuccess('Dokumen berhasil dihapus');
+                                $('#viewDocumentModal').addClass('hidden');
+                                loadData(); // Reload data to update table
+                            } else {
+                                showError(response.message);
+                            }
+                        }
+                        , error: function(xhr, status, error) {
+                            handleAjaxError(xhr, status, error);
+                            console.error('AJAX Error deleteDocument:', xhr);
+                        }
+                    });
+                }
+            });
+
+            $('#kapal_id').on('change', function() {
+                const kapalId = $(this).val();
+                if (kapalId) {
+                    loadKapalData(kapalId);
+                    // Jika tanggal sudah ada dan tidak dalam mode edit, langsung ambil data BA Sebelum Pengisian
+                    if ($('#tanggal_surat').val() && !currentEditMode) {
+                        loadBaSebelumPengisianData();
+                    }
+                } else {
+                    clearKapalData();
+                }
+            });
+
+            $('#tanggal_surat').on('change', function() {
+                // Only load BA Sebelum Pengisian data if not in edit mode
+                if (!currentEditMode) {
+                    loadBaSebelumPengisianData();
+                }
+            });
+
+            $('#volume_pengisian').on('input', function() {
+                calculateVolumeSisa();
             });
 
             $('#baForm').on('submit', function(e) {
@@ -454,12 +603,12 @@
                         if (response.errors) displayValidationErrors(response.errors);
                     }
                 }
-                , error: function(xhr) {
+                , error: function(xhr, status, error) {
                     if (xhr.status === 422) {
                         displayValidationErrors(xhr.responseJSON.errors);
                         showError('Validasi gagal');
                     } else {
-                        showError('Gagal menyimpan BA');
+                        handleAjaxError(xhr, status, error);
                     }
                 }
             });
@@ -489,17 +638,25 @@
 
         window.editBa = function(id) {
             currentBaId = id;
-            currentEditMode = true;
+            currentEditMode = true; // Set edit mode first
             $.ajax({
                 url: `/ba-penerima-hibah-bbm-dengan-instansi-lain/${id}`
                 , type: 'GET'
                 , success: function(response) {
                     if (response.success) {
+                        // Fill form with BA data - no need to load kapal data in edit mode
                         fillEditForm(response.data);
+
                         $('#modalTitle').text('Form Edit BA');
                         $('#submitBtn').html('Update BA');
                         $('#baModal').removeClass('hidden');
+                    } else {
+                        showError(response.message);
                     }
+                }
+                , error: function(xhr, status, error) {
+                    handleAjaxError(xhr, status, error);
+                    console.error('AJAX Error editBa:', xhr);
                 }
             });
         };
@@ -516,15 +673,20 @@
             $('#persetujuan_id').val(ba.m_persetujuan_id);
             $('#tanggal_persetujuan').val(formatDateForInput(ba.tgl_persetujuan));
             $('#keterangan_jenis_bbm').val(ba.keterangan_jenis_bbm);
-            $('#volume_hibah').val(ba.volume_pengisian);
+            $('#link_ba').val(ba.link_modul_ba);
+            $('#volume_sebelum').val(ba.volume_sebelum);
+            $('#volume_pengisian').val(ba.volume_pengisian);
+            $('#volume_sisa').val(ba.volume_sisa);
             $('#sebab_temp').val(ba.sebab_temp);
-            $('#nama_staf_pangkalan').val(ba.nama_staf_pagkalan);
+            $('#nama_staf_pangkalan').val(ba.nama_staf_pagkalan || ba.nama_staf_pangkalan);
             $('#nip_staf').val(ba.nip_staf);
             $('#jabatan_staf_pangkalan').val(ba.jabatan_staf_pangkalan);
             $('#nama_nahkoda').val(ba.nama_nahkoda);
             $('#nip_nahkoda').val(ba.nip_nahkoda);
+            $('#pangkat_nahkoda').val(ba.pangkat_nahkoda);
             $('#nama_kkm').val(ba.nama_kkm);
             $('#nip_kkm').val(ba.nip_kkm);
+            $('#pangkat_kkm').val(ba.pangkat_kkm);
             $('#nama_nahkoda_temp').val(ba.nama_nahkoda_temp);
             $('#pangkat_nahkoda_temp').val(ba.pangkat_nahkoda_temp);
             $('#nip_nahkoda_temp').val(ba.nip_nahkoda_temp);
@@ -738,27 +900,16 @@
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
-                            Persetujuan
+                            Link BA Sebelum Pengisian
                         </h4>
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <div>
-                                <label for="persetujuan_id" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    Pilih <span class="text-red-500">*</span>
-                                </label>
-                                <select id="persetujuan_id" name="persetujuan_id" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white">
-                                    <option value="">-- Pilih --</option>
-                                    @foreach($persetujuans as $p)
-                                    <option value="{{ $p->id }}">{{ $p->deskripsi_persetujuan }}</option>
-                                    @endforeach
-                                </select>
+                                <label for="link_ba" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Link BA</label>
+                                <input type="text" id="link_ba" name="link_ba" readonly class="w-full px-4 py-3 border rounded-lg bg-gray-100 dark:bg-gray-600 cursor-not-allowed">
                             </div>
                             <div>
-                                <label for="nomor_persetujuan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nomor</label>
-                                <input type="text" id="nomor_persetujuan" readonly class="w-full px-4 py-3 border rounded-lg bg-gray-100 dark:bg-gray-600 cursor-not-allowed">
-                            </div>
-                            <div>
-                                <label for="tanggal_persetujuan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Tanggal</label>
-                                <input type="date" id="tanggal_persetujuan" name="tgl_persetujuan" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white transition-colors">
+                                <label for="volume_sebelum" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">BBM Sebelum Pengisian (Liter)</label>
+                                <input type="number" id="volume_sebelum" name="volume_sebelum" step="0.01" min="0" readonly class="w-full px-4 py-3 border rounded-lg bg-gray-100 dark:bg-gray-600 cursor-not-allowed">
                             </div>
                         </div>
                     </div>
@@ -770,14 +921,18 @@
                             </svg>
                             Info BBM
                         </h4>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                             <div>
                                 <label for="keterangan_jenis_bbm" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Jenis BBM <span class="text-red-500">*</span></label>
-                                <input type="text" id="keterangan_jenis_bbm" name="keterangan_jenis_bbm" value="BIO SOLAR" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 dark:bg-gray-700 dark:text-white">
+                                <input type="text" id="keterangan_jenis_bbm" name="keterangan_jenis_bbm" required placeholder="Jenis BBM" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 dark:bg-gray-700 dark:text-white">
                             </div>
                             <div>
-                                <label for="volume_hibah" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Volume (Liter) <span class="text-red-500">*</span></label>
-                                <input type="number" id="volume_hibah" name="volume_pengisian" step="0.01" min="0" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 dark:bg-gray-700 dark:text-white">
+                                <label for="volume_pengisian" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Jumlah BBM Diterima (Liter) <span class="text-red-500">*</span></label>
+                                <input type="number" id="volume_pengisian" name="volume_pengisian" step="0.01" min="0" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            <div>
+                                <label for="volume_sisa" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Sisa BBM (Liter)</label>
+                                <input type="number" id="volume_sisa" name="volume_sisa" step="0.01" min="0" readonly class="w-full px-4 py-3 border rounded-lg bg-gray-100 dark:bg-gray-600 cursor-not-allowed">
                             </div>
                         </div>
                         <div class="mt-4">
@@ -792,26 +947,26 @@
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
-                            Staf Pangkalan
+                            PEJABAT/STAF UPT PENERIMA HIBAH
                         </h4>
                         <div class="mb-4">
                             <div class="flex items-center">
                                 <input type="checkbox" id="an_staf" name="an_staf" value="1" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                                <label for="an_staf" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">An. Staf</label>
+                                <label for="an_staf" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">An. Staf Pangkalan</label>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                             <div>
-                                <label for="nama_staf_pangkalan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nama Staf Pangkalan</label>
+                                <label for="nama_staf_pangkalan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NAMA PEJABAT/STAF UPT</label>
                                 <input type="text" id="nama_staf_pangkalan" name="nama_staf_pangkalan" placeholder="Nama lengkap staf pangkalan" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition-colors">
                             </div>
                             <div>
-                                <label for="nip_staf" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NIP Staf</label>
-                                <input type="text" id="nip_staf" name="nip_staf" placeholder="Nomor Induk Pegawai" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition-colors">
+                                <label for="jabatan_staf_pangkalan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Jabatan</label>
+                                <input type="text" id="jabatan_staf_pangkalan" name="jabatan_staf_pangkalan" placeholder="Jabatan staf pangkalan" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition-colors">
                             </div>
                             <div>
-                                <label for="jabatan_staf_pangkalan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Jabatan Staf</label>
-                                <input type="text" id="jabatan_staf_pangkalan" name="jabatan_staf_pangkalan" placeholder="Jabatan staf pangkalan" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition-colors">
+                                <label for="nip_staf" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NIP</label>
+                                <input type="text" id="nip_staf" name="nip_staf" placeholder="Nomor Induk Pegawai" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition-colors">
                             </div>
                         </div>
                     </div>
@@ -821,30 +976,47 @@
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
-                            Nakhoda & KKM Kapal
+                            NAKHODA KAPAL PENERIMA HIBAH
                         </h4>
                         <div class="mb-3">
                             <input type="checkbox" id="an_nakhoda" name="an_nakhoda" value="1" class="h-4 w-4">
                             <label for="an_nakhoda" class="ml-2 text-sm font-medium">An. Nakhoda</label>
                         </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
                             <div>
-                                <label for="nama_nahkoda" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nama</label>
+                                <label for="nama_nahkoda" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NAMA NAKHODA</label>
                                 <input type="text" id="nama_nahkoda" name="nama_nahkoda" placeholder="Nama nakhoda" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            <div>
+                                <label for="pangkat_nahkoda" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Pangkat/Gol</label>
+                                <input type="text" id="pangkat_nahkoda" name="pangkat_nahkoda" placeholder="Pangkat/Gol" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 dark:bg-gray-700 dark:text-white">
                             </div>
                             <div>
                                 <label for="nip_nahkoda" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NIP</label>
                                 <input type="text" id="nip_nahkoda" name="nip_nahkoda" placeholder="NIP" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 dark:bg-gray-700 dark:text-white">
                             </div>
                         </div>
+                    </div>
+
+                    <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                        <h4 class="text-lg font-medium text-blue-900 dark:text-blue-100 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            KKM KAPAL PENERIMA HIBAH
+                        </h4>
                         <div class="mb-3">
                             <input type="checkbox" id="an_kkm" name="an_kkm" value="1" class="h-4 w-4">
                             <label for="an_kkm" class="ml-2 text-sm font-medium">An. KKM</label>
                         </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                             <div>
-                                <label for="nama_kkm" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nama</label>
+                                <label for="nama_kkm" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NAMA KKM</label>
                                 <input type="text" id="nama_kkm" name="nama_kkm" placeholder="Nama KKM" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            <div>
+                                <label for="pangkat_kkm" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Pangkat/Gol</label>
+                                <input type="text" id="pangkat_kkm" name="pangkat_kkm" placeholder="Pangkat/Gol" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 dark:bg-gray-700 dark:text-white">
                             </div>
                             <div>
                                 <label for="nip_kkm" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NIP</label>
@@ -858,7 +1030,7 @@
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
-                            Nakhoda & KKM Pemberi Hibah
+                            NAMA NAKHODA Pemberi Hibah
                         </h4>
                         <div class="mb-3">
                             <input type="checkbox" id="an_nakhoda_temp" name="an_nakhoda_temp" value="1" class="h-4 w-4">
@@ -866,7 +1038,7 @@
                         </div>
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
                             <div>
-                                <label for="nama_nahkoda_temp" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nama Nakhoda Pemberi Hibah</label>
+                                <label for="nama_nahkoda_temp" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NAMA NAKHODA Pemberi Hibah</label>
                                 <input type="text" id="nama_nahkoda_temp" name="nama_nahkoda_temp" placeholder="Nama nakhoda pemberi" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:text-white transition-colors">
                             </div>
                             <div>
@@ -884,7 +1056,7 @@
                         </div>
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <div>
-                                <label for="nama_kkm_temp" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nama KKM Pemberi Hibah</label>
+                                <label for="nama_kkm_temp" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NAMA KKM Pemberi Hibah</label>
                                 <input type="text" id="nama_kkm_temp" name="nama_kkm_temp" placeholder="Nama KKM pemberi" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 dark:bg-gray-700 dark:text-white transition-colors">
                             </div>
                             <div>
@@ -963,6 +1135,115 @@
         </div>
         <div class="p-6 overflow-auto max-h-[calc(90vh-120px)]">
             <div id="documentViewer"></div>
+        </div>
+        <div class="flex justify-end space-x-3 p-6 border-t">
+            <button id="deleteDocumentBtn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg">Hapus Dokumen</button>
+            <button id="closeViewDocumentModal" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg">Tutup</button>
+        </div>
+    </div>
+</div>
+
+<!-- Help Modal -->
+<div id="helpModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full hidden z-[99999]">
+    <div class="relative mx-auto p-5 border w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 shadow-lg rounded-lg bg-white dark:bg-gray-800 mt-10 mb-10 max-h-[90vh] overflow-y-auto help-modal-scroll">
+        <div class="mt-3">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between pb-4">
+                <h3 class="text-xl font-medium text-gray-900 dark:text-white">Panduan BA Penerima Hibah BBM Dengan Instansi Lain</h3>
+                <button id="closeHelpModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="space-y-6">
+                <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                    <h4 class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-3">Tentang BA Penerima Hibah BBM Dengan Instansi Lain</h4>
+                    <p class="text-blue-800 dark:text-blue-200 text-sm leading-relaxed">
+                        Berita Acara Penerima Hibah BBM Dengan Instansi Lain digunakan untuk mencatat penerimaan hibah BBM dari instansi lain di luar kapal pengawas.
+                        Dokumen ini berisi informasi tentang instansi penerima, instansi pemberi, volume BBM yang diterima, dan kondisi penerimaan.
+                    </p>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white">Langkah-langkah Pengisian:</h4>
+
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">1</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Isi Informasi Umum</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Lengkapi nomor surat, tanggal, jam, zona waktu, dan lokasi pembuatan BA.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">2</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Data Instansi Penerima</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Isi informasi instansi yang menerima hibah BBM, termasuk nama instansi dan alamat.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">3</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Data Instansi Pemberi</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Isi informasi instansi pemberi hibah BBM, termasuk nama instansi dan alamat.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">4</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Data Volume Hibah</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Isi volume BBM yang diterima, jenis BBM, dan kondisi penerimaan hibah.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">5</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Informasi Petugas</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Lengkapi data staf pangkalan, nahkoda, dan KKM. Centang checkbox jika sebagai an.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">6</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Upload Dokumen</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Upload dokumen pendukung jika diperlukan (opsional).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
+                    <h4 class="text-lg font-semibold text-yellow-900 dark:text-yellow-100 mb-2">Catatan Penting:</h4>
+                    <ul class="text-yellow-800 dark:text-yellow-200 text-sm space-y-1">
+                        <li>• Pastikan data instansi penerima dan pemberi akurat</li>
+                        <li>• Semua field bertanda (*) wajib diisi</li>
+                        <li>• Volume hibah harus sesuai dengan kapasitas yang tersedia</li>
+                        <li>• Dokumen ini harus ditandatangani oleh pihak yang berwenang</li>
+                        <li>• Pastikan koordinasi dengan instansi pemberi telah dilakukan</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 </div>

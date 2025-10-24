@@ -56,11 +56,11 @@
                     </svg>
                     Preview
                 </button>
-                <button id="printBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                <button id="pdfBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                     </svg>
-                    Print
+                    Export PDF
                 </button>
                 <button id="excelBtn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,9 +82,9 @@
                             <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">No</th>
                             <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Periode</th>
                             <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">UPT</th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">No Tagihan</th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Tanggal Surat</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Anggaran (Rp)</th>
                             <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Total Tagihan (Rp)</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Sisa Anggaran (Rp)</th>
                         </tr>
                     </thead>
                     <tbody id="dataTableBody" class="bg-white dark:bg-gray-800">
@@ -162,8 +162,9 @@
             loadData();
         });
 
-        // Print button
-        $('#printBtn').click(function() {
+
+        // PDF button
+        $('#pdfBtn').click(function() {
             const tglAwal = $('#tgl_awal').val();
             const tglAkhir = $('#tgl_akhir').val();
 
@@ -175,7 +176,7 @@
             // Create form and submit via POST
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = '{{ route("laporan-anggaran.export.pdf", "riwayat-all") }}';
+            form.action = '{{ route("laporan-anggaran.riwayat-all.export") }}';
             form.target = '_blank';
 
             const csrfToken = document.createElement('input');
@@ -195,6 +196,18 @@
             tglAkhirInput.name = 'tgl_akhir';
             tglAkhirInput.value = tglAkhir;
             form.appendChild(tglAkhirInput);
+
+            const typeInput = document.createElement('input');
+            typeInput.type = 'hidden';
+            typeInput.name = 'type';
+            typeInput.value = 'riwayat-all';
+            form.appendChild(typeInput);
+
+            const formatInput = document.createElement('input');
+            formatInput.type = 'hidden';
+            formatInput.name = 'format';
+            formatInput.value = 'pdf';
+            form.appendChild(formatInput);
 
             document.body.appendChild(form);
             form.submit();
@@ -214,7 +227,7 @@
             // Create form and submit via POST
             const form = document.createElement('form');
             form.method = 'POST';
-            form.action = '{{ route("laporan-anggaran.export.excel", "riwayat-all") }}';
+            form.action = '{{ route("laporan-anggaran.riwayat-all.export") }}';
             form.target = '_blank';
 
             const csrfToken = document.createElement('input');
@@ -234,6 +247,18 @@
             tglAkhirInput.name = 'tgl_akhir';
             tglAkhirInput.value = tglAkhir;
             form.appendChild(tglAkhirInput);
+
+            const typeInput = document.createElement('input');
+            typeInput.type = 'hidden';
+            typeInput.name = 'type';
+            typeInput.value = 'riwayat-all';
+            form.appendChild(typeInput);
+
+            const formatInput = document.createElement('input');
+            formatInput.type = 'hidden';
+            formatInput.name = 'format';
+            formatInput.value = 'excel';
+            form.appendChild(formatInput);
 
             document.body.appendChild(form);
             form.submit();
@@ -273,10 +298,10 @@
                         <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
                             <td class="px-4 py-3 text-center border border-gray-300 dark:border-gray-600">${index + 1}</td>
                             <td class="px-4 py-3 text-center border border-gray-300 dark:border-gray-600">${item.periode}</td>
-                            <td class="px-4 py-3 border border-gray-300 dark:border-gray-600">${item.upt ? item.upt.nama : '-'}</td>
-                            <td class="px-4 py-3 text-center border border-gray-300 dark:border-gray-600">${item.no_tagihan}</td>
-                            <td class="px-4 py-3 text-center border border-gray-300 dark:border-gray-600">${new Date(item.tanggal_surat).toLocaleDateString('id-ID')}</td>
+                            <td class="px-4 py-3 border border-gray-300 dark:border-gray-600">${item.nama_upt}</td>
+                            <td class="px-4 py-3 text-right border border-gray-300 dark:border-gray-600 font-medium">Rp. ${new Intl.NumberFormat('id-ID').format(item.anggaran)}</td>
                             <td class="px-4 py-3 text-right border border-gray-300 dark:border-gray-600 font-medium">Rp. ${new Intl.NumberFormat('id-ID').format(item.total_tagihan)}</td>
+                            <td class="px-4 py-3 text-right border border-gray-300 dark:border-gray-600 font-medium">Rp. ${new Intl.NumberFormat('id-ID').format(item.sisa_anggaran)}</td>
                         </tr>
                     `;
                     });

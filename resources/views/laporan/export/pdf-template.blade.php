@@ -143,9 +143,9 @@
                 <th class="text-center">No</th>
                 <th class="text-center">Periode</th>
                 <th class="text-center">UPT</th>
-                <th class="text-center">No Tagihan</th>
-                <th class="text-center">Tanggal Surat</th>
+                <th class="text-right">Anggaran (Rp)</th>
                 <th class="text-right">Total Tagihan (Rp)</th>
+                <th class="text-right">Sisa Anggaran (Rp)</th>
                 @break
                 @case('realisasi-periode')
                 <th class="text-center">No</th>
@@ -185,7 +185,6 @@
                 @break
                 @case('verifikasi-tagihan')
                 <th class="text-center">No</th>
-                <th class="text-center">Periode</th>
                 <th class="text-center">UPT</th>
                 <th class="text-center">No Tagihan</th>
                 <th class="text-center">Tanggal Surat</th>
@@ -210,11 +209,11 @@
                 <td class="text-right">{{ number_format($row->total_anggaran, 0, ',', '.') }}</td>
                 @break
                 @case('riwayat-all')
-                <td class="text-center">{{ $row->periode }}</td>
-                <td>{{ $row->upt ? $row->upt->nama : '-' }}</td>
-                <td class="text-center">{{ $row->no_tagihan }}</td>
-                <td class="text-center">{{ \Carbon\Carbon::parse($row->tanggal_surat)->format('d/m/Y') }}</td>
-                <td class="text-right">{{ number_format($row->total_tagihan, 0, ',', '.') }}</td>
+                <td class="text-center">{{ $row['periode'] }}</td>
+                <td>{{ $row['nama_upt'] }}</td>
+                <td class="text-right">{{ number_format($row['anggaran'], 0, ',', '.') }}</td>
+                <td class="text-right">{{ number_format($row['total_tagihan'], 0, ',', '.') }}</td>
+                <td class="text-right">{{ number_format($row['sisa_anggaran'], 0, ',', '.') }}</td>
                 @break
                 @case('realisasi-periode')
                 <td class="text-center">{{ $row->periode }}</td>
@@ -249,16 +248,20 @@
                 <td class="text-right">{{ number_format($row->harga_total, 0, ',', '.') }}</td>
                 @break
                 @case('verifikasi-tagihan')
-                <td class="text-center">{{ $row->periode }}</td>
-                <td>{{ $row->upt ? $row->upt->nama : '-' }}</td>
-                <td class="text-center">{{ $row->no_tagihan }}</td>
-                <td class="text-center">{{ \Carbon\Carbon::parse($row->tanggal_surat)->format('d/m/Y') }}</td>
-                <td>{{ $row->lokasi_surat }}</td>
-                <td class="text-center">{{ $row->no_invoice }}</td>
-                <td class="text-right">{{ number_format($row->volume_isi, 0, ',', '.') }}</td>
-                <td class="text-right">{{ number_format($row->harga_total, 0, ',', '.') }}</td>
+                {{-- Debug: Show available keys --}}
+                {{-- Available keys: {{ implode(', ', array_keys($row)) }} --}}
+                <td>{{ $row['UPT'] ?? ($row['upt']['nama'] ?? '-') }}</td>
+                <td class="text-center">{{ $row['No Tagihan'] ?? ($row['no_tagihan'] ?? '-') }}</td>
+                <td class="text-center">{{ $row['Tanggal Surat'] ?? ($row['tanggal_surat'] ?? '-') }}</td>
+                <td>{{ $row['Lokasi Surat'] ?? ($row['lokasi_surat'] ?? '-') }}</td>
+                <td class="text-center">{{ $row['No Invoice'] ?? ($row['no_invoice'] ?? '-') }}</td>
+                <td class="text-right">{{ $row['Volume Isi (Liter)'] ?? ($row['volume_isi'] ?? '0') }}</td>
+                <td class="text-right">{{ $row['Harga Total (Rp)'] ?? ($row['harga_total'] ?? '0') }}</td>
                 <td class="text-center">
-                    @if($row->status_segel == 1)
+                    @php
+                    $statusSegel = $row['Status Segel'] ?? $row['status_segel'] ?? 'RUSAK';
+                    @endphp
+                    @if($statusSegel == 'BAIK' || $statusSegel == 1)
                     <span class="status-baik">BAIK</span>
                     @else
                     <span class="status-rusak">RUSAK</span>
@@ -269,7 +272,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="10" class="text-center">Tidak ada data</td>
+                <td colspan="9" class="text-center">Tidak ada data</td>
             </tr>
             @endforelse
         </tbody>

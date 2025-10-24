@@ -60,11 +60,11 @@
                     </svg>
                     Preview
                 </button>
-                <button id="printBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                <button id="pdfBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                     </svg>
-                    Print
+                    Export PDF
                 </button>
                 <button id="excelBtn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -162,8 +162,8 @@
             loadData();
         });
 
-        // Print button
-        $('#printBtn').click(function() {
+        // PDF button
+        $('#pdfBtn').click(function() {
             const periode = $('#periode').val();
             const uptCode = $('#upt_code').val();
 
@@ -172,33 +172,13 @@
                 return;
             }
 
-            // Create form and submit via POST
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '{{ route("laporan-anggaran.export.pdf", "realisasi-periode") }}';
-            form.target = '_blank';
+            const params = new URLSearchParams({
+                periode: periode
+                , upt_code: uptCode
+                , format: 'pdf'
+            });
 
-            const csrfToken = document.createElement('input');
-            csrfToken.type = 'hidden';
-            csrfToken.name = '_token';
-            csrfToken.value = '{{ csrf_token() }}';
-            form.appendChild(csrfToken);
-
-            const periodeInput = document.createElement('input');
-            periodeInput.type = 'hidden';
-            periodeInput.name = 'periode';
-            periodeInput.value = periode;
-            form.appendChild(periodeInput);
-
-            const uptCodeInput = document.createElement('input');
-            uptCodeInput.type = 'hidden';
-            uptCodeInput.name = 'upt_code';
-            uptCodeInput.value = uptCode;
-            form.appendChild(uptCodeInput);
-
-            document.body.appendChild(form);
-            form.submit();
-            document.body.removeChild(form);
+            window.open(`{{ route("laporan-anggaran.realisasi-periode.export") }}?${params}`, '_blank');
         });
 
         // Excel button
@@ -211,33 +191,13 @@
                 return;
             }
 
-            // Create form and submit via POST
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '{{ route("laporan-anggaran.export.excel", "realisasi-periode") }}';
-            form.target = '_blank';
+            const params = new URLSearchParams({
+                periode: periode
+                , upt_code: uptCode
+                , format: 'excel'
+            });
 
-            const csrfToken = document.createElement('input');
-            csrfToken.type = 'hidden';
-            csrfToken.name = '_token';
-            csrfToken.value = '{{ csrf_token() }}';
-            form.appendChild(csrfToken);
-
-            const periodeInput = document.createElement('input');
-            periodeInput.type = 'hidden';
-            periodeInput.name = 'periode';
-            periodeInput.value = periode;
-            form.appendChild(periodeInput);
-
-            const uptCodeInput = document.createElement('input');
-            uptCodeInput.type = 'hidden';
-            uptCodeInput.name = 'upt_code';
-            uptCodeInput.value = uptCode;
-            form.appendChild(uptCodeInput);
-
-            document.body.appendChild(form);
-            form.submit();
-            document.body.removeChild(form);
+            window.open(`{{ route("laporan-anggaran.realisasi-periode.export") }}?${params}`, '_blank');
         });
 
 
@@ -299,7 +259,7 @@
                             <td class="px-4 py-3 text-center border border-gray-300 dark:border-gray-600">${item.periode}</td>
                             <td class="px-4 py-3 border border-gray-300 dark:border-gray-600">${item.upt ? item.upt.nama : '-'}</td>
                             <td class="px-4 py-3 text-center border border-gray-300 dark:border-gray-600">${item.no_tagihan}</td>
-                            <td class="px-4 py-3 text-center border border-gray-300 dark:border-gray-600">${new Date(item.tanggal_surat).toLocaleDateString('id-ID')}</td>
+                            <td class="px-4 py-3 text-center border border-gray-300 dark:border-gray-600">${item.tanggal_surat}</td>
                             <td class="px-4 py-3 text-right border border-gray-300 dark:border-gray-600 font-medium">Rp. ${new Intl.NumberFormat('id-ID').format(item.total_realisasi)}</td>
                         </tr>
                     `;

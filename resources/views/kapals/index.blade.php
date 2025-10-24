@@ -57,8 +57,8 @@
 
                 <!-- Tahun Buat Filter -->
                 <div class="w-full sm:w-40">
-                    <label for="tahun_buat" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tahun Buat</label>
-                    <select id="tahun_buat" name="tahun_buat" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                    <label for="filter_tahun_buat" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tahun Buat</label>
+                    <select id="filter_tahun_buat" name="tahun_buat" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
                         <option value="">Semua Tahun</option>
                         @for($year = date('Y'); $year >= 1990; $year--)
                         <option value="{{ $year }}" {{ request('tahun_buat') == $year ? 'selected' : '' }}>{{ $year }}</option>
@@ -629,7 +629,7 @@
         $('#clearFilter').click(function() {
             $('#search').val('');
             $('#upt').val('');
-            $('#tahun_buat').val('');
+            $('#filter_tahun_buat').val('');
             $('#perPage').val('10');
             currentPage = 1;
             currentFilters = {};
@@ -697,7 +697,7 @@
         const filters = {
             search: $('#search').val()
             , upt: $('#upt').val()
-            , tahun_buat: $('#tahun_buat').val()
+            , tahun_buat: $('#filter_tahun_buat').val()
             , per_page: $('#perPage').val()
             , page: page
         };

@@ -9,12 +9,20 @@
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">BA Pemberi Hibah BBM Dengan Instansi Lain</h1>
             <p class="text-gray-600 dark:text-gray-400">Kelola Berita Acara Pemberi Hibah BBM Dengan Instansi Lain</p>
         </div>
-        <button id="createBaBtn" class="inline-flex items-center px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-            </svg>
-            Tambah BA
-        </button>
+        <div class="flex gap-2">
+            <button id="helpBtn" class="inline-flex items-center px-4 py-2 text-green-600 bg-green-50 hover:bg-green-100 border border-green-200 hover:border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50 dark:border-green-700 dark:hover:border-green-600 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Bantuan
+            </button>
+            <button id="createBaBtn" class="inline-flex items-center px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 hover:border-blue-300 font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Tambah BA
+            </button>
+        </div>
     </div>
 
     <div class="bg-white dark:bg-gray-800 rounded-none border border-gray-200 dark:border-gray-700 overflow-hidden p-6">
@@ -176,7 +184,10 @@
 
         function setDefaultDates() {
             const today = new Date().toISOString().split('T')[0];
+            const currentTime = new Date().toTimeString().slice(0, 5); // Format HH:MM
+
             if ($('#tanggal_surat').length) $('#tanggal_surat').val(today);
+            if ($('#jam_surat').length) $('#jam_surat').val(currentTime);
         }
 
         function setupDatePickers() {
@@ -247,26 +258,47 @@
         }
 
         function loadKapalData(kapalId) {
-            $.ajax({
-                url: '{{ route("ba-pemberi-hibah-bbm-dengan-instansi-lain.kapal-data") }}'
-                , type: 'GET'
-                , data: {
-                    kapal_id: kapalId
-                }
-                , success: function(response) {
-                    if (response.success) {
-                        const data = response.data;
-                        $('#code_kapal').val(data.code_kapal);
-                        $('#alamat_upt').val(data.alamat_upt);
-                        $('#zona_waktu_surat').val(data.zona_waktu_upt);
-                        $('#nama_nahkoda').val(data.nama_nakoda);
-                        $('#nip_nahkoda').val(data.nip_nakoda);
-                        $('#nama_kkm').val(data.nama_kkm);
-                        $('#nip_kkm').val(data.nip_kkm);
-                    } else {
-                        clearKapalData();
+            return new Promise((resolve) => {
+                $.ajax({
+                    url: '{{ route("ba-pemberi-hibah-bbm-dengan-instansi-lain.kapal-data") }}'
+                    , type: 'GET'
+                    , data: {
+                        kapal_id: kapalId
                     }
-                }
+                    , success: function(response) {
+                        if (response.success) {
+                            const data = response.data;
+                            $('#code_kapal').val(data.code_kapal);
+                            $('#alamat_upt').val(data.alamat_upt);
+                            $('#zona_waktu_surat').val(data.zona_waktu_upt);
+                            $('#lokasi_surat').val(data.kota);
+
+                            // PEJABAT/STAF UPT
+                            $('#nama_petugas').val(data.nama_petugas);
+                            $('#nip_petugas').val(data.nip_petugas);
+                            $('#jabatan_staf_pangkalan').val(data.jabatan_petugas);
+
+                            // NAKHODA
+                            $('#nama_nahkoda').val(data.nama_nakoda);
+                            $('#nip_nahkoda').val(data.nip_nakoda);
+                            $('#pangkat_nahkoda').val(data.pangkat_nahkoda);
+
+                            // KKM
+                            $('#nama_kkm').val(data.nama_kkm);
+                            $('#nip_kkm').val(data.nip_kkm);
+
+                            // Load LINK BA dan volume dari BA Penerimaan BBM
+                            getVolumeSounding();
+                        } else {
+                            clearKapalData();
+                        }
+                        resolve();
+                    }
+                    , error: function(xhr) {
+                        console.error('AJAX Error loadKapalData:', xhr);
+                        resolve();
+                    }
+                });
             });
         }
 
@@ -280,16 +312,63 @@
                 , success: function(response) {
                     if (response.success) {
                         const data = response.data;
-                        $('#nomor_persetujuan').val(data.nomor_persetujuan);
+                        // Hanya auto-fill tanggal persetujuan, nomor persetujuan bisa diinput manual
                         $('#tanggal_persetujuan').val(formatDateForInput(data.tanggal_persetujuan));
                     }
                 }
             });
         }
 
+        function getVolumeSounding() {
+            var tanggal_surat = $("#tanggal_surat").val();
+            var kapal_id = $("#kapal_id").val();
+
+            if (tanggal_surat && kapal_id) {
+                $.ajax({
+                    url: '{{ route("ba-pemberi-hibah-bbm-dengan-instansi-lain.ba-data") }}'
+                    , type: 'GET'
+                    , data: {
+                        tanggal_surat: tanggal_surat
+                        , kapal_id: kapal_id
+                    }
+                    , success: function(response) {
+                        if (response.success && response.data) {
+                            $('#link_ba').val(response.data.nomor_surat);
+                            $('#link_ba_hidden').val(response.data.nomor_surat);
+                            $('#volume_sebelum').val(response.data.volume_sisa);
+                        } else {
+                            $('#link_ba').val('');
+                            $('#link_ba_hidden').val('');
+                            $('#volume_sebelum').val('');
+                        }
+                    }
+                    , error: function(xhr) {
+                        console.error('AJAX Error getVolumeSounding:', xhr);
+                    }
+                });
+            }
+        }
+
+        function validateVolume() {
+            const volumeSebelum = parseFloat($('#volume_sebelum').val()) || 0;
+            const volumePemakaian = parseFloat($('#volume_pemakaian').val()) || 0;
+
+            if (volumePemakaian > volumeSebelum) {
+                alert('Volume Hibah Tidak Boleh Melebihi Volume Sounding / Lakukan Sounding Ulang');
+                $('#volume_pemakaian').val('');
+                $('#volume_sisa').val('');
+                $('#submitBtn').prop('disabled', true);
+            } else {
+                const volumeSisa = volumeSebelum - volumePemakaian;
+                $('#volume_sisa').val(volumeSisa.toFixed(2));
+                $('#submitBtn').prop('disabled', false);
+            }
+        }
+
         function clearKapalData() {
-            $('#code_kapal, #alamat_upt, #jabatan_staf_pangkalan, #nama_petugas, #nip_petugas, #nama_nahkoda, #pangkat_nahkoda, #nip_nahkoda, #nama_kkm, #nip_kkm, #nama_nahkoda_penerima, #pangkat_nahkoda_penerima, #nip_nahkoda_penerima, #nama_kkm_penerima, #nip_kkm_penerima').val('');
-            $('#an_staf, #an_nakhoda, #an_kkm, #an_nakhoda_penerima, #an_kkm_penerima').prop('checked', false);
+            $('#code_kapal, #alamat_upt, #jabatan_staf_pangkalan, #nama_petugas, #nip_petugas, #nama_nahkoda, #pangkat_nahkoda, #nip_nahkoda, #nama_kkm, #nip_kkm, #link_ba, #link_ba_hidden, #volume_sebelum').val('');
+            $('#an_staf, #an_nakhoda, #an_kkm').prop('checked', false);
+            // Tidak clear nomor_persetujuan karena bisa diinput manual
         }
 
         function renderTable(data) {
@@ -400,6 +479,11 @@
         }
 
         function setupEventHandlers() {
+            // Help button
+            $('#helpBtn').click(function() {
+                $('#helpModal').removeClass('hidden').addClass('flex items-center justify-center');
+            });
+
             $(document).on('click', '#createBaBtn, #createFirstBaBtn', function() {
                 resetForm();
                 $('#baModal').removeClass('hidden');
@@ -410,14 +494,33 @@
             $('#closeUploadModal, #cancelUploadBtn').on('click', () => $('#uploadModal').addClass('hidden'));
             $('#closeViewDocumentModal').on('click', () => $('#viewDocumentModal').addClass('hidden'));
 
+            // Close help modal
+            $('#closeHelpModal').on('click', function() {
+                $('#helpModal').addClass('hidden').removeClass('flex items-center justify-center');
+            });
+
+            $('#deleteDocumentBtn').on('click', function() {
+                if (confirm('Apakah Anda yakin ingin menghapus dokumen ini?')) {
+                    deleteDocument();
+                }
+            });
+
             $('#kapal_id').on('change', function() {
                 const kapalId = $(this).val();
                 kapalId ? loadKapalData(kapalId) : clearKapalData();
             });
 
+            $('#tanggal_surat').on('change', function() {
+                getVolumeSounding();
+            });
+
             $('#persetujuan_id').on('change', function() {
                 const persetujuanId = $(this).val();
                 if (persetujuanId) loadPersetujuanData(persetujuanId);
+            });
+
+            $('#volume_pemakaian').on('input', function() {
+                validateVolume();
             });
 
             $('#baForm').on('submit', function(e) {
@@ -492,16 +595,249 @@
                 , success: function(response) {
                     if (response.success) {
                         const ba = response.data;
-                        let html = '<div class="grid grid-cols-2 gap-4">';
-                        html += `<div><strong>Nomor Surat:</strong> ${ba.nomor_surat}</div>`;
-                        html += `<div><strong>Tanggal:</strong> ${formatDate(ba.tanggal_surat)}</div>`;
-                        html += `<div><strong>Lokasi:</strong> ${ba.lokasi_surat}</div>`;
-                        html += `<div><strong>Kapal Pemberi:</strong> ${ba.kapal ? ba.kapal.nama_kapal : ba.kapal_code}</div>`;
-                        html += `<div><strong>Kapal Penerima:</strong> ${ba.kapal_code_temp}</div>`;
-                        html += `<div><strong>Volume Hibah:</strong> ${formatNumber(ba.volume_pemakaian)} Liter</div>`;
-                        html += `<div><strong>Jenis BBM:</strong> ${ba.keterangan_jenis_bbm}</div>`;
-                        html += `<div><strong>No Persetujuan:</strong> ${ba.link_modul_ba}</div>`;
-                        html += '</div>';
+                        let html = `
+                            <div class="space-y-6">
+                                <!-- Informasi Umum -->
+                                <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                                    <h4 class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-4 flex items-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Informasi Umum
+                                    </h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Nomor Surat</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.nomor_surat || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Tanggal Surat</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${formatDate(ba.tanggal_surat)}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Jam Surat</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.jam_surat || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Zona Waktu</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.zona_waktu_surat || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Lokasi Surat</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.lokasi_surat || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">LINK BA</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.link_modul_ba || '-'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Informasi Kapal -->
+                                <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+                                    <h4 class="text-lg font-semibold text-green-900 dark:text-green-100 mb-4 flex items-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                        </svg>
+                                        Informasi Kapal
+                                    </h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Kapal Pemberi Hibah</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.kapal ? ba.kapal.nama_kapal : ba.kapal_code}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Kapal Penerima Hibah</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.kapal_code_temp || '-'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Informasi Persetujuan -->
+                                <div class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
+                                    <h4 class="text-lg font-semibold text-purple-900 dark:text-purple-100 mb-4 flex items-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        Berdasarkan Persetujuan
+                                    </h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Nomor Persetujuan</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.nomer_persetujuan || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Tanggal Persetujuan</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${formatDate(ba.tgl_persetujuan)}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Informasi BBM -->
+                                <div class="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4">
+                                    <h4 class="text-lg font-semibold text-orange-900 dark:text-orange-100 mb-4 flex items-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                        </svg>
+                                        Informasi BBM
+                                    </h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Jenis BBM</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.keterangan_jenis_bbm || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">BBM Sebelum Pengisian</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${formatNumber(ba.volume_sebelum)} Liter</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Volume Hibah</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${formatNumber(ba.volume_pemakaian)} Liter</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Sisa BBM</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${formatNumber(ba.volume_sisa)} Liter</p>
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Alasan Hibah BBM</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.sebab_temp || '-'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Pejabat/Staf UPT Kapal Pemberi Hibah -->
+                                <div class="bg-teal-50 dark:bg-teal-900/20 rounded-lg p-4">
+                                    <h4 class="text-lg font-semibold text-teal-900 dark:text-teal-100 mb-4 flex items-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg>
+                                        PEJABAT/STAF UPT KAPAL PEMBERI HIBAH
+                                    </h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Jabatan</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.jabatan_staf_pangkalan || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Nama</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.nama_staf_pagkalan || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">NIP</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.nip_staf || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">An.</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.an_staf ? 'Ya' : 'Tidak'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Nakhoda Kapal Pemberi Hibah -->
+                                <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-4">
+                                    <h4 class="text-lg font-semibold text-indigo-900 dark:text-indigo-100 mb-4 flex items-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg>
+                                        NAKHODA KAPAL PEMBERI HIBAH
+                                    </h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Nama</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.nama_nahkoda || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Pangkat/Gol</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.pangkat_nahkoda || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">NIP</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.nip_nahkoda || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">An.</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.an_nakhoda ? 'Ya' : 'Tidak'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- KKM Kapal Pemberi Hibah -->
+                                <div class="bg-cyan-50 dark:bg-cyan-900/20 rounded-lg p-4">
+                                    <h4 class="text-lg font-semibold text-cyan-900 dark:text-cyan-100 mb-4 flex items-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg>
+                                        KKM KAPAL PEMBERI HIBAH
+                                    </h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Nama</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.nama_kkm || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">NIP</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.nip_kkm || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">An.</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.an_kkm ? 'Ya' : 'Tidak'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Nakhoda Penerima Hibah -->
+                                <div class="bg-pink-50 dark:bg-pink-900/20 rounded-lg p-4">
+                                    <h4 class="text-lg font-semibold text-pink-900 dark:text-pink-100 mb-4 flex items-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg>
+                                        NAKHODA PENERIMA HIBAH
+                                    </h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Nama</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.nama_nahkoda_temp || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Pangkat/Gol</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.pangkat_nahkoda_temp || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">NIP</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.nip_nahkoda_temp || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">An.</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.an_nakhoda_temp ? 'Ya' : 'Tidak'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- KKM Penerima Hibah -->
+                                <div class="bg-rose-50 dark:bg-rose-900/20 rounded-lg p-4">
+                                    <h4 class="text-lg font-semibold text-rose-900 dark:text-rose-100 mb-4 flex items-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                        </svg>
+                                        KKM PENERIMA HIBAH
+                                    </h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Nama</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.nama_kkm_temp || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">NIP</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.nip_kkm_temp || '-'}</p>
+                                        </div>
+                                        <div>
+                                            <label class="text-sm font-medium text-gray-600 dark:text-gray-400">An.</label>
+                                            <p class="text-sm text-gray-900 dark:text-white font-medium">${ba.an_kkm_temp ? 'Ya' : 'Tidak'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
                         $('#viewBaContent').html(html);
                         $('#viewBaModal').removeClass('hidden');
                     } else {
@@ -562,12 +898,18 @@
             $('#jam_surat').val(formatTimeForInput(ba.jam_surat));
             $('#zona_waktu_surat').val(ba.zona_waktu_surat);
             $('#lokasi_surat').val(ba.lokasi_surat);
+
+            // LINK BA
+            $('#link_ba').val(ba.link_modul_ba);
+            $('#link_ba_hidden').val(ba.link_modul_ba);
+
             // Persetujuan - set langsung tanpa trigger change untuk menghindari konflik
             if (ba.m_persetujuan_id) {
                 $('#persetujuan_id').val(ba.m_persetujuan_id);
             }
             console.log('Setting tanggal_persetujuan:', ba.tgl_persetujuan);
             $('#tanggal_persetujuan').val(formatDateForInput(ba.tgl_persetujuan));
+            $('#nomor_persetujuan').val(ba.nomer_persetujuan);
 
             // Kapal Penerima Hibah
             console.log('Setting nama_kapal_penerima:', ba.kapal_code_temp);
@@ -718,6 +1060,52 @@
             });
         }
 
+        window.openViewDocumentModal = function(id) {
+            currentBaId = id;
+            $.ajax({
+                url: `/ba-pemberi-hibah-bbm-dengan-instansi-lain/${id}/view-document`
+                , type: 'GET'
+                , success: function(response) {
+                    if (response.success) {
+                        $('#documentViewer').html(response.html);
+                        $('#viewDocumentModal').removeClass('hidden');
+                    } else {
+                        showError(response.message);
+                    }
+                }
+                , error: function(xhr) {
+                    showError('Gagal memuat dokumen');
+                }
+            });
+        };
+
+        function deleteDocument() {
+            if (!currentBaId) {
+                showError('ID BA tidak ditemukan');
+                return;
+            }
+
+            $.ajax({
+                url: `/ba-pemberi-hibah-bbm-dengan-instansi-lain/${currentBaId}/delete-document`
+                , type: 'DELETE'
+                , headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+                , success: function(response) {
+                    if (response.success) {
+                        showSuccess(response.message);
+                        $('#viewDocumentModal').addClass('hidden');
+                        loadData(); // Refresh table
+                    } else {
+                        showError(response.message);
+                    }
+                }
+                , error: function(xhr) {
+                    showError('Gagal menghapus dokumen');
+                }
+            });
+        }
+
         window.viewDocument = function(baId) {
             $.ajax({
                 url: `/ba-pemberi-hibah-bbm-dengan-instansi-lain/${baId}/view-document`
@@ -764,17 +1152,18 @@
                     @csrf
                     <input type="hidden" id="baId" name="ba_id">
 
+                    <!-- Kapal -->
                     <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
                         <h4 class="text-lg font-medium text-blue-900 dark:text-blue-100 mb-4 flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                             </svg>
-                            Kapal Pemberi Hibah
+                            Kapal
                         </h4>
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <div>
                                 <label for="kapal_id" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    Pilih Kapal <span class="text-red-500">*</span>
+                                    Kapal <span class="text-red-500">*</span>
                                 </label>
                                 <select id="kapal_id" name="kapal_id" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
                                     <option value="">-- Pilih Kapal --</option>
@@ -784,63 +1173,72 @@
                                 </select>
                             </div>
                             <div>
-                                <label for="code_kapal" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Kode Kapal</label>
+                                <label for="code_kapal" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">KODE KAPAL</label>
                                 <input type="text" id="code_kapal" readonly class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 dark:text-white cursor-not-allowed">
                             </div>
                         </div>
                     </div>
 
+                    <!-- Informasi BA -->
                     <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
                         <h4 class="text-lg font-medium text-green-900 dark:text-green-100 mb-4 flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                             </svg>
-                            Lokasi dan Waktu
+                            Informasi BA
                         </h4>
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
                             <div>
-                                <label for="alamat_upt" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Alamat UPT</label>
+                                <label for="alamat_upt" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">LOKASI UPT</label>
                                 <textarea id="alamat_upt" rows="3" readonly class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 dark:text-white cursor-not-allowed resize-none"></textarea>
                             </div>
                             <div>
                                 <label for="lokasi_surat" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    Lokasi BA <span class="text-red-500">*</span>
+                                    LOKASI KAPAL <span class="text-red-500">*</span>
                                 </label>
-                                <textarea id="lokasi_surat" name="lokasi_surat" rows="3" required placeholder="Lokasi..." class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white resize-none"></textarea>
+                                <textarea id="lokasi_surat" name="lokasi_surat" rows="3" required placeholder="Lokasi kapal..." class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white resize-none"></textarea>
                             </div>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <div class="md:col-span-2">
-                                <label for="nomor_surat" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    Nomor BA <span class="text-red-500">*</span>
-                                </label>
-                                <input type="text" id="nomor_surat" name="nomor_surat" required placeholder="BA/001/KKP/2024" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white">
-                            </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-4">
                             <div>
                                 <label for="tanggal_surat" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    Tanggal <span class="text-red-500">*</span>
+                                    TANGGAL <span class="text-red-500">*</span>
                                 </label>
                                 <input type="date" id="tanggal_surat" name="tanggal_surat" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white">
                             </div>
                             <div>
                                 <label for="jam_surat" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    Jam <span class="text-red-500">*</span>
+                                    JAM <span class="text-red-500">*</span>
                                 </label>
                                 <input type="time" id="jam_surat" name="jam_surat" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white">
                             </div>
+                            <div>
+                                <label for="zona_waktu_surat" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    Zona Waktu Surat <span class="text-red-500">*</span>
+                                </label>
+                                <select id="zona_waktu_surat" name="zona_waktu_surat" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white">
+                                    <option value="WIB">WIB</option>
+                                    <option value="WITA">WITA</option>
+                                    <option value="WIT">WIT</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="mt-4">
-                            <label for="zona_waktu_surat" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                Zona Waktu <span class="text-red-500">*</span>
-                            </label>
-                            <select id="zona_waktu_surat" name="zona_waktu_surat" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white">
-                                <option value="WIB">WIB</option>
-                                <option value="WITA">WITA</option>
-                                <option value="WIT">WIT</option>
-                            </select>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            <div>
+                                <label for="link_ba" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">LINK BA</label>
+                                <input type="text" id="link_ba" readonly class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 dark:text-white cursor-not-allowed">
+                                <input type="hidden" id="link_ba_hidden" name="link_modul_ba">
+                            </div>
+                            <div>
+                                <label for="nomor_surat" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                    NOMOR BA <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text" id="nomor_surat" name="nomor_surat" required placeholder="BA/001/KKP/2024" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white">
+                            </div>
                         </div>
                     </div>
 
+                    <!-- Kapal Penerima Hibah -->
                     <div class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4">
                         <h4 class="text-lg font-medium text-purple-900 dark:text-purple-100 mb-4 flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -858,6 +1256,7 @@
                         </div>
                     </div>
 
+                    <!-- Berdasarkan Persetujuan -->
                     <div class="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4">
                         <h4 class="text-lg font-medium text-orange-900 dark:text-orange-100 mb-4 flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -868,26 +1267,27 @@
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                             <div>
                                 <label for="persetujuan_id" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                    Pilih Persetujuan <span class="text-red-500">*</span>
+                                    Berdasarkan persetujuan <span class="text-red-500">*</span>
                                 </label>
                                 <select id="persetujuan_id" name="persetujuan_id" required class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white">
-                                    <option value="">-- Pilih --</option>
+                                    <option value="">--Pilih--</option>
                                     @foreach($persetujuans as $persetujuan)
                                     <option value="{{ $persetujuan->id }}">{{ $persetujuan->deskripsi_persetujuan }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div>
-                                <label for="nomor_persetujuan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nomor Persetujuan</label>
-                                <input type="text" id="nomor_persetujuan" readonly class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 dark:text-white cursor-not-allowed">
+                                <label for="nomor_persetujuan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NOMOR PERSETUJUAN</label>
+                                <input type="text" id="nomor_persetujuan" name="nomor_persetujuan" placeholder="Nomor persetujuan" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 dark:bg-gray-700 dark:text-white">
                             </div>
                             <div>
-                                <label for="tanggal_persetujuan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Tanggal Persetujuan</label>
+                                <label for="tanggal_persetujuan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">TANGGAL PERSETUJUAN</label>
                                 <input name="tgl_persetujuan" type="date" id="tanggal_persetujuan" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 dark:bg-gray-700 dark:text-white transition-colors">
                             </div>
                         </div>
                     </div>
 
+                    <!-- Informasi BBM -->
                     <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
                         <h4 class="text-lg font-medium text-yellow-900 dark:text-yellow-100 mb-4 flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -925,91 +1325,103 @@
                         </div>
                     </div>
 
-                    <!-- Staf Pangkalan -->
+                    <!-- PEJABAT/STAF UPT -->
                     <div class="bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-4">
                         <h4 class="text-lg font-medium text-indigo-900 dark:text-indigo-100 mb-4 flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
-                            PEJABAT/STAF UPT
+                            PEJABAT/STAF UPT KAPAL PEMBERI HIBAH
                         </h4>
                         <div class="mb-4">
                             <div class="flex items-center">
                                 <input type="checkbox" id="an_staf" name="an_staf" value="1" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
-                                <label for="an_staf" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">An. Pejabat/Staf UPT</label>
+                                <label for="an_staf" class="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300">An.</label>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                             <div>
-                                <label for="jabatan_staf_pangkalan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Jabatan Pejabat/Staf UPT</label>
-                                <input type="text" id="jabatan_staf_pangkalan" name="jabatan_staf_pangkalan" placeholder="Jabatan pejabat/staf UPT" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition-colors">
+                                <label for="jabatan_staf_pangkalan" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Staf Pangkalan</label>
+                                <input type="text" id="jabatan_staf_pangkalan" name="jabatan_staf_pangkalan" readonly class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 dark:text-white cursor-not-allowed">
                             </div>
                             <div>
-                                <label for="nama_petugas" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nama Pejabat/Staf UPT</label>
-                                <input type="text" id="nama_petugas" name="nama_petugas" placeholder="Nama pejabat/staf UPT" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition-colors">
+                                <label for="nama_petugas" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NAMA PEJABAT/STAF UPT</label>
+                                <input type="text" id="nama_petugas" name="nama_petugas" readonly class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 dark:text-white cursor-not-allowed">
                             </div>
                             <div>
                                 <label for="nip_petugas" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NIP</label>
-                                <input type="text" id="nip_petugas" name="nip_petugas" placeholder="Nomor Induk Pegawai" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white transition-colors">
+                                <input type="text" id="nip_petugas" name="nip_petugas" readonly class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 dark:text-white cursor-not-allowed">
                             </div>
                         </div>
                     </div>
 
+                    <!-- NAKHODA -->
                     <div class="bg-cyan-50 dark:bg-cyan-900/20 rounded-lg p-4">
                         <h4 class="text-lg font-medium text-cyan-900 dark:text-cyan-100 mb-4 flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
-                            Nakhoda & KKM Kapal
+                            NAKHODA KAPAL PEMBERI HIBAH
                         </h4>
                         <div class="mb-3">
                             <input type="checkbox" id="an_nakhoda" name="an_nakhoda" value="1" class="h-4 w-4 text-cyan-600 focus:ring-cyan-500 border-gray-300 rounded">
-                            <label for="an_nakhoda" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">An. Nakhoda</label>
+                            <label for="an_nakhoda" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">An.</label>
                         </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                             <div>
-                                <label for="nama_nahkoda" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nama Nakhoda</label>
-                                <input type="text" id="nama_nahkoda" name="nama_nahkoda" placeholder="Nama nakhoda" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 dark:bg-gray-700 dark:text-white">
+                                <label for="nama_nahkoda" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NAMA NAKHODA</label>
+                                <input type="text" id="nama_nahkoda" name="nama_nahkoda" readonly class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 dark:text-white cursor-not-allowed">
                             </div>
                             <div>
                                 <label for="pangkat_nahkoda" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Pangkat/Gol</label>
-                                <input type="text" id="pangkat_nahkoda" name="pangkat_nahkoda" placeholder="Pangkat/Gol" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 dark:bg-gray-700 dark:text-white">
+                                <input type="text" id="pangkat_nahkoda" name="pangkat_nahkoda" readonly class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 dark:text-white cursor-not-allowed">
                             </div>
                             <div>
                                 <label for="nip_nahkoda" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NIP</label>
-                                <input type="text" id="nip_nahkoda" name="nip_nahkoda" placeholder="NIP" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 dark:bg-gray-700 dark:text-white">
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <input type="checkbox" id="an_kkm" name="an_kkm" value="1" class="h-4 w-4 text-cyan-600 focus:ring-cyan-500 border-gray-300 rounded">
-                            <label for="an_kkm" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">An. KKM</label>
-                        </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            <div>
-                                <label for="nama_kkm" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nama KKM</label>
-                                <input type="text" id="nama_kkm" name="nama_kkm" placeholder="Nama KKM" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 dark:bg-gray-700 dark:text-white">
-                            </div>
-                            <div>
-                                <label for="nip_kkm" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NIP</label>
-                                <input type="text" id="nip_kkm" name="nip_kkm" placeholder="NIP" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 dark:bg-gray-700 dark:text-white">
+                                <input type="text" id="nip_nahkoda" name="nip_nahkoda" readonly class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 dark:text-white cursor-not-allowed">
                             </div>
                         </div>
                     </div>
 
+                    <!-- KKM -->
+                    <div class="bg-teal-50 dark:bg-teal-900/20 rounded-lg p-4">
+                        <h4 class="text-lg font-medium text-teal-900 dark:text-teal-100 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                            KKM KAPAL PEMBERI HIBAH
+                        </h4>
+                        <div class="mb-3">
+                            <input type="checkbox" id="an_kkm" name="an_kkm" value="1" class="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded">
+                            <label for="an_kkm" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">An.</label>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                            <div>
+                                <label for="nama_kkm" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NAMA KKM</label>
+                                <input type="text" id="nama_kkm" name="nama_kkm" readonly class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 dark:text-white cursor-not-allowed">
+                            </div>
+                            <div>
+                                <label for="nip_kkm" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NIP</label>
+                                <input type="text" id="nip_kkm" name="nip_kkm" readonly class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 dark:text-white cursor-not-allowed">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NAKHODA PENERIMA HIBAH -->
                     <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
                         <h4 class="text-lg font-medium text-green-900 dark:text-green-100 mb-4 flex items-center">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
-                            Nakhoda & KKM Penerima Hibah
+                            NAKHODA PENERIMA HIBAH
                         </h4>
                         <div class="mb-3">
                             <input type="checkbox" id="an_nakhoda_penerima" name="an_nakhoda_penerima" value="1" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
-                            <label for="an_nakhoda_penerima" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">An. Nakhoda</label>
+                            <label for="an_nakhoda_penerima" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">An.</label>
                         </div>
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                             <div>
-                                <label for="nama_nahkoda_penerima" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nama Nakhoda Penerima Hibah</label>
+                                <label for="nama_nahkoda_penerima" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NAMA NAKHODA PENERIMA HIBAH</label>
                                 <input type="text" id="nama_nahkoda_penerima" name="nama_nahkoda_penerima" placeholder="Nama nakhoda penerima" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white">
                             </div>
                             <div>
@@ -1021,18 +1433,28 @@
                                 <input type="text" id="nip_nahkoda_penerima" name="nip_nahkoda_penerima" placeholder="NIP" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white">
                             </div>
                         </div>
+                    </div>
+
+                    <!-- KKM PENERIMA HIBAH -->
+                    <div class="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-4">
+                        <h4 class="text-lg font-medium text-emerald-900 dark:text-emerald-100 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                            KKM PENERIMA HIBAH
+                        </h4>
                         <div class="mb-3">
-                            <input type="checkbox" id="an_kkm_penerima" name="an_kkm_penerima" value="1" class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded">
-                            <label for="an_kkm_penerima" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">An. KKM</label>
+                            <input type="checkbox" id="an_kkm_penerima" name="an_kkm_penerima" value="1" class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded">
+                            <label for="an_kkm_penerima" class="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">An.</label>
                         </div>
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                             <div>
-                                <label for="nama_kkm_penerima" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Nama KKM Penerima Hibah</label>
-                                <input type="text" id="nama_kkm_penerima" name="nama_kkm_penerima" placeholder="Nama KKM penerima" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white">
+                                <label for="nama_kkm_penerima" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NAMA KKM PENERIMA HIBAH</label>
+                                <input type="text" id="nama_kkm_penerima" name="nama_kkm_penerima" placeholder="Nama KKM penerima" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white">
                             </div>
                             <div>
                                 <label for="nip_kkm_penerima" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">NIP</label>
-                                <input type="text" id="nip_kkm_penerima" name="nip_kkm_penerima" placeholder="NIP" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white">
+                                <input type="text" id="nip_kkm_penerima" name="nip_kkm_penerima" placeholder="NIP" class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-emerald-500 dark:bg-gray-700 dark:text-white">
                             </div>
                         </div>
                     </div>
@@ -1054,19 +1476,24 @@
 
 <div id="viewBaModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full hidden z-[99999]">
     <div class="flex items-center justify-center min-h-full py-8">
-        <div class="relative mx-auto p-6 border w-11/12 md:w-3/4 shadow-lg rounded-lg bg-white dark:bg-gray-800 max-h-[90vh] overflow-y-auto">
+        <div class="relative mx-auto p-6 border w-11/12 md:w-3/4 lg:w-2/3 shadow-lg rounded-lg bg-white dark:bg-gray-800 max-h-[90vh] overflow-y-auto">
             <div class="mt-3">
                 <div class="flex items-center justify-between pb-6 border-b border-gray-200 dark:border-gray-700">
-                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Detail BA</h3>
-                    <button id="closeViewModal" class="text-gray-400 hover:text-gray-600">
+                    <div>
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Detail BA Pemberi Hibah BBM Dengan Instansi Lain</h3>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Informasi lengkap Berita Acara Pemberi Hibah BBM Dengan Instansi Lain</p>
+                    </div>
+                    <button id="closeViewModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </button>
                 </div>
-                <div id="viewBaContent" class="mt-6"></div>
+                <div id="viewBaContent" class="mt-6">
+                    <!-- Content will be loaded here -->
+                </div>
                 <div class="flex items-center justify-end pt-6 border-t border-gray-200 dark:border-gray-700">
-                    <button type="button" id="closeViewModalBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg">
+                    <button type="button" id="closeViewModalBtn" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg transition-colors">
                         Tutup
                     </button>
                 </div>
@@ -1104,14 +1531,129 @@
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
         <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Dokumen Pendukung</h3>
-            <button id="closeViewDocumentModal" class="text-gray-400 hover:text-gray-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
+            <div class="flex items-center space-x-2">
+                <button id="deleteDocumentBtn" class="p-2 text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 hover:border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 dark:border-red-700 dark:hover:border-red-600 rounded-lg transition-all duration-200" title="Hapus Dokumen">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                </button>
+                <button id="closeViewDocumentModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
         </div>
+
         <div class="p-6 overflow-auto max-h-[calc(90vh-120px)]">
-            <div id="documentViewer"></div>
+            <div id="documentViewer" class="w-full h-full">
+                <!-- Document content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Help Modal -->
+<div id="helpModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 backdrop-blur-sm overflow-y-auto h-full w-full hidden z-[99999]">
+    <div class="relative mx-auto p-5 border w-11/12 md:w-4/5 lg:w-3/4 xl:w-2/3 shadow-lg rounded-lg bg-white dark:bg-gray-800 mt-10 mb-10 max-h-[90vh] overflow-y-auto help-modal-scroll">
+        <div class="mt-3">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between pb-4">
+                <h3 class="text-xl font-medium text-gray-900 dark:text-white">Panduan BA Pemberi Hibah BBM Dengan Instansi Lain</h3>
+                <button id="closeHelpModal" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Content -->
+            <div class="space-y-6">
+                <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                    <h4 class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-3">Tentang BA Pemberi Hibah BBM Dengan Instansi Lain</h4>
+                    <p class="text-blue-800 dark:text-blue-200 text-sm leading-relaxed">
+                        Berita Acara Pemberi Hibah BBM Dengan Instansi Lain digunakan untuk mencatat pemberian hibah BBM kepada instansi lain di luar kapal pengawas.
+                        Dokumen ini berisi informasi tentang instansi pemberi, instansi penerima, volume BBM yang dihibahkan, dan kondisi pemberian.
+                    </p>
+                </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white">Langkah-langkah Pengisian:</h4>
+
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">1</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Isi Informasi Umum</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Lengkapi nomor surat, tanggal, jam, zona waktu, dan lokasi pembuatan BA.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">2</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Data Instansi Pemberi</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Isi informasi instansi yang memberikan hibah BBM, termasuk nama instansi dan alamat.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">3</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Data Instansi Penerima</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Isi informasi instansi penerima hibah BBM, termasuk nama instansi dan alamat.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">4</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Data Volume Hibah</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Isi volume BBM yang dihibahkan, jenis BBM, dan kondisi pemberian hibah.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">5</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Informasi Petugas</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Lengkapi data staf pangkalan, nahkoda, dan KKM. Centang checkbox jika sebagai an.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-3">
+                            <div class="flex-shrink-0 w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400">6</span>
+                            </div>
+                            <div>
+                                <h5 class="font-medium text-gray-900 dark:text-white">Upload Dokumen</h5>
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Upload dokumen pendukung jika diperlukan (opsional).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
+                    <h4 class="text-lg font-semibold text-yellow-900 dark:text-yellow-100 mb-2">Catatan Penting:</h4>
+                    <ul class="text-yellow-800 dark:text-yellow-200 text-sm space-y-1">
+                        <li>• Pastikan data instansi pemberi dan penerima akurat</li>
+                        <li>• Semua field bertanda (*) wajib diisi</li>
+                        <li>• Volume hibah harus sesuai dengan kapasitas yang tersedia</li>
+                        <li>• Dokumen ini harus ditandatangani oleh pihak yang berwenang</li>
+                        <li>• Pastikan koordinasi dengan instansi penerima telah dilakukan</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 </div>

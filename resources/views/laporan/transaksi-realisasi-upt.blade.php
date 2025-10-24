@@ -68,11 +68,11 @@
                     </svg>
                     Preview
                 </button>
-                <button id="printBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                <button id="pdfBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                     </svg>
-                    Print
+                    Export PDF
                 </button>
                 <button id="excelBtn" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -180,8 +180,8 @@
             loadData();
         });
 
-        // Print button
-        $('#printBtn').click(function() {
+        // PDF button
+        $('#pdfBtn').click(function() {
             const tglAwal = $('#tgl_awal').val();
             const tglAkhir = $('#tgl_akhir').val();
             const uptCode = $('#upt_code').val();
@@ -192,45 +192,15 @@
                 return;
             }
 
-            // Create form and submit via POST
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '{{ route("laporan-anggaran.export.pdf", "transaksi-realisasi-upt") }}';
-            form.target = '_blank';
+            const params = new URLSearchParams({
+                tgl_awal: tglAwal
+                , tgl_akhir: tglAkhir
+                , upt_code: uptCode
+                , no_tagihan: noTagihan
+                , format: 'pdf'
+            });
 
-            const csrfToken = document.createElement('input');
-            csrfToken.type = 'hidden';
-            csrfToken.name = '_token';
-            csrfToken.value = '{{ csrf_token() }}';
-            form.appendChild(csrfToken);
-
-            const tglAwalInput = document.createElement('input');
-            tglAwalInput.type = 'hidden';
-            tglAwalInput.name = 'tgl_awal';
-            tglAwalInput.value = tglAwal;
-            form.appendChild(tglAwalInput);
-
-            const tglAkhirInput = document.createElement('input');
-            tglAkhirInput.type = 'hidden';
-            tglAkhirInput.name = 'tgl_akhir';
-            tglAkhirInput.value = tglAkhir;
-            form.appendChild(tglAkhirInput);
-
-            const uptCodeInput = document.createElement('input');
-            uptCodeInput.type = 'hidden';
-            uptCodeInput.name = 'upt_code';
-            uptCodeInput.value = uptCode;
-            form.appendChild(uptCodeInput);
-
-            const noTagihanInput = document.createElement('input');
-            noTagihanInput.type = 'hidden';
-            noTagihanInput.name = 'no_tagihan';
-            noTagihanInput.value = noTagihan;
-            form.appendChild(noTagihanInput);
-
-            document.body.appendChild(form);
-            form.submit();
-            document.body.removeChild(form);
+            window.open(`{{ route("laporan-anggaran.transaksi-realisasi-upt.export") }}?${params}`, '_blank');
         });
 
         // Excel button
@@ -245,45 +215,15 @@
                 return;
             }
 
-            // Create form and submit via POST
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '{{ route("laporan-anggaran.export.excel", "transaksi-realisasi-upt") }}';
-            form.target = '_blank';
+            const params = new URLSearchParams({
+                tgl_awal: tglAwal
+                , tgl_akhir: tglAkhir
+                , upt_code: uptCode
+                , no_tagihan: noTagihan
+                , format: 'excel'
+            });
 
-            const csrfToken = document.createElement('input');
-            csrfToken.type = 'hidden';
-            csrfToken.name = '_token';
-            csrfToken.value = '{{ csrf_token() }}';
-            form.appendChild(csrfToken);
-
-            const tglAwalInput = document.createElement('input');
-            tglAwalInput.type = 'hidden';
-            tglAwalInput.name = 'tgl_awal';
-            tglAwalInput.value = tglAwal;
-            form.appendChild(tglAwalInput);
-
-            const tglAkhirInput = document.createElement('input');
-            tglAkhirInput.type = 'hidden';
-            tglAkhirInput.name = 'tgl_akhir';
-            tglAkhirInput.value = tglAkhir;
-            form.appendChild(tglAkhirInput);
-
-            const uptCodeInput = document.createElement('input');
-            uptCodeInput.type = 'hidden';
-            uptCodeInput.name = 'upt_code';
-            uptCodeInput.value = uptCode;
-            form.appendChild(uptCodeInput);
-
-            const noTagihanInput = document.createElement('input');
-            noTagihanInput.type = 'hidden';
-            noTagihanInput.name = 'no_tagihan';
-            noTagihanInput.value = noTagihan;
-            form.appendChild(noTagihanInput);
-
-            document.body.appendChild(form);
-            form.submit();
-            document.body.removeChild(form);
+            window.open(`{{ route("laporan-anggaran.transaksi-realisasi-upt.export") }}?${params}`, '_blank');
         });
 
 

@@ -25,6 +25,7 @@ class ConfUser extends Authenticatable
         'nama_lengkap',
         'nip',
         'golongan',
+        'ttd',
         'date_insert',
         'user_insert',
         'date_update',
@@ -107,5 +108,21 @@ class ConfUser extends Authenticatable
     public function kapals()
     {
         return $this->belongsToMany(MKapal::class, 'sys_user_kapal', 'conf_user_id', 'm_kapal_id');
+    }
+
+    /**
+     * Get the TTD attribute as URL
+     */
+    public function getTtdAttribute($value)
+    {
+        if ($value) {
+            // Jika sudah berupa URL lengkap, return as is
+            if (filter_var($value, FILTER_VALIDATE_URL)) {
+                return $value;
+            }
+            // Jika berupa path file, tambahkan base URL
+            return url('images/ttd/' . $value);
+        }
+        return null;
     }
 }

@@ -90,8 +90,10 @@
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Total Anggaran</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Keterangan</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">User Input</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Tanggal Input</th>
-                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Status</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Tgl Input</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Status Approval</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">User Approval</th>
+                        <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Tgl Approval</th>
                         <th class="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider border border-gray-300 dark:border-gray-600">Aksi</th>
                     </tr>
                 </thead>
@@ -102,13 +104,6 @@
         </div>
     </div>
 
-    <!-- Loading Indicator -->
-    <div id="loadingIndicator" class="hidden items-center justify-center py-8">
-        <div class="flex items-center justify-center">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <span class="ml-2 text-gray-600 dark:text-gray-400">Memuat data...</span>
-        </div>
-    </div>
 </div>
 
 <!-- Add/Edit Modal -->
@@ -267,11 +262,25 @@
             loadData();
         });
 
+        // Auto-filter on change
+        $('#status, #dateFrom, #dateTo').change(function() {
+            loadData();
+        });
+
         // Search on enter
         $('#search').keypress(function(e) {
             if (e.which == 13) {
                 loadData();
             }
+        });
+
+        // Search on input with debounce
+        let searchTimeout;
+        $('#search').on('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(function() {
+                loadData();
+            }, 500);
         });
     });
 
@@ -331,7 +340,17 @@
     }
 
     function loadData() {
-        $('#loadingIndicator').removeClass('hidden');
+        // Show loading in table
+        $('#dataTableBody').html(`
+            <tr>
+                <td colspan="10" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                    <div class="flex items-center justify-center">
+                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                        <span class="ml-2">Memuat data...</span>
+                    </div>
+                </td>
+            </tr>
+        `);
 
         // Get filter parameters
         const search = $('#search').val();
@@ -345,12 +364,10 @@
             , date_from: dateFrom
             , date_to: dateTo
         }, function(response) {
-            $('#loadingIndicator').addClass('hidden');
-
             if (!response.data || response.data.length === 0) {
                 $('#dataTableBody').html(`
                     <tr>
-                        <td colspan="8" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                        <td colspan="10" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                             Tidak ada data anggaran
                         </td>
                     </tr>
@@ -365,6 +382,7 @@
                     '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">Belum Disetujui</span>';
 
                 const tanggalInput = new Date(item.tanggal_input).toLocaleDateString('id-ID');
+                const tanggalApproval = item.tanggal_app ? new Date(item.tanggal_app).toLocaleDateString('id-ID') : '-';
                 const totalAnggaran = 'Rp. ' + new Intl.NumberFormat('id-ID').format(item.total_anggaran || 0);
 
                 let actions = '<div class="flex items-center justify-end space-x-1">';
@@ -388,13 +406,19 @@
                             <div class="text-sm text-gray-900 dark:text-white">${item.keterangan || '-'}</div>
                         </td>
                         <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
-                            <div class="text-sm text-gray-900 dark:text-white">${item.user_input || '-'}</div>
+                            <div class="text-sm text-gray-900 dark:text-white">${item.user_input ? (item.user_input.nama_lengkap || item.user_input.username) : '-'}</div>
                         </td>
                         <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
                             <div class="text-sm text-gray-900 dark:text-white">${tanggalInput}</div>
                         </td>
                         <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
                             ${statusBadge}
+                        </td>
+                        <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
+                            <div class="text-sm text-gray-900 dark:text-white">${item.user_app || '-'}</div>
+                        </td>
+                        <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
+                            <div class="text-sm text-gray-900 dark:text-white">${tanggalApproval}</div>
                         </td>
                         <td class="px-6 py-4 text-center border border-gray-300 dark:border-gray-600">
                             ${actions}
@@ -404,12 +428,17 @@
             });
 
             $('#dataTableBody').html(html);
-        }).fail(function() {
-            $('#loadingIndicator').addClass('hidden');
+        }).fail(function(xhr, status, error) {
+            console.error('Error loading data:', error);
             $('#dataTableBody').html(`
                 <tr>
-                    <td colspan="8" class="px-6 py-4 text-center text-red-500">
-                        Error loading data
+                    <td colspan="10" class="px-6 py-4 text-center text-red-500">
+                        <div class="flex items-center justify-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Error loading data: ${error}
+                        </div>
                     </td>
                 </tr>
             `);

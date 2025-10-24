@@ -61,7 +61,7 @@
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
-                        Export Excel
+                            Excel
                     </button>
                 </div>
 
@@ -70,11 +70,11 @@
                         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                         </svg>
-                        Export PDF
+                            PDF
                     </button>
                 </div>
 
-                
+
             </form>
         </div>
 
@@ -112,7 +112,7 @@
 <script>
     $(document).ready(function() {
         loadUptOptions();
-        
+
         // Load kapal options (all kapals initially)
         loadKapalOptions('');
 
@@ -125,6 +125,17 @@
 
         $('#upt_id').change(function() {
             loadKapalOptions($(this).val());
+        });
+
+        // Handle form submission
+        $('#filterForm').on('submit', function(e) {
+            e.preventDefault();
+            loadData();
+        });
+
+        // Handle filter changes
+        $('#start_date, #end_date, #upt_id, #kapal_id').on('change', function() {
+            loadData();
         });
         // Force date input to work properly
         $('#start_date, #end_date').on('focus', function() {
@@ -196,6 +207,7 @@
             });
         });
     }
+
     function formatDate(dateString) {
         if (!dateString) return '-';
         const date = new Date(dateString);
@@ -313,10 +325,10 @@
         exportButton.disabled = true;
 
         const params = new URLSearchParams({
-            start_date: startDate,
-            end_date: endDate,
-            upt_id: uptId,
-            format: format
+            start_date: startDate
+            , end_date: endDate
+            , upt_id: uptId
+            , format: format
         });
 
         // Use fetch to handle the response
@@ -352,9 +364,6 @@
                 exportButton.innerHTML = originalText;
                 exportButton.disabled = false;
             });
-    });
-
-        window.open(`{{ route("laporan-bbm.history-penerimaan-penggunaan.export") }}?${params}`, '_blank');
     }
 
 </script>
